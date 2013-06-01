@@ -113,6 +113,13 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'south',
     'django_extensions',
+    'api',
+    'tokenapi'
+)
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'tokenapi.backends.TokenBackend'
 )
 
 LOGFILE = os.path.join(PROJECT_DIR, "logfile.log")

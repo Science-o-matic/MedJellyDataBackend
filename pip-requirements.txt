@@ -5,3 +5,4 @@ South
 MySQL-python
 ipython
 fabric
+django-tokenapi
