@@ -113,6 +113,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'south',
     'django_extensions',
+    'sights'
 )
 
 LOGFILE = os.path.join(PROJECT_DIR, "logfile.log")
