@@ -57,11 +57,6 @@ MEDIA_URL = '/media/'
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = (
-    os.path.join(os.path.abspath(os.path.dirname(__file__)), "static/"),
-)
-
-
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '0dasdsr6%7dasdsgip5tmez*vygfv+u14h@4lbt^8e2^26o#5_f_#b7%cm)u'
 
