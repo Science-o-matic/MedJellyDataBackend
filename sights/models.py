@@ -19,6 +19,8 @@ class Sight(models.Model):
 class Beach(models.Model):
     code = models.CharField(max_length=20)
     name = models.CharField(max_length=1000)
+    city = models.CharField(max_length=1000, blank=True)
+    owner = models.CharField(max_length=1000, blank=True)
 
     def __unicode__(self):
         return self.name
