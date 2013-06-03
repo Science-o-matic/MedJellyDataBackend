@@ -108,7 +108,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'south',
     'django_extensions',
-    'tokenapi'
+    'tokenapi',
+    'sights'
 )
 
 AUTHENTICATION_BACKENDS = (
