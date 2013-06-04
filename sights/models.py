@@ -39,54 +39,50 @@ class VariablesGroup(models.Model):
         verbose_name = "Grupo de Variables"
         verbose_name_plural = "Grupos de Variables"
 
-
-class VariableType(models.Model):
-    beach = models.ForeignKey('Beach')
-    group = models.ForeignKey('VariablesGroup')
-    description = models.ForeignKey('VariableDescription')
-    code = models.CharField(max_length=20)
-    name = models.CharField(max_length=1000)
-
-    def __unicode__(self):
-        return "%s - %s" % (self.name, self.description)
-
-    class Meta:
-        verbose_name = "Tipo de Variable"
-        verbose_name_plural = "Tipos de Variables"
-
-
-class VariableDescription(models.Model):
-    variable_type = models.ForeignKey('VariableType', related_name='possible_descriptions')
+class MeasureUnit(models.Model):
     name = models.CharField(max_length=1000)
 
     def __unicode__(self):
         return self.name
 
-    class Meta:
-        verbose_name = "Descripción de Variable"
-        verbose_name_plural = "Descripciones de Variables"
-
-
-
-class MeasureUnits(models.Model):
-    name = models.CharField(max_length=1000)
-
-    def __unicode__(self):
-        return self.name
+    @classmethod
+    def get_default(self):
+        try:
+            return self.objects.get(id=1)
+        except:
+            return 1
 
     class Meta:
         verbose_name = "Unidad de medida"
         verbose_name_plural = "Unidades de medida"
 
 
+
+
+class Variable(models.Model):
+    beach = models.ForeignKey('Beach')
+    group = models.ForeignKey('VariablesGroup')
+    code = models.CharField(max_length=20)
+    type = models.CharField(max_length=300)
+    description = models.CharField(max_length=300)
+    measure_unit = models.ForeignKey('MeasureUnit',
+                                     default = MeasureUnit.get_default)
+
+    def __unicode__(self):
+        return "%s - %s" % (self.name, self.description)
+
+    class Meta:
+        verbose_name = "Variable"
+        verbose_name_plural = "Variables"
+
+
 class SightVariables(models.Model):
     sight = models.ForeignKey('Sight')
-    variable = models.ForeignKey('VariableType')
+    variable = models.ForeignKey('Variable')
     value = models.FloatField()
 
     def __unicode__(self):
         return "%s %s %s" % (self.sight, self.variable, self.value)
-
 
     class Meta:
         verbose_name = "Variable de avistamiento"
