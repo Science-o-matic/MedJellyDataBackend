@@ -61,7 +61,7 @@ class MeasureUnit(models.Model):
 
 class Variable(models.Model):
     beach = models.ForeignKey('Beach')
-    group = models.ForeignKey('VariablesGroup')
+    group = models.ForeignKey('VariablesGroup', null=True, blank=True)
     code = models.CharField(max_length=20)
     type = models.CharField(max_length=300)
     description = models.CharField(max_length=300)
@@ -69,7 +69,7 @@ class Variable(models.Model):
                                      default = MeasureUnit.get_default)
 
     def __unicode__(self):
-        return "%s - %s" % (self.name, self.description)
+        return "%s - %s" % (self.type, self.description)
 
     class Meta:
         verbose_name = "Variable"
