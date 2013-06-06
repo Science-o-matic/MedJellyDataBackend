@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-
 from django.db import models
-from django.db import models
+from django.contrib.auth.models import User
 
 
 class Sight(models.Model):
     timestamp = models.DateTimeField()
     comments = models.TextField(blank=True)
     beach = models.ForeignKey('Beach')
+    reported_from = models.ForeignKey('ReportingClient')
 
     def __unicode__(self):
         return "%s: %s (%s)" % (self.timestamp, self.beach, self.beach_code)
@@ -19,14 +19,36 @@ class Sight(models.Model):
 class Beach(models.Model):
     code = models.CharField(max_length=20)
     name = models.CharField(max_length=1000)
-    city = models.CharField(max_length=1000, blank=True)
-    owner = models.CharField(max_length=1000, blank=True)
+    city = models.ForeignKey("City")
+    owner = models.ForeignKey("BeachOwner")
+    users = models.ManyToManyField(User)
 
     def __unicode__(self):
         return self.name
 
     class Meta:
         verbose_name = "Playa"
+
+
+class City(models.Model):
+    name = models.CharField(max_length=300)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Ciudad"
+        verbose_name_plural = "Ciudades"
+
+
+class BeachOwner(models.Model):
+    name = models.CharField(max_length=300)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Propietario"
 
 
 class VariablesGroup(models.Model):
@@ -87,3 +109,14 @@ class SightVariables(models.Model):
     class Meta:
         verbose_name = "Variable de avistamiento"
         verbose_name_plural = "Variables de avistamientos"
+
+
+class ReportingClient(models.Model):
+    name = models.CharField(max_length=300)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Origen del reporte"
+        verbose_name_plural = "Orígenes de reporte"
