@@ -2,28 +2,34 @@
 from django import forms
 from django.forms.widgets import HiddenInput
 from form_utils.forms import BetterModelForm
-from sights.models import Sight, Variable
+from sights.models import Sight, Variable, VariablesGroup
 
 
 class SightForm(BetterModelForm):
-
     
     def __init__(self, *args, **kwargs):
         super(SightForm, self).__init__()
-        variable_fields = {}
-        for var in Variable.objects.all():
-            try:
-                print var
-                FieldClass = getattr(forms, var.field_type)
-                var_fields["var_%s" % var.id] = FieldClass(label=var.label)
-            except:
-                pass
-        self.fields.update(var_fields)
-        for i in range(len(self.base_fieldsets)):
-            fs_fields = self.base_fieldsets[i][1]
-            fs_fields['fields'].extend(
-                var_fields.keys())
 
+        fields = {}
+        fieldsets = []
+        for group in VariablesGroup.objects.all():
+            variables = group.variable_set.all()
+            fieldset_fields = []
+            for var in variables:
+                FieldClass = getattr(forms, var.field_type)
+                field_name = "var_%s" % var.id
+                fields[field_name] = FieldClass(label=var.label)
+                fieldset_fields.append(field_name)
+                
+#            import ipdb; ipdb.set_trace()
+            fieldsets.append((group.fieldset_name, 
+                              {'fields': fieldset_fields})
+                             )
+        self.fields.update(fields)
+        for fs in fieldsets:
+            self.base_fieldsets.append(fs)
+        from pprint import pprint
+        #pprint(self.base_fieldsets)
 
     class Meta:
         model = Sight

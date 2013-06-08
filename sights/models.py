@@ -54,8 +54,16 @@ class BeachOwner(models.Model):
 class VariablesGroup(models.Model):
     name = models.CharField(max_length=1000)
 
+    def __str__(self):
+        return self.name
+
     def __unicode__(self):
         return self.name
+
+    @property
+    def fieldset_name(self):
+        fieldset_name = self.name.strip().lower().replace(" ", "_")
+        return fieldset_name.encode("ascii", "ignore").replace("'", "")
 
     class Meta:
         verbose_name = "Grupo de Variables"
