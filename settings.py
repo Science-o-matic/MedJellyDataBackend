@@ -109,7 +109,8 @@ INSTALLED_APPS = (
     'south',
     'django_extensions',
     'tokenapi',
-    'sights'
+    'sights',
+    'form_utils'
 )
 
 AUTHENTICATION_BACKENDS = (
