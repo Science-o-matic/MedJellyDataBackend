@@ -11,17 +11,18 @@ class SightForm(BetterModelForm):
     def __init__(self, *args, **kwargs):
         super(SightForm, self).__init__()
         variable_fields = {}
-        for variable in Variable.objects.all():
+        for var in Variable.objects.all():
             try:
-                FieldClass = getattr(forms, variable.field_type)
-                variable_fields["variable_%s" % variable.id] = FieldClass(label=variable.label)
+                print var
+                FieldClass = getattr(forms, var.field_type)
+                var_fields["var_%s" % var.id] = FieldClass(label=var.label)
             except:
                 pass
-        self.fields.update(variable_fields)
+        self.fields.update(var_fields)
         for i in range(len(self.base_fieldsets)):
             fs_fields = self.base_fieldsets[i][1]
             fs_fields['fields'].extend(
-                variable_fields.keys())
+                var_fields.keys())
 
 
     class Meta:
