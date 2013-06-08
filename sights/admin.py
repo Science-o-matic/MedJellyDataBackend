@@ -1,5 +1,5 @@
 from django.contrib import admin
-from models import Sight, Beach, VariablesGroup, Variable,  MeasureUnit, SightVariables, \
+from models import Sight, Beach, VariablesGroup, Variable,  BeachVariable, MeasureUnit, SightVariables, \
     ReportingClient, City, BeachOwner
 
 
@@ -8,6 +8,7 @@ class BeachAdmin(admin.ModelAdmin):
 
 admin.site.register(Sight)
 admin.site.register(Beach, BeachAdmin)
+admin.site.register(BeachVariable)
 admin.site.register(VariablesGroup)
 admin.site.register(Variable)
 admin.site.register(MeasureUnit)

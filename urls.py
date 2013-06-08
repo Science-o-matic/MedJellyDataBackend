@@ -7,7 +7,9 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
                        url(r'', include('tokenapi.urls')),
+                       url(r'^sights/', include('sights.urls')),
                        url(r'^admin/', include(admin.site.urls)),
+
 )
 
 if settings.DEBUG:

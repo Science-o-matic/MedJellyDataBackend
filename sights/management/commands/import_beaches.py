@@ -1,6 +1,6 @@
 import csv
 from django.core.management.base import BaseCommand
-from sights.models import Beach, Variable, MeasureUnit
+from sights.models import Beach, Variable, BeachVariable, MeasureUnit
 
 
 class Command(BaseCommand):
@@ -34,11 +34,13 @@ class Command(BaseCommand):
         return beach_object
 
     def create_variable(self, variable, beach_object, measure_unit_object):
-        Variable.objects.get_or_create(type=variable["type"],
-                                       code=variable["code"],
-                                       description=variable["description"],
-                                       beach=beach_object,
-                                       measure_unit=measure_unit_object)
+        var, _ = Variable.objects.get_or_create(type=variable["type"],
+                                                description=variable["description"],
+                                                measure_unit=measure_unit_object)
+        BeachVariable.objects.get_or_create(variable=var,
+                                            code=variable["code"],
+                                            beach=beach_object,)
+
 
     def create_measure_unit(self, measure_unit):
         measure_unit_object, _ = MeasureUnit.objects.get_or_create(name=measure_unit["name"])

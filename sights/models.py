@@ -4,9 +4,9 @@ from django.contrib.auth.models import User
 
 
 class Sight(models.Model):
-    timestamp = models.DateTimeField()
+    timestamp = models.DateTimeField(verbose_name="Data de medició")
     comments = models.TextField(blank=True)
-    beach = models.ForeignKey('Beach')
+    beach = models.ForeignKey('Beach', verbose_name="Platja")
     reported_from = models.ForeignKey('ReportingClient')
 
     def __unicode__(self):
@@ -79,12 +79,7 @@ class MeasureUnit(models.Model):
         verbose_name_plural = "Unidades de medida"
 
 
-
-
 class Variable(models.Model):
-    beach = models.ForeignKey('Beach')
-    group = models.ForeignKey('VariablesGroup', null=True, blank=True)
-    code = models.CharField(max_length=20)
     type = models.CharField(max_length=300)
     description = models.CharField(max_length=300)
     measure_unit = models.ForeignKey('MeasureUnit',
@@ -93,14 +88,25 @@ class Variable(models.Model):
     def __unicode__(self):
         return "%s - %s" % (self.type, self.description)
 
+  
+
+class BeachVariable(models.Model):
+    beach = models.ForeignKey('Beach')
+    group = models.ForeignKey('VariablesGroup', null=True, blank=True)
+    code = models.CharField(max_length=20, null=True)
+    variable = models.ForeignKey('Variable', null=True)
+
+    def __unicode__(self):
+        return unicode(self.variable)
+
     class Meta:
-        verbose_name = "Variable"
-        verbose_name_plural = "Variables"
+        verbose_name = "Variable de playa"
+        verbose_name_plural = "Variables de playa"
 
 
 class SightVariables(models.Model):
     sight = models.ForeignKey('Sight')
-    variable = models.ForeignKey('Variable')
+    variable = models.ForeignKey('BeachVariable')
     value = models.FloatField()
 
     def __unicode__(self):
