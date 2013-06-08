@@ -93,6 +93,7 @@ class Variable(models.Model):
         ('ChoiceField', 'ChoiceField'),
         ('DateField', 'DateField'),
         ('DateTimeField', 'DateTimeField'),
+        ('DecimalField', 'DecimalField')
         )
     field_type = models.CharField(max_length=50, choices=FIELD_TYPES,
                                   null=True)
