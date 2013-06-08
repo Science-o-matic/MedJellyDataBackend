@@ -20,16 +20,11 @@ class SightForm(BetterModelForm):
                 field_name = "var_%s" % var.id
                 fields[field_name] = FieldClass(label=var.label)
                 fieldset_fields.append(field_name)
-                
-#            import ipdb; ipdb.set_trace()
             fieldsets.append((group.fieldset_name, 
                               {'fields': fieldset_fields})
                              )
         self.fields.update(fields)
-        for fs in fieldsets:
-            self.base_fieldsets.append(fs)
-        from pprint import pprint
-        #pprint(self.base_fieldsets)
+        self.base_fieldsets.extend(fieldsets)
 
     class Meta:
         model = Sight
