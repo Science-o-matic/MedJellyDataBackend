@@ -80,14 +80,33 @@ class MeasureUnit(models.Model):
 
 
 class Variable(models.Model):
+    group = models.ForeignKey('VariablesGroup', null=True)
     type = models.CharField(max_length=300)
     description = models.CharField(max_length=300)
     measure_unit = models.ForeignKey('MeasureUnit',
                                      default = MeasureUnit.get_default)
+    label = models.CharField(max_length=300, null=True)
+    FIELD_TYPES = (
+        ('BooleanField', 'BooleanField'),
+        ('CharField', 'CharField'),
+        ('TextField', 'TextField'),
+        ('ChoiceField', 'ChoiceField'),
+        ('DateField', 'DateField'),
+        ('DateTimeField', 'DateTimeField'),
+        )
+    field_type = models.CharField(max_length=50, choices=FIELD_TYPES,
+                                  null=True)
+
+    WIDGET_TYPES = (
+        ('HiddenInput', 'HiddenInput'),
+        )
+    widget = models.CharField(max_length=50, choices=WIDGET_TYPES,
+                                  null=True, blank=True)
+    possible_values = models.TextField(
+        help_text="json representing key/values", null=True, blank=True)
 
     def __unicode__(self):
         return "%s - %s" % (self.type, self.description)
-
   
 
 class BeachVariable(models.Model):
