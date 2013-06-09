@@ -113,9 +113,13 @@ class Variable(models.Model):
                                   null=True, blank=True)
     possible_values = models.TextField(
         help_text="json representing key/values", null=True, blank=True)
+    order = models.IntegerField(null=True, blank=True)
 
     def __unicode__(self):
         return "%s - %s" % (self.type, self.description)
+
+    class Meta:
+        ordering = ['order']
   
 
 class BeachVariable(models.Model):
