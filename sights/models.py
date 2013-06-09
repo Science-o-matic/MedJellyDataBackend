@@ -8,6 +8,7 @@ class Sight(models.Model):
     comments = models.TextField(blank=True)
     beach = models.ForeignKey('Beach', verbose_name="Platja")
     reported_from = models.ForeignKey('ReportingClient')
+    variables = models.ManyToManyField("BeachVariable", through="SightVariables")
 
     def __unicode__(self):
         return u"%s (%s)" % (unicode(self.beach), self.beach.code)
@@ -137,9 +138,6 @@ class SightVariables(models.Model):
     sight = models.ForeignKey('Sight')
     variable = models.ForeignKey('BeachVariable')
     value = models.FloatField()
-
-    def __unicode__(self):
-        return "%s %s %s" % (self.sight, self.variable, self.value)
 
     class Meta:
         verbose_name = "Variable de avistamiento"

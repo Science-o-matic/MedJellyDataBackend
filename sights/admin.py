@@ -7,14 +7,21 @@ class BeachAdmin(admin.ModelAdmin):
     search_fields = ("name",)
 
 
+class SightVariablesInline(admin.TabularInline):
+    model = Sight.variables.through
+    raw_id_fields = ("variable",)
+
+
 class SightAdmin(admin.ModelAdmin):
     list_display = ("timestamp", "beach",)
     list_filter = ("timestamp", "beach")
+    inlines = [SightVariablesInline]
 
 
 class SightVariablesAdmin(admin.ModelAdmin):
     fields = ("sight", "variable", "value",)
     raw_id_fields = ("variable",)
+
 
 class VariableAdmin(admin.ModelAdmin):
     list_display = ("type", "description", "field_type")
