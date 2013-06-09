@@ -50,12 +50,16 @@ def _add_sight_attr(sight, key, value):
 def _add_sight_var(sight, var_id, value):
     beach_variable = BeachVariable.objects.get(beach=sight.beach,
                                                 variable_id=var_id)
+    var_type = beach_variable.variable.field_type
     SightVariables.objects.create(sight=sight,
-                                  variable=beach_variable, value=_clean_value(value))
+                                  variable=beach_variable,
+                                  value=_clean_value(value, var_type))
 
-def _clean_value(value):
-    if value == "on":
+def _clean_value(value, var_type):
+    if var_type == "BooleanField" and value == "on":
         return 1
-    else:
+    elif var_type == "DecimalField":
         return float(value)
+    else:
+        return int(value)
     
