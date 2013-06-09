@@ -1,19 +1,23 @@
 # -*- coding: utf-8 -*-
 import json
+import datetime
 from django import forms
 from django.forms.widgets import HiddenInput
-from form_utils.forms import BetterModelForm
-from sights.models import Sight, Variable, VariablesGroup
+from form_utils.forms import BetterForm
+from sights.models import Sight, Variable, VariablesGroup, Beach
 
 
-class SightForm(BetterModelForm):
-    
+class SightForm(BetterForm):
+
     def __init__(self, *args, **kwargs):
         super(SightForm, self).__init__()
-
-        fields = {}
+        self.user = kwargs["user"]
+        
+        self.fields = {'beach': forms.ModelChoiceField(queryset=Beach.objects.filter(users__in=(self.user,)),
+                                                       initial=1),
+                       'timestamp': forms.DateTimeField(initial=datetime.datetime.now)
+                       }
         fieldsets = []
-
         for group in VariablesGroup.objects.all():
             variables = group.variable_set.all()
             fieldset_fields = []
@@ -21,7 +25,10 @@ class SightForm(BetterModelForm):
                 FieldClass = getattr(forms, var.field_type)
                 field_name = "var_%s" % var.id
                 if var.field_type == "ChoiceField":
-                    choices = [(value, value) for value in json.loads(var.possible_values)]
+                    possible_values = json.loads(var.possible_values)
+                    choices = []
+                    for i in range(len(possible_values)):
+                        choices.append((i, possible_values[i]))
                     field_class = FieldClass(label=var.label, choices=choices)
                 else:
                     field_class = FieldClass(label=var.label)
@@ -29,11 +36,13 @@ class SightForm(BetterModelForm):
                 fieldset_fields.append(field_name)
             self.fieldsets.fieldsets.append((group.fieldset_name, 
                                              {'fields': fieldset_fields,
-                                              'legend': group.name})
-                                            )
+                                              'legend': group.name}))
+
+    def is_valid(self):
+        return True
 
     class Meta:
-        model = Sight
         fieldsets = [('main', {'fields': ['beach', 'timestamp',],
                                 'legend': ''}),
-                      ]
+                     ]
+
