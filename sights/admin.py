@@ -8,6 +8,8 @@ class BeachAdmin(admin.ModelAdmin):
 
 
 class VariableAdmin(admin.ModelAdmin):
+    list_display = ("type", "description", "field_type")
+    list_filter = ("field_type",) 
     pass
 
 admin.site.register(Sight)

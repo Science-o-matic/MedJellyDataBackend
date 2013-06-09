@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 from django import forms
 from django.forms.widgets import HiddenInput
 from form_utils.forms import BetterModelForm
@@ -19,13 +20,18 @@ class SightForm(BetterModelForm):
             for var in variables:
                 FieldClass = getattr(forms, var.field_type)
                 field_name = "var_%s" % var.id
-                fields[field_name] = FieldClass(label=var.label)
+                if var.field_type == "ChoiceField":
+                    print var
+                    choices = [(value, value) for value in json.loads(var.possible_values)]
+                    print choices
+                    field_class = FieldClass(label=var.label, choices=choices)
+                else:
+                    field_class = FieldClass(label=var.label)
+                self.fields[field_name] = field_class
                 fieldset_fields.append(field_name)
-            fieldsets.append((group.fieldset_name, 
-                              {'fields': fieldset_fields})
-                             )
-        self.fields.update(fields)
-        self.fieldsets.fieldsets.extend(fieldsets)
+            self.fieldsets.fieldsets.append((group.fieldset_name, 
+                                             {'fields': fieldset_fields})
+                                            )
 
     class Meta:
         model = Sight
