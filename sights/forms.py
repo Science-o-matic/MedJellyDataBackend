@@ -16,8 +16,8 @@ class SightForm(BetterForm):
         self.fields = {'beach': forms.ModelChoiceField(queryset=Beach.objects.filter(users__in=(self.user,)),
                                                        initial=1,
                                                        label="Platja"),
-                       'timestamp': forms.DateTimeField(initial=datetime.datetime.now().strftime("%d-%m-%Y %H"),
-                                                        input_formats="%d-%m-%Y %H",
+                       'timestamp': forms.DateTimeField(initial=datetime.datetime.now().strftime("%d-%m-%Y %H:00"),
+                                                        input_formats="%d-%m-%Y %H:00",
                                                         label="Data de medició"),
                        'comments': forms.CharField(widget=forms.Textarea, label="Observacions")
                        }
