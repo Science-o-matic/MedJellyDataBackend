@@ -21,7 +21,7 @@ class SightForm(BetterModelForm):
                 field_name = "var_%s" % var.id
                 fields[field_name] = FieldClass(label=var.label)
                 fieldset_fields.append(field_name)
-            self.fieldsets.fieldsets.append((group.fieldset_name, 
+            fieldsets.append((group.fieldset_name, 
                               {'fields': fieldset_fields})
                              )
         self.fields.update(fields)

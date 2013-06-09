@@ -110,8 +110,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'tokenapi',
     'sights',
-    'form_utils',
-    'json_field'
+    'form_utils'
 )
 
 AUTHENTICATION_BACKENDS = (
