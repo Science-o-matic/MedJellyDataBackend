@@ -12,18 +12,26 @@ class SightAdmin(admin.ModelAdmin):
     list_filter = ("timestamp", "beach")
 
 
+class SightVariablesAdmin(admin.ModelAdmin):
+    fields = ("sight", "variable", "value",)
+    raw_id_fields = ("variable",)
+
 class VariableAdmin(admin.ModelAdmin):
     list_display = ("type", "description", "field_type")
     list_filter = ("field_type",) 
 
 
+class BeachVariableAdmin(admin.ModelAdmin):
+    pass
+
+
 admin.site.register(Sight, SightAdmin)
 admin.site.register(Beach, BeachAdmin)
-admin.site.register(BeachVariable)
+admin.site.register(BeachVariable, BeachVariableAdmin)
 admin.site.register(VariablesGroup)
 admin.site.register(Variable, VariableAdmin)
 admin.site.register(MeasureUnit)
-admin.site.register(SightVariables)
+admin.site.register(SightVariables, SightVariablesAdmin)
 admin.site.register(ReportingClient)
 admin.site.register(City)
 admin.site.register(BeachOwner)
