@@ -15,7 +15,8 @@ class SightForm(BetterForm):
         
         self.fields = {'beach': forms.ModelChoiceField(queryset=Beach.objects.filter(users__in=(self.user,)),
                                                        initial=1),
-                       'timestamp': forms.DateTimeField(initial=datetime.datetime.now().strftime('%d-%m-%Y %H:%I'))
+                       'timestamp': forms.DateTimeField(initial=datetime.datetime.now().strftime('%d-%m-%Y %H:%I')),
+                       'comments': forms.CharField(widget=forms.Textarea, label="")
                        }
         fieldsets = []
         for group in VariablesGroup.objects.all():
@@ -37,6 +38,8 @@ class SightForm(BetterForm):
             self.fieldsets.fieldsets.append((group.fieldset_name, 
                                              {'fields': fieldset_fields,
                                               'legend': group.name}))
+        self.fieldsets.fieldsets.append(('comments', {'fields': ['comments',],
+                                                      'legend': 'Comentaris'}))
 
     def is_valid(self):
         return True
