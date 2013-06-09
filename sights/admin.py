@@ -13,8 +13,8 @@ class SightVariablesInline(admin.TabularInline):
 
 
 class SightAdmin(admin.ModelAdmin):
-    list_display = ("timestamp", "beach", "reported_from",)
-    list_filter = ("timestamp", "beach")
+    list_display = ("timestamp", "beach", "reported_from", "validated")
+    list_filter = ( "validated", "timestamp", "beach")
     inlines = [SightVariablesInline]
 
 

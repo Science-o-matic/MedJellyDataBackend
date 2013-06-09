@@ -22,6 +22,7 @@ class SightForm(BetterForm):
         fieldsets = []
         for group in VariablesGroup.objects.all():
             variables = group.variable_set.all()
+            no_label = (len(variables) == 1)
             fieldset_fields = []
             for var in variables:
                 FieldClass = getattr(forms, var.field_type)
@@ -33,6 +34,7 @@ class SightForm(BetterForm):
                         choices.append((i, possible_values[i]))
                     field_class = FieldClass(label=var.label, choices=choices)
                 else:
+                    var.label = "" if no_label else var.label
                     field_class = FieldClass(label=var.label)
                 self.fields[field_name] = field_class
                 fieldset_fields.append(field_name)

@@ -9,6 +9,7 @@ class Sight(models.Model):
     beach = models.ForeignKey('Beach', verbose_name="Platja")
     reported_from = models.ForeignKey('ReportingClient')
     variables = models.ManyToManyField("BeachVariable", through="SightVariables")
+    validated = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u"%s (%s)" % (unicode(self.beach), self.beach.code)
