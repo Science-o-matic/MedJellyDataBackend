@@ -8,9 +8,11 @@ from sights.models import Sight, Beach, ReportingClient, SightVariables, BeachVa
 from tokenapi.decorators import token_required
 
 
+@token_required
 def new(request):
+    user = request.user
     if request.method == 'POST':
-        form = SightForm(request.POST, user=31)
+        form = SightForm(request.POST, user=user)
         if form.is_valid():
             # TODO: Form validation and/or bounding to be fixed
             # Harcoded by now
@@ -31,7 +33,7 @@ def new(request):
             print "KO"
             print form.errors
     else:
-        form = SightForm({}, user=31) # An unbound form
+        form = SightForm({}, user=user) # An unbound form
 
     return render(request, 'new_sight.html', {
         'form': form,
