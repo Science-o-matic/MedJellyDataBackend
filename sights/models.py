@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.contrib.auth.models import User
+from json_field import JSONField
 
 
 class Sight(models.Model):
@@ -111,7 +112,7 @@ class Variable(models.Model):
         )
     widget = models.CharField(max_length=50, choices=WIDGET_TYPES,
                                   null=True, blank=True)
-    possible_values = models.TextField(
+    possible_values = JSONField(
         help_text="json representing key/values", null=True, blank=True)
 
     def __unicode__(self):

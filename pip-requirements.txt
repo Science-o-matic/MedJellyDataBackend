@@ -8,3 +8,4 @@ fabric
 django-tokenapi
 gunicorn
 django-form-utils
+django-json-field
