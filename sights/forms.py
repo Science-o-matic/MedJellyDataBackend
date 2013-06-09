@@ -44,7 +44,7 @@ class SightForm(BetterForm):
                                              {'fields': fieldset_fields,
                                               'legend': group.name}))
         self.fieldsets.fieldsets.append(('comments', {'fields': ['comments',],
-                                                      'legend': 'Comentaris'}))
+                                                      'legend': 'Observacions'}))
 
     def is_valid(self):
         return True
