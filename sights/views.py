@@ -3,7 +3,7 @@ from django.views.generic.edit import FormView
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from sights.forms import SightForm
-from sights.models import Sight, Beach, ReportingClient
+from sights.models import Sight, Beach, ReportingClient, SightVariables, BeachVariable
 from tokenapi.decorators import token_required
 
 
@@ -15,13 +15,16 @@ def new(request):
             # Harcoded by now
             sight = Sight()
             for key, value in request.POST.iteritems():
-                if key.startswith("var"):
-                    # save sight variable
-                    pass
-                else:
+                if not key.startswith("var"):
                     _add_sight_attr(sight, key, value)
             sight.reported_from = ReportingClient.objects.get(id=1)
             sight.save()
+
+            for key, value in request.POST.iteritems():
+                if key.startswith("var"):
+                    var_id = key.split("_")[1]
+                    _add_sight_var(sight, var_id, value)
+
             return HttpResponseRedirect('/created/')
         else:
             print "KO"
@@ -36,10 +39,23 @@ def new(request):
 
 
 def _add_sight_attr(sight, key, value):
-    print "saving value", key, value
     if value is not None:
         if key == "timestamp":
             value = datetime.datetime.strptime(value, "%d-%m-%Y %H:%I")
         if key == "beach":
             value = Beach.objects.get(pk=value)
         setattr(sight, key, value)
+
+
+def _add_sight_var(sight, var_id, value):
+    beach_variable = BeachVariable.objects.get(beach=sight.beach,
+                                                variable_id=var_id)
+    SightVariables.objects.create(sight=sight,
+                                  variable=beach_variable, value=_clean_value(value))
+
+def _clean_value(value):
+    if value == "on":
+        return 1
+    else:
+        return float(value)
+    
