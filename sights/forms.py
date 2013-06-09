@@ -21,16 +21,15 @@ class SightForm(BetterModelForm):
                 FieldClass = getattr(forms, var.field_type)
                 field_name = "var_%s" % var.id
                 if var.field_type == "ChoiceField":
-                    print var
                     choices = [(value, value) for value in json.loads(var.possible_values)]
-                    print choices
                     field_class = FieldClass(label=var.label, choices=choices)
                 else:
                     field_class = FieldClass(label=var.label)
                 self.fields[field_name] = field_class
                 fieldset_fields.append(field_name)
             self.fieldsets.fieldsets.append((group.fieldset_name, 
-                                             {'fields': fieldset_fields})
+                                             {'fields': fieldset_fields,
+                                              'legend': group.name})
                                             )
 
     class Meta:
