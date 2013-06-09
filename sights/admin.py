@@ -25,7 +25,7 @@ class SightVariablesAdmin(admin.ModelAdmin):
 
 class VariableAdmin(admin.ModelAdmin):
     list_display = ("type", "description", "field_type")
-    list_filter = ("field_type",) 
+    list_filter = ("field_type","group") 
 
 
 class BeachVariableAdmin(admin.ModelAdmin):
