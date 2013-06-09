@@ -2,7 +2,7 @@ import datetime
 import dateutil.parser
 from django.views.generic.edit import FormView
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 from sights.forms import SightForm
 from sights.models import Sight, Beach, ReportingClient, SightVariables, BeachVariable
 from tokenapi.decorators import token_required
@@ -26,7 +26,7 @@ def new(request):
                     var_id = key.split("_")[1]
                     _add_sight_var(sight, var_id, value)
 
-            return HttpResponseRedirect('/created/')
+            return HttpResponse('Dades creades')
         else:
             print "KO"
             print form.errors
