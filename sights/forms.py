@@ -12,6 +12,7 @@ class SightForm(BetterModelForm):
 
         fields = {}
         fieldsets = []
+
         for group in VariablesGroup.objects.all():
             variables = group.variable_set.all()
             fieldset_fields = []
@@ -24,7 +25,7 @@ class SightForm(BetterModelForm):
                               {'fields': fieldset_fields})
                              )
         self.fields.update(fields)
-        self.base_fieldsets.extend(fieldsets)
+        self.fieldsets.fieldsets.extend(fieldsets)
 
     class Meta:
         model = Sight
