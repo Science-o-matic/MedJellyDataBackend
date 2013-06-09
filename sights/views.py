@@ -1,4 +1,5 @@
 import datetime
+import dateutil.parser
 from django.views.generic.edit import FormView
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
@@ -28,7 +29,6 @@ def new(request):
             return HttpResponseRedirect('/created/')
         else:
             print "KO"
-            print "form errors"
             print form.errors
     else:
         form = SightForm({}, user=31) # An unbound form
@@ -40,10 +40,10 @@ def new(request):
 
 def _add_sight_attr(sight, key, value):
     if value is not None:
-        if key == "timestamp":
-            value = datetime.datetime.strptime(value, "%d-%m-%Y %H:%I")
         if key == "beach":
             value = Beach.objects.get(pk=value)
+        elif key == "timestamp":
+            value = dateutil.parser.parse(value)
         setattr(sight, key, value)
 
 
