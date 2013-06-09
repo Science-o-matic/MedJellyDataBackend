@@ -64,4 +64,3 @@ def _clean_value(value, var_type):
         return float(value)
     else:
         return int(value)
-    

@@ -12,12 +12,14 @@ class SightForm(BetterForm):
     def __init__(self, *args, **kwargs):
         super(SightForm, self).__init__()
         self.user = kwargs["user"]
-        
+
         self.fields = {'beach': forms.ModelChoiceField(queryset=Beach.objects.filter(users__in=(self.user,)),
-                                                       initial=1),
-                       'timestamp': forms.DateTimeField(initial=datetime.datetime.now().strftime("%d-%m-%Y %H:%I"),
-                                                        input_formats="%d-%m-%Y %H:%I"),
-                       'comments': forms.CharField(widget=forms.Textarea, label="")
+                                                       initial=1,
+                                                       label="Platja"),
+                       'timestamp': forms.DateTimeField(initial=datetime.datetime.now().strftime("%d-%m-%Y %H"),
+                                                        input_formats="%d-%m-%Y %H",
+                                                        label="Data de medició"),
+                       'comments': forms.CharField(widget=forms.Textarea, label="Observacions")
                        }
         fieldsets = []
         for group in VariablesGroup.objects.all():
@@ -38,7 +40,7 @@ class SightForm(BetterForm):
                     field_class = FieldClass(label=var.label)
                 self.fields[field_name] = field_class
                 fieldset_fields.append(field_name)
-            self.fieldsets.fieldsets.append((group.fieldset_name, 
+            self.fieldsets.fieldsets.append((group.fieldset_name,
                                              {'fields': fieldset_fields,
                                               'legend': group.name}))
         self.fieldsets.fieldsets.append(('comments', {'fields': ['comments',],
@@ -51,4 +53,3 @@ class SightForm(BetterForm):
         fieldsets = [('main', {'fields': ['beach', 'timestamp',],
                                 'legend': ''}),
                      ]
-
