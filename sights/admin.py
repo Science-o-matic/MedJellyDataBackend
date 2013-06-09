@@ -7,12 +7,17 @@ class BeachAdmin(admin.ModelAdmin):
     search_fields = ("name",)
 
 
+class SightAdmin(admin.ModelAdmin):
+    list_display = ("timestamp", "beach",)
+    list_filter = ("timestamp", "beach")
+
+
 class VariableAdmin(admin.ModelAdmin):
     list_display = ("type", "description", "field_type")
     list_filter = ("field_type",) 
-    pass
 
-admin.site.register(Sight)
+
+admin.site.register(Sight, SightAdmin)
 admin.site.register(Beach, BeachAdmin)
 admin.site.register(BeachVariable)
 admin.site.register(VariablesGroup)

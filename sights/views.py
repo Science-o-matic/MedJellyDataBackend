@@ -1,23 +1,27 @@
+import datetime
 from django.views.generic.edit import FormView
-from sights.forms import SightForm
-from sights.models import Sight
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
+from sights.forms import SightForm
+from sights.models import Sight, Beach, ReportingClient
+from tokenapi.decorators import token_required
 
 
 def new(request):
     if request.method == 'POST':
         form = SightForm(request.POST, user=31)
         if form.is_valid():
-            # TODO: Form validation and/or bounding next to be fixed
+            # TODO: Form validation and/or bounding to be fixed
             # Harcoded by now
+            sight = Sight()
             for key, value in request.POST.iteritems():
                 if key.startswith("var"):
                     # save sight variable
                     pass
                 else:
-                    _save_beach_attr(key, value)
-                    
+                    _add_sight_attr(sight, key, value)
+            sight.reported_from = ReportingClient.objects.get(id=1)
+            sight.save()
             return HttpResponseRedirect('/created/')
         else:
             print "KO"
@@ -31,9 +35,11 @@ def new(request):
     })
 
 
-def _save_beach_attr(key, value):
+def _add_sight_attr(sight, key, value):
     print "saving value", key, value
     if value is not None:
-        sight = Sight()
+        if key == "timestamp":
+            value = datetime.datetime.strptime(value, "%d-%m-%Y %H:%I")
+        if key == "beach":
+            value = Beach.objects.get(pk=value)
         setattr(sight, key, value)
-        sight.save()

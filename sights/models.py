@@ -10,7 +10,7 @@ class Sight(models.Model):
     reported_from = models.ForeignKey('ReportingClient')
 
     def __unicode__(self):
-        return "%s: %s (%s)" % (self.timestamp, self.beach, self.beach_code)
+        return u"%s (%s)" % (unicode(self.beach), self.beach.code)
 
     class Meta:
         verbose_name = "Avistamiento"
@@ -53,9 +53,6 @@ class BeachOwner(models.Model):
 
 class VariablesGroup(models.Model):
     name = models.CharField(max_length=1000)
-
-    def __str__(self):
-        return self.name
 
     def __unicode__(self):
         return self.name
