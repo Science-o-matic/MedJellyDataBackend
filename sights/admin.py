@@ -31,7 +31,7 @@ class VariableAdmin(admin.ModelAdmin):
 class BeachVariableAdmin(admin.ModelAdmin):
     search_fields = ("code",)
     list_display = ("code", "variable", "beach")
-    list_filter = ("beach")
+    list_filter = ("beach",)
 
 
 admin.site.register(Sight, SightAdmin)
