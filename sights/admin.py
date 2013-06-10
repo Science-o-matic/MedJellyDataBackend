@@ -25,11 +25,13 @@ class SightVariablesAdmin(admin.ModelAdmin):
 
 class VariableAdmin(admin.ModelAdmin):
     list_display = ("type", "description", "field_type")
-    list_filter = ("field_type","group") 
+    list_filter = ("field_type","group")
 
 
 class BeachVariableAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ("code",)
+    list_display = ("code", "variable", "beach")
+    list_filter = ("beach", "group")
 
 
 admin.site.register(Sight, SightAdmin)

@@ -119,11 +119,10 @@ class Variable(models.Model):
 
     class Meta:
         ordering = ['order']
-  
+
 
 class BeachVariable(models.Model):
     beach = models.ForeignKey('Beach')
-    group = models.ForeignKey('VariablesGroup', null=True, blank=True)
     code = models.CharField(max_length=20, null=True)
     variable = models.ForeignKey('Variable', null=True)
 
