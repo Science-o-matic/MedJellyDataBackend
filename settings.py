@@ -118,6 +118,14 @@ AUTHENTICATION_BACKENDS = (
     'tokenapi.backends.TokenBackend'
 )
 
+ACANET_FTP = {
+    'host': '<host>',
+    'port': 22,
+    'user': '<user>',
+    'password': '<password>',
+    'path': '<path>'
+}
+
 LOGFILE = os.path.join(PROJECT_DIR, "logfile.log")
 
 try:
