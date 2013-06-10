@@ -139,6 +139,9 @@ class SightVariables(models.Model):
     variable = models.ForeignKey('BeachVariable')
     value = models.FloatField()
 
+    def __unicode__(self):
+        return self.variable.variable.type
+
     class Meta:
         verbose_name = "Variable de avistamiento"
         verbose_name_plural = "Variables de avistamientos"
