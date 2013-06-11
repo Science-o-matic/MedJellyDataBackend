@@ -24,6 +24,7 @@ class SightVariablesAdmin(admin.ModelAdmin):
 
 
 class VariableAdmin(admin.ModelAdmin):
+    search_fields = ("type", "description")
     list_display = ("type", "description", "field_type")
     list_filter = ("field_type","group")
 
