@@ -9,3 +9,4 @@ django-tokenapi
 gunicorn
 django-form-utils
 dateutils
+lxml

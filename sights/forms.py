@@ -29,11 +29,12 @@ class SightForm(BetterForm):
             for var in variables:
                 FieldClass = getattr(forms, var.field_type)
                 field_name = "var_%s" % var.id
-                if var.field_type == "ChoiceField":
+                if var.id == 67:
                     possible_values = json.loads(var.possible_values)
                     choices = []
-                    for i in range(len(possible_values)):
-                        choices.append((i, possible_values[i]))
+                    for value in possible_values:
+                        print value
+                        choices.append(tuple(value))
                     field_class = FieldClass(label=var.label, choices=choices)
                 else:
                     var.label = "" if no_label else var.label

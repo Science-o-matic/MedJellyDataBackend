@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
+from lxml import etree as ET
 
 
 class Sight(models.Model):
@@ -10,9 +12,24 @@ class Sight(models.Model):
     reported_from = models.ForeignKey('ReportingClient')
     variables = models.ManyToManyField("BeachVariable", through="SightVariables")
     validated = models.BooleanField(default=False)
+    sent = models.BooleanField(default=False, verbose_name="Enviat")
+    sent_timestamp = models.DateTimeField(verbose_name="Data de enviament", null=True)
 
     def __unicode__(self):
         return u"%s (%s)" % (unicode(self.beach), self.beach.code)
+
+    def save(self, *args, **kwargs):
+        if self.validated and not self.sent:
+            self._sent_sight()
+
+    def _sent_sight(self):
+        root = ET.Element('six')
+        sight = ET.Element('mostreig', codi="", tipus="PLAJ", timestamp="",
+                           observacions="prueba" if settings.DEBUG else "")
+        root.append(sight)
+        tree = ET.ElementTree(root)
+        tree.write("output.xml", pretty_print=True, xml_declaration=True, encoding="ISO-8859-1")
+
 
     class Meta:
         verbose_name = "Avistamiento"
