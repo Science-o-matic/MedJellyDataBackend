@@ -74,7 +74,7 @@ def _run_manage(command):
     run("%s ./manage.py %s" % (env['python_path'], command))
 
 def _dump_mysql_data(file_path):
-    return 'mysqldump --defaults-file="/home/jellyrisk/.mysqldump_cnf" --single-transaction %s > %s' % (PROJECT_DB_NAME, file_path)
+    return 'mysqldump --defaults-file="/home/medjellydata/.mysqldump_cnf" --single-transaction %s > %s' % (PROJECT_DB_NAME, file_path)
 
 @roles('%s' % PROJECT_USER)
 def syncmedia():
