@@ -19,16 +19,26 @@ class Sight(models.Model):
         return u"%s (%s)" % (unicode(self.beach), self.beach.code)
 
     def save(self, *args, **kwargs):
+        super(Sight, self).save(*args, **kwargs)
         if self.validated and not self.sent:
             self._sent_sight()
 
     def _sent_sight(self):
         root = ET.Element('six')
-        sight = ET.Element('mostreig', codi="", tipus="PLAJ", timestamp="",
+        code = "ICM%s-%s" % (self.id, self.timestamp.strftime('%Y%m%d'))
+        timestamp = self.timestamp.strftime('%D/%M/%Y %H:00')
+        sight = ET.Element('mostreig', codi=code, tipus="PLAJ", timestamp=timestamp,
                            observacions="prueba" if settings.DEBUG else "")
+        for group in VariablesGroup.objects.all():
+            sight.append(ET.Element('grup', codi=group.name, observacions=""))
+            for variable in Sigth.variables.filter(group=group):
+                var = ET.Element('var')
+                var.append(ET.Element("timestamp"))
         root.append(sight)
+
         tree = ET.ElementTree(root)
-        tree.write("output.xml", pretty_print=True, xml_declaration=True, encoding="ISO-8859-1")
+        tree.write("sight_%s.xml" % code, pretty_print=True,
+                   xml_declaration=True, encoding="ISO-8859-1")
 
 
     class Meta:
@@ -130,6 +140,8 @@ class Variable(models.Model):
     possible_values = models.TextField(
         help_text="json representing key/values", null=True, blank=True)
     order = models.IntegerField(null=True, blank=True)
+    ftp_exportable = models.BooleanField(default=True)
+
 
     def __unicode__(self):
         return "%s - %s" % (self.type, self.description)
