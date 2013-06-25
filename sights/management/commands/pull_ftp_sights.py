@@ -23,7 +23,7 @@ class Command(BaseCommand):
         self.sftp.chdir(settings.ACANET_FTP['path'])
         for f in self.sftp.listdir():
             self.import_sights_file(f)
-            self.log("Imported", f)
+            self.log("Imported %s" %  f)
         self.sftp.close()
 
 
@@ -32,8 +32,10 @@ class Command(BaseCommand):
 
 
     def import_sights_file(self, filename):
+        sights_file = self.get_sights_file(filename)
         self.log("Parsing and importing...")
-        for line in self.get_sights_file(filename):
+        for line in sights_file:
+            created = False
             if not line.startswith("*"):
                 sight, created = self.create_sight(line)
             if created:
@@ -46,7 +48,7 @@ class Command(BaseCommand):
         beach_code = fields[1]
         variable = {
             "code": fields[2],
-            "value": fields[3]
+            "value": fields[3].replace(",", ".")
         }
         beach = Beach.objects.get(code=beach_code)
         sight, created = Sight.objects.get_or_create(timestamp=timestamp,
