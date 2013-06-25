@@ -128,7 +128,18 @@ ACANET_FTP = {
     'path': '<path>'
 }
 
-
+ACANET_API = {
+    'debug': {
+        'user': '<user>',
+        'password': '<password>',
+        'host': 'https://app.bahiasoftware.es/MEDUSAS/ws'
+        },
+    'production': {
+        'user': '<user>',
+        'password': '<password>',
+        'host': 'https://app.bahiasoftware.es/MEDUSAS/ws'
+        },
+}
 
 LOGFILE = os.path.join(PROJECT_DIR, "logfile.log")
 
