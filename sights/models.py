@@ -11,19 +11,18 @@ class Sight(models.Model):
     beach = models.ForeignKey('Beach', verbose_name="Platja")
     reported_from = models.ForeignKey('ReportingClient')
     variables = models.ManyToManyField("BeachVariable", through="SightVariables")
-    validated = models.BooleanField(default=False)
+    validated = models.BooleanField(default=False, verbose_name="Validat")
     sent = models.BooleanField(default=False, verbose_name="Enviat")
     sent_timestamp = models.DateTimeField(verbose_name="Data de enviament", null=True)
 
     def __unicode__(self):
         return u"%s (%s)" % (unicode(self.beach), self.beach.code)
 
-    def save(self, *args, **kwargs):
-        super(Sight, self).save(*args, **kwargs)
+    def sent_sight(self):
         if self.validated and not self.sent:
             self._sent_sight()
 
-    def _sent_sight(self):
+    def _sent_sight():
         root = ET.Element('six')
         code = "ICM%s-%s" % (self.id, self.timestamp.strftime('%Y%m%d'))
         timestamp = self.timestamp.strftime('%d/%m/%Y %H:00')
@@ -154,7 +153,6 @@ class Variable(models.Model):
         )
     field_type = models.CharField(max_length=50, choices=FIELD_TYPES,
                                   null=True)
-
     WIDGET_TYPES = (
         ('HiddenInput', 'HiddenInput'),
         )

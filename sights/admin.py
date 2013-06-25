@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.contrib import admin
 from models import Sight, Beach, VariablesGroup, Variable,  BeachVariable, MeasureUnit, SightVariables, \
     ReportingClient, City, BeachOwner
@@ -16,6 +17,15 @@ class SightAdmin(admin.ModelAdmin):
     list_display = ("timestamp", "beach", "reported_from", "validated")
     list_filter = ( "validated", "timestamp", "beach")
     inlines = [SightVariablesInline]
+    actions = ['mark_as_valid', 'mark_as_invalid']
+
+    def mark_as_valid(self, request, queryset):
+        queryset.update(validated=True)
+    mark_as_valid.short_description = "Validar avistamientos seleccionados"
+
+    def mark_as_invalid(self, request, queryset):
+        queryset.update(validated=False)
+    mark_as_invalid.short_description = "Invalidar avistamientos seleccionados"
 
 
 class SightVariablesAdmin(admin.ModelAdmin):
