@@ -8,7 +8,7 @@ class XMLExporter(object):
     def XMLnode(self, name, XMLNodeText=None, **kwargs):
         node = ET.Element(name, kwargs)
         if XMLNodeText:
-            node.text = XMLNodeText
+            node.text = str(XMLNodeText)
         return node
 
 
@@ -88,20 +88,27 @@ class APIExporter(XMLExporter):
                                   data=self.generate_xml())
         result = urllib2.urlopen(request)
 
-
     def generate_xml(self):
         root = ET.Element('beaches')
         root.append(self.generate_beach_xml())
         tree = ET.ElementTree(root)
+        print ET.tostring(tree, pretty_print=True)
         return ET.tostring(tree, pretty_print=True)
 
     def generate_beach_xml(self):
         timestamp = self.instance.timestamp.strftime("%Y%m%d %H:00")
         beach = self.XMLnode('beach', id=self.instance.beach.code)
         beach.append(self.XMLnode('flagStatusUpdated', timestamp))
-        beach.append(self.XMLnode('flagReason', '')) # TODO get variable motiu de la bandera
+        beach.append(self.XMLnode('flagStatus', "GREEN")) # TODO convert variable to generate this
+        beach.append(self.XMLnode('flagReason', 1)) # TODO get variable motiu de la bandera
         beach.append(self.XMLnode('jellyFishStatusUpdated', timestamp))
-        beach.append(self.XMLnode('jellyFishStatus', '')) # TODO figure out how to get this
-        # TODO add jellyFishes
+        beach.append(self.XMLnode('jellyFishStatus', "LOW_WARNING")) # TODO figure out this
         jellyFishes = self.XMLnode('jellyFishes')
+        self.add_jellyfishes_xml(jellyFishes)
+        beach.append(jellyFishes)
         return beach
+
+    def add_jellyfishes_xml(self, node):
+        qs = self.instance.sightvariables_set.exclude(variable__variable__api_export_id=None)
+        for var in qs[:2]:
+            node.append(self.XMLnode("jellyFish", var.variable.variable.api_export_id))

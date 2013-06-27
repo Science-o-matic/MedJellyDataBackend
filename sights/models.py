@@ -13,7 +13,7 @@ class Sight(models.Model):
     variables = models.ManyToManyField("BeachVariable", through="SightVariables")
     validated = models.BooleanField(default=False, verbose_name="Validat")
     sent = models.BooleanField(default=False, verbose_name="Enviat")
-    sent_timestamp = models.DateTimeField(verbose_name="Data de enviament", null=True)
+    sent_timestamp = models.DateTimeField(verbose_name="Data de enviament", null=True, blank=True)
 
     def __unicode__(self):
         return u"%s (%s)" % (unicode(self.beach), self.beach.code)
