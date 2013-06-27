@@ -59,8 +59,11 @@ def _add_sight_var(sight, var_id, value):
 
 def _clean_value(value, var_type):
     if var_type == "BooleanField" and value == "on":
-        return 1
-    elif var_type == "DecimalField":
-        return float(value)
+        cleaned_value = 1
     else:
-        return int(value)
+        if var_type == "DecimalField":
+            value = value if value else 0
+            cleaned_value = float(value)
+        else:
+            cleaned_value = int(value)
+    return cleaned_value

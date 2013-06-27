@@ -8,12 +8,12 @@ class XMLExporter(object):
     def XMLnode(self, name, XMLNodeText=None, **kwargs):
         node = ET.Element(name, kwargs)
         if XMLNodeText:
-            node.text = str(XMLNodeText)
+            node.text = unicode(XMLNodeText)
         return node
 
 
 class FTPExporter(XMLExporter):
-    filename_template = "ICM_PLAT_%s.dat"
+    filename_template = "ICM_PLAT_%s.DAT"
 
     def __init__(self, instance):
         self.instance = instance
@@ -30,29 +30,16 @@ class FTPExporter(XMLExporter):
             grup = ET.Element('grup', codi=group.name, observacions="")
             for sightvariable in SightVariables.objects.filter(sight=self.instance,
                                                                variable__variable__group=group):
-                var = ET.Element('var')
-                var_timestamp = ET.Element("timestamp")
-                var_timestamp.text = str(timestamp)
-                var.append(var_timestamp)
-                var_estacio = ET.Element("estacio")
-                var_estacio.text = self.instance.beach.code
-                var.append(var_estacio)
-                var_sightvariable = ET.Element("variable")
-                var_sightvariable.text = sightvariable.variable.code
-                var.append(var_sightvariable)
-                var_profunditat = ET.Element("profunditat")
-                var_profunditat.text = "1"
-                var.append(var_profunditat)
-                var_valor = ET.Element("valor")
-                var_valor.text = str(sightvariable.value)
-                var.append(var_valor)
-                var_motiuInvalid = ET.Element("motiuInvalidacio")
-                var_motiuInvalid.text = "0"
-                var.append(ET.Element("motiuInvalidacio"))
-                var.append(ET.Element("anotacio"))
-                var_unitatMesura = ET.Element("unitatMesura")
-                var_unitatMesura.text = sightvariable.variable.variable.measure_unit.name
-                var.append(var_unitatMesura)
+                var = self.XMLnode('var')
+                var.append(self.XMLnode("timestamp", str(timestamp)))
+                var.append(self.XMLnode("estacio", self.instance.beach.code))
+                var.append(self.XMLnode("variable",  sightvariable.variable.code))
+                var.append(self.XMLnode("profunditat", "1"))
+                var.append(self.XMLnode("valor", str(sightvariable.value)))
+                var.append(self.XMLnode("motiuInvalidacio", "0"))
+                var.append(self.XMLnode("anotacio"))
+                measure_unit = sightvariable.variable.variable.measure_unit.name
+                var.append(self.XMLnode("unitatMesura", measure_unit))
                 grup.append(var)
             sight.append(grup)
         root.append(sight)
