@@ -122,7 +122,7 @@ class Variable(models.Model):
         help_text="json representing key/values", null=True, blank=True)
     order = models.IntegerField(null=True, blank=True)
     ftp_exportable = models.BooleanField(default=True)
-
+    api_export_id = models.IntegerField(null=True, blank=True)
 
     def __unicode__(self):
         return "%s - %s" % (self.type, self.description)
