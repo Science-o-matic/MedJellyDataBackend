@@ -7,7 +7,7 @@ import paramiko
 class XMLExporter(object):
 
     def XMLnode(self, name, XMLNodeText=None, **kwargs):
-        node = ET.Element(name, kwargs)
+        node = ET.Element(name, **kwargs)
         if XMLNodeText:
             node.text = unicode(XMLNodeText)
         return node
@@ -95,7 +95,7 @@ class APIExporter(XMLExporter):
 
     def generate_beach_xml(self):
         timestamp = self.instance.timestamp.strftime("%Y%m%d %H:00")
-        beach = self.XMLnode('beach', id=self.instance.beach.code)
+        beach = ET.Element('beach', id=unicode(self.instance.beach.api_id))
         beach.append(self.XMLnode('flagStatusUpdated', timestamp))
         beach.append(self.XMLnode('flagStatus', "GREEN")) # TODO convert variable to generate this
         beach.append(self.XMLnode('flagReason', 1)) # TODO get variable motiu de la bandera
