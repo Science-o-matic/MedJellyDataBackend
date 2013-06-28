@@ -20,7 +20,7 @@ class Command(BaseCommand):
                           password = settings.ACANET_FTP['password'])
         self.sftp = paramiko.SFTPClient.from_transport(transport)
         self.log("Connected")
-        self.sftp.chdir(settings.ACANET_FTP['path'])
+        self.sftp.chdir(settings.ACANET_FTP['out_path'])
         for f in self.sftp.listdir():
             self.import_sights_file(f)
             self.log("Imported %s" %  f)

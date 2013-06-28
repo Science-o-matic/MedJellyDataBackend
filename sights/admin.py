@@ -15,9 +15,9 @@ class SightVariablesInline(admin.TabularInline):
 
 class SightAdmin(admin.ModelAdmin):
     list_display = ("timestamp", "beach", "reported_from", "validated")
-    list_filter = ( "validated", "timestamp", "beach")
+    list_filter = ( "validated", "timestamp", "reported_from", "beach")
     inlines = [SightVariablesInline]
-    actions = ['mark_as_valid', 'mark_as_invalid']
+    actions = ['mark_as_valid', 'mark_as_invalid', 'export']
 
     def mark_as_valid(self, request, queryset):
         queryset.update(validated=True)
@@ -26,6 +26,11 @@ class SightAdmin(admin.ModelAdmin):
     def mark_as_invalid(self, request, queryset):
         queryset.update(validated=False)
     mark_as_invalid.short_description = "Invalidar avistamientos seleccionados"
+
+    def export(self, request, queryset):
+        for item in queryset:
+            item.export()
+    export.short_description = "Exportar avistamientos seleccionados"
 
 
 class SightVariablesAdmin(admin.ModelAdmin):

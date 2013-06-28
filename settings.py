@@ -125,7 +125,8 @@ ACANET_FTP = {
     'port': 22,
     'user': '<user>',
     'password': '<password>',
-    'path': '<path>'
+    'in_path': '<path>',
+    'out_path': '<path>'
 }
 
 ACANET_API = {

@@ -1,6 +1,7 @@
-import urllib2, base64
+import urllib2, base64, os
 from lxml import etree as ET
 from django.conf import settings
+import paramiko
 
 
 class XMLExporter(object):
@@ -44,6 +45,7 @@ class FTPExporter(XMLExporter):
             sight.append(grup)
         root.append(sight)
 
+
         filename = self.filename_template % self.instance.timestamp.strftime('%Y%m%d')
         tree = ET.ElementTree(root)
         tree.write(filename, pretty_print=True,
@@ -51,6 +53,16 @@ class FTPExporter(XMLExporter):
         f = open(filename, "a")
         f.write("***** FI DE FITXER *****")
         f.close()
+
+        self.send_to_ftp(filename)
+
+    def send_to_ftp(self, filename):
+        transport = paramiko.Transport((settings.ACANET_FTP['host'],
+                                        settings.ACANET_FTP['port']))
+        transport.connect(username = settings.ACANET_FTP['user'],
+                          password = settings.ACANET_FTP['password'])
+        self.sftp = paramiko.SFTPClient.from_transport(transport)
+        self.sftp.put(filename, os.path.join(settings.ACANET_FTP['in_path'], filename))
 
 
 class APIExporter(XMLExporter):
