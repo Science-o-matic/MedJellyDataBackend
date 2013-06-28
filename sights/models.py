@@ -33,7 +33,7 @@ class Beach(models.Model):
     city = models.ForeignKey("City")
     owner = models.ForeignKey("BeachOwner")
     users = models.ManyToManyField(User)
-    api_id = models.IntegerField(null=True, blank=True)
+    api_id = models.IntegerField(null=True, blank=False)
 
     def __unicode__(self):
         return self.name
