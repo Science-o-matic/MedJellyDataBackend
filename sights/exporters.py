@@ -66,6 +66,7 @@ class FTPExporter(XMLExporter):
 
 
 class APIExporter(XMLExporter):
+    FLAG_STATUS = ("NO_INFO", "GREEN", "YELLOW", "RED")
 
     def __init__(self, instance):
         self.instance = instance
@@ -91,13 +92,15 @@ class APIExporter(XMLExporter):
         root = ET.Element('beaches')
         root.append(self.generate_beach_xml())
         tree = ET.ElementTree(root)
+        print ET.tostring(tree, pretty_print=True)
         return ET.tostring(tree, pretty_print=True)
 
     def generate_beach_xml(self):
         timestamp = self.instance.timestamp.strftime("%Y%m%d %H:00")
         beach = ET.Element('beach', id=unicode(self.instance.beach.api_id))
         beach.append(self.XMLnode('flagStatusUpdated', timestamp))
-        beach.append(self.XMLnode('flagStatus', "GREEN")) # TODO convert variable to generate this
+        flag = self.instance.sightvariables_set.filter(variable__variable__api_export_id=0)[0]
+        beach.append(self.XMLnode('flagStatus', self.FLAG_STATUS[int(flag.value)]))
         beach.append(self.XMLnode('flagReason', 1)) # TODO get variable motiu de la bandera
         beach.append(self.XMLnode('jellyFishStatusUpdated', timestamp))
         beach.append(self.XMLnode('jellyFishStatus', "LOW_WARNING")) # TODO figure out this
