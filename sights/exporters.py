@@ -101,7 +101,8 @@ class APIExporter(XMLExporter):
         beach.append(self.XMLnode('flagStatusUpdated', timestamp))
         flag = self.instance.sightvariables_set.filter(variable__variable__api_export_id=0)[0]
         beach.append(self.XMLnode('flagStatus', self.FLAG_STATUS[int(flag.value)]))
-        beach.append(self.XMLnode('flagReason', 1)) # TODO get variable motiu de la bandera
+        flagReason = self.instance.sightvariables_set.filter(variable__variable__api_export_id=99)[0]
+        beach.append(self.XMLnode('flagReason', flagReason.value))
         beach.append(self.XMLnode('jellyFishStatusUpdated', timestamp))
         beach.append(self.XMLnode('jellyFishStatus', "LOW_WARNING")) # TODO figure out this
         jellyFishes = self.XMLnode('jellyFishes')
