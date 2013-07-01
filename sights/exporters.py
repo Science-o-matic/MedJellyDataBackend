@@ -84,7 +84,7 @@ class APIExporter(XMLExporter):
     def export(self):
         request = urllib2.Request(self.endpoint_url,
                                   headers={"Authorization": self.auth_header},
-                                  data=self.generate_xml())
+                                  data="data=" + self.generate_xml())
         result = urllib2.urlopen(request)
 
     def generate_xml(self):
