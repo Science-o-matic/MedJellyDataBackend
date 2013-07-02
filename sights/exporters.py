@@ -30,6 +30,7 @@ class FTPExporter(XMLExporter):
         for group in VariablesGroup.objects.all():
             grup = ET.Element('grup', codi=group.name, observacions="")
             for sightvariable in SightVariables.objects.filter(sight=self.instance,
+                                                               variable__variable__ftp_exportable=True,
                                                                variable__variable__group=group):
                 var = self.XMLnode('var')
                 var.append(self.XMLnode("timestamp", str(timestamp)))
@@ -92,17 +93,16 @@ class APIExporter(XMLExporter):
         root = ET.Element('beaches')
         root.append(self.generate_beach_xml())
         tree = ET.ElementTree(root)
-        print ET.tostring(tree, pretty_print=True)
         return ET.tostring(tree, pretty_print=True)
 
     def generate_beach_xml(self):
         timestamp = self.instance.timestamp.strftime("%Y%m%d %H:00")
         beach = ET.Element('beach', id=unicode(self.instance.beach.api_id))
         beach.append(self.XMLnode('flagStatusUpdated', timestamp))
-        flag = self.instance.sightvariables_set.filter(variable__variable__api_export_id=0)[0]
-        beach.append(self.XMLnode('flagStatus', self.FLAG_STATUS[int(flag.value)]))
-        flagReason = self.instance.sightvariables_set.filter(variable__variable__api_export_id=99)[0]
-        beach.append(self.XMLnode('flagReason', flagReason.value))
+        flag = self.instance.get_flag()
+        beach.append(self.XMLnode('flagStatus', self.FLAG_STATUS[int(flag)]))
+        flagReason = self.instance.get_flag_reason()
+        beach.append(self.XMLnode('flagReason', str(flagReason)))
         beach.append(self.XMLnode('jellyFishStatusUpdated', timestamp))
         beach.append(self.XMLnode('jellyFishStatus', "LOW_WARNING")) # TODO figure out this
         jellyFishes = self.XMLnode('jellyFishes')

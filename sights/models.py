@@ -24,6 +24,18 @@ class Sight(models.Model):
             APIExporter(self).export()
             self.sent = True
 
+    def get_flag(self):
+        try:
+            return self.sightvariables_set.filter(variable__variable__api_export_id=0)[0].value
+        except IndexError:
+            return 0 # NO_INFO
+
+    def get_flag_reason(self):
+        try:
+            return self.sightvariables_set.filter(variable__variable__api_export_id=0)[0].value
+        except IndexError:
+            return 0 # NONE
+
     class Meta:
         verbose_name = "Avistamiento"
 
