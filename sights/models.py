@@ -137,6 +137,7 @@ class Variable(models.Model):
     order = models.IntegerField(null=True, blank=True)
     ftp_exportable = models.BooleanField(default=True)
     api_export_id = models.IntegerField(null=True, blank=True)
+    api_warning_level = models.IntegerField(null=True, blank=True)
 
     def __unicode__(self):
         return "%s - %s" % (self.type, self.description)
