@@ -22,6 +22,7 @@ class Sight(models.Model):
         if self.validated and not self.sent:
             FTPExporter(self).export()
             APIExporter(self).export()
+            self.sent = True
 
     class Meta:
         verbose_name = "Avistamiento"
