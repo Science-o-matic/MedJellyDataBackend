@@ -45,7 +45,7 @@ def _add_sight_attr(sight, key, value):
         if key == "beach":
             value = Beach.objects.get(pk=value)
         elif key == "timestamp":
-            value = dateutil.parser.parse(value)
+            value = dateutil.parser.parse(value, dayfirst=True)
         setattr(sight, key, value)
 
 
