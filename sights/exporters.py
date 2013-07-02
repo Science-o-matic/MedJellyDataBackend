@@ -93,6 +93,7 @@ class APIExporter(XMLExporter):
         root = ET.Element('beaches')
         root.append(self.generate_beach_xml())
         tree = ET.ElementTree(root)
+        print ET.tostring(tree, pretty_print=True)
         return ET.tostring(tree, pretty_print=True)
 
     def generate_beach_xml(self):
@@ -112,5 +113,5 @@ class APIExporter(XMLExporter):
 
     def add_jellyfishes_xml(self, node):
         qs = self.instance.sightvariables_set.exclude(variable__variable__api_export_id=None)
-        for var in qs[:2]:
+        for var in qs.order_by("variable__variable__api_warning_level")[:2]:
             node.append(self.XMLnode("jellyFish", var.variable.variable.api_export_id))
