@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.db.models import Max
 from django.conf import settings
 from django.contrib.auth.models import User
 from sights.exporters import FTPExporter, APIExporter
@@ -14,6 +15,14 @@ class Sight(models.Model):
     validated = models.BooleanField(default=False, verbose_name="Validat")
     sent = models.BooleanField(default=False, verbose_name="Enviat")
     sent_timestamp = models.DateTimeField(verbose_name="Data de enviament", null=True, blank=True)
+
+    JELLYFISH_STATUS = {
+        (0, 0): "NO_WARNING",
+        (1, 8): "LOW_WARNING",
+        (9, 13): "HIGH_WARNING",
+        (11, 11): "VERY_HIGH_WARNING"
+    }
+
 
     def __unicode__(self):
         return u"%s (%s)" % (unicode(self.beach), self.beach.code)
@@ -32,9 +41,22 @@ class Sight(models.Model):
 
     def get_flag_reason(self):
         try:
-            return self.sightvariables_set.filter(variable__variable__api_export_id=0)[0].value
+            return self.sightvariables_set.filter(variable__variable__api_export_id=99)[0].value
         except IndexError:
             return 0 # NONE
+
+    def get_jellyFishStatus(self):
+        try:
+            qs = self.sightvariables_set.exclude(variable__variable__api_export_id=None)
+            warning_level = qs.aggregate(Max("variable__variable__api_warning_level"))
+            return self._jellyFishStatus(warning_level)
+        except IndexError:
+            return 0 # NONE
+
+    def _jellyFishStatus(self, warning_level):
+        for k, v in self.JELLYFISH_STATUS.items():
+            if (warning_level >= k[0]) and (warning_level <= k[1]):
+                return v
 
     class Meta:
         verbose_name = "Avistamiento"
