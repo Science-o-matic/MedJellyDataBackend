@@ -93,8 +93,7 @@ class APIExporter(XMLExporter):
         root = ET.Element('beaches')
         root.append(self.generate_beach_xml())
         tree = ET.ElementTree(root)
-        print ET.tostring(tree, pretty_print=True)
-        return ET.tostring(tree, pretty_print=True)
+        return ET.tostring(tree)
 
     def generate_beach_xml(self):
         timestamp = self.instance.timestamp.strftime("%Y%m%d %H:00")
