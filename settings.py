@@ -8,6 +8,8 @@ PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
+ALLOWED_HOSTS = "medjellydata.com"
+
 ADMINS = (
     ('Admin', 'support@science-o-matic.com')
 )
@@ -119,6 +121,16 @@ AUTHENTICATION_BACKENDS = (
 )
 
 TOKEN_TIMEOUT_DAYS = 1
+
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = '<host>'
+EMAIL_HOST_USER = '<user>'
+EMAIL_HOST_PASSWORD = '<password>'
+SERVER_EMAIL = "medjellydata@medjellydata.com"
 
 ACANET_FTP = {
     'host': '<host>',
