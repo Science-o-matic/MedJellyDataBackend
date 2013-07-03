@@ -106,7 +106,7 @@ class APIExporter(XMLExporter):
         beach.append(self.XMLnode('flagReason', str(flagReason)))
         beach.append(self.XMLnode('jellyFishStatusUpdated', timestamp))
         jellyFishStatus = self.instance.get_jellyFishStatus()
-        beach.append(self.XMLnode('jellyFishStatus', "LOW_WARNING")) # TODO figure out this
+        beach.append(self.XMLnode('jellyFishStatus', jellyFishStatus))
         jellyFishes = self.XMLnode('jellyFishes')
         self.add_jellyfishes_xml(jellyFishes)
         beach.append(jellyFishes)
@@ -114,5 +114,6 @@ class APIExporter(XMLExporter):
 
     def add_jellyfishes_xml(self, node):
         qs = self.instance.sightvariables_set.exclude(variable__variable__api_export_id=None)
-        for var in qs.order_by("-variable__variable__api_warning_level")[:2]:
+        # Value = 1 indicates presence
+        for var in qs.filter(value=1).order_by("-variable__variable__api_warning_level")[:2]:
             node.append(self.XMLnode("jellyFish", var.variable.variable.api_export_id))

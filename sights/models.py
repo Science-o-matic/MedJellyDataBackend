@@ -18,9 +18,9 @@ class Sight(models.Model):
 
     JELLYFISH_STATUS = {
         (0, 0): "NO_WARNING",
-        (1, 8): "LOW_WARNING",
-        (9, 13): "HIGH_WARNING",
-        (11, 11): "VERY_HIGH_WARNING"
+        (1, 7): "LOW_WARNING",
+        (8, 12): "HIGH_WARNING",
+        (13, 13): "VERY_HIGH_WARNING"
     }
 
 
@@ -43,15 +43,25 @@ class Sight(models.Model):
         try:
             return self.sightvariables_set.filter(variable__variable__api_export_id=99)[0].value
         except IndexError:
-            return 0 # NONE
+            return 15 # NOT VERIFIED
 
     def get_jellyFishStatus(self):
         try:
             qs = self.sightvariables_set.exclude(variable__variable__api_export_id=None)
-            warning_level = qs.aggregate(Max("variable__variable__api_warning_level"))
+            warning_level = self.max_warning_level(qs)
             return self._jellyFishStatus(warning_level)
         except IndexError:
             return 0 # NONE
+
+    def max_warning_level(self, qs):
+        max_level = 0
+        # Value = 1 indicates presence
+        for var in qs.filter(value=1):
+            warning_level = var.variable.variable.api_warning_level
+            if warning_level > max_level:
+                max_level = warning_level
+        return max_level
+
 
     def _jellyFishStatus(self, warning_level):
         for k, v in self.JELLYFISH_STATUS.items():
