@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.db.models import Max
 from django.conf import settings
 from django.contrib.auth.models import User
 from sights.exporters import FTPExporter, APIExporter
@@ -14,6 +15,14 @@ class Sight(models.Model):
     validated = models.BooleanField(default=False, verbose_name="Validat")
     sent = models.BooleanField(default=False, verbose_name="Enviat")
     sent_timestamp = models.DateTimeField(verbose_name="Data de enviament", null=True, blank=True)
+
+    JELLYFISH_STATUS = {
+        (0, 0): "NO_WARNING",
+        (1, 7): "LOW_WARNING",
+        (8, 12): "HIGH_WARNING",
+        (13, 13): "VERY_HIGH_WARNING"
+    }
+
 
     def __unicode__(self):
         return u"%s (%s)" % (unicode(self.beach), self.beach.code)
@@ -32,9 +41,32 @@ class Sight(models.Model):
 
     def get_flag_reason(self):
         try:
-            return self.sightvariables_set.filter(variable__variable__api_export_id=0)[0].value
+            return self.sightvariables_set.filter(variable__variable__api_export_id=99)[0].value
+        except IndexError:
+            return 15 # NOT VERIFIED
+
+    def get_jellyFishStatus(self):
+        try:
+            qs = self.sightvariables_set.exclude(variable__variable__api_export_id=None)
+            warning_level = self.max_warning_level(qs)
+            return self._jellyFishStatus(warning_level)
         except IndexError:
             return 0 # NONE
+
+    def max_warning_level(self, qs):
+        max_level = 0
+        # Value = 1 indicates presence
+        for var in qs.filter(value=1):
+            warning_level = var.variable.variable.api_warning_level
+            if warning_level > max_level:
+                max_level = warning_level
+        return max_level
+
+
+    def _jellyFishStatus(self, warning_level):
+        for k, v in self.JELLYFISH_STATUS.items():
+            if (warning_level >= k[0]) and (warning_level <= k[1]):
+                return v
 
     class Meta:
         verbose_name = "Avistamiento"

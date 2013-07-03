@@ -14,8 +14,8 @@ class SightVariablesInline(admin.TabularInline):
 
 
 class SightAdmin(admin.ModelAdmin):
-    list_display = ("timestamp", "beach", "reported_from", "validated")
-    list_filter = ( "validated", "timestamp", "reported_from", "beach")
+    list_display = ("timestamp", "beach", "reported_from", "validated", "sent")
+    list_filter = ( "validated", "sent", "timestamp", "reported_from", "beach" )
     inlines = [SightVariablesInline]
     actions = ['mark_as_valid', 'mark_as_invalid', 'export']
 
