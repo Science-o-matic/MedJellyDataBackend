@@ -30,6 +30,7 @@ def new(request):
 
             return HttpResponse('Dades creades')
         else:
+            # TODO Handle this
             print "KO"
             print form.errors
     else:

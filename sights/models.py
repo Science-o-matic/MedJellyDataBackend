@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 from django.db import models
 from django.db.models import Max
 from django.conf import settings
@@ -32,6 +33,8 @@ class Sight(models.Model):
             FTPExporter(self).export()
             APIExporter(self).export()
             self.sent = True
+            self.sent_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%I")
+            self.save()
 
     def get_flag(self):
         try:
