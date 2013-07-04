@@ -67,14 +67,14 @@ def pulldb():
     get(dump_file, '.')
     run('rm %s' % dump_file)
     if confirm("Load dumped remote data into local DB?"):
-        local('mysql --defaults-file=".mysqldump" %s < %s' % (env['project_name'], filename))
+        local('mysql --defaults-file=".mysqldump_cnf" %s < %s' % (env['project_name'], filename))
 
 
 def _run_manage(command):
     run("%s ./manage.py %s" % (env['python_path'], command))
 
 def _dump_mysql_data(file_path):
-    return 'mysqldump --defaults-file="/home/jellyrisk/.mysqldump_cnf" --single-transaction %s > %s' % (PROJECT_DB_NAME, file_path)
+    return 'mysqldump --defaults-file="/home/medjellydata/.mysqldump_cnf" --single-transaction %s > %s' % (PROJECT_DB_NAME, file_path)
 
 @roles('%s' % PROJECT_USER)
 def syncmedia():
