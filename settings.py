@@ -11,7 +11,8 @@ TEMPLATE_DEBUG = DEBUG
 ALLOWED_HOSTS = "medjellydata.com"
 
 ADMINS = (
-    ('Admin', 'support@science-o-matic.com')
+    ('Martín Fuentes', 'fuentesmartin@gmail.com'),
+    ('Antonio Barcia', 'antonio.barcia@gmail.com')
 )
 
 MANAGERS = ADMINS
