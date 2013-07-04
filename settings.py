@@ -128,6 +128,7 @@ if DEBUG:
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
+EMAIL_SUBJECT_PREFIX = "[medjellydata] "
 EMAIL_HOST = '<host>'
 EMAIL_HOST_USER = '<user>'
 EMAIL_HOST_PASSWORD = '<password>'
