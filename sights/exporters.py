@@ -1,7 +1,11 @@
+import paramiko
+import logging
 import urllib2, base64, os
 from lxml import etree as ET
 from django.conf import settings
-import paramiko
+
+
+logger = logging.getLogger(__name__)
 
 
 class XMLExporter(object):
@@ -85,11 +89,11 @@ class APIExporter(XMLExporter):
         return "Basic %s" % base64.encodestring('%s:%s' % (username, password)).replace('\n', '')
 
     def export(self):
-        if settings.DEBUG:
-            print self.endpoint_url
-            print "Content-type", "application/x-www-form-urlencoded",
-            print "Authorization", self.auth_header
-            print "data=", self.generate_xml()
+        url = self.endpoint_url
+        content_type_header = "Content-type: application/x-www-form-urlencoded"
+        auth_header = "Authorization:", self.auth_header
+        data = self.generate_xml()
+        request_info = "\n".join((url, content_type_header, auth_header, data)
         request = urllib2.Request(self.endpoint_url,
                                   headers={"Content-type": "application/x-www-form-urlencoded",
                                            "Authorization": self.auth_header},
