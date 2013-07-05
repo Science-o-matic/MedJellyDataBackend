@@ -132,7 +132,8 @@ EMAIL_SUBJECT_PREFIX = "[medjellydata] "
 EMAIL_HOST = '<host>'
 EMAIL_HOST_USER = '<user>'
 EMAIL_HOST_PASSWORD = '<password>'
-SERVER_EMAIL = "medjellydata@medjellydata.com"
+SERVER_EMAIL = "<email>"
+REVIEWER_EMAIL = "<email>"
 
 ACANET_FTP = {
     'host': '<host>',

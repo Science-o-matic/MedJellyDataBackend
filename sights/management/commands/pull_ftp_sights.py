@@ -5,11 +5,14 @@ import paramiko
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from sights.models import Sight, SightVariables, Beach, ReportingClient, BeachVariable
+from django.core.mail import send_mail
 
 
 class Command(BaseCommand):
     help = 'Pull FTP sights files and import content into sights models'
     reported_from = ReportingClient.objects.get(name="FTP")
+    log_messages = {}
+    imported_count = 0
 
 
     def handle(self, *args, **options):
@@ -26,10 +29,13 @@ class Command(BaseCommand):
             self.log("Imported %s" %  f)
         self.sftp.close()
 
-
     def log(self, message):
+        self.log_messages.append(message)
         print datetime.datetime.now().strftime("%d/%M/%Y %H:%I"), message
 
+    def send_email(count, message):
+        send_mail('[medjellydata] %s new sights imported from FTP', self.log_messages,
+                  settings.SERVER_EMAIL, setitngs.REVIEWER_EMAIL, fail_silently=False)
 
     def import_sights_file(self, filename):
         sights_file = self.get_sights_file(filename)
@@ -40,7 +46,7 @@ class Command(BaseCommand):
                 sight, created = self.create_sight(line)
             if created:
                 self.log("Created sight in %s at %s" % (sight, sight.timestamp))
-
+                self.imported_count += 1
 
     def create_sight(self, line):
         fields = line.split("|")
