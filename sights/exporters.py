@@ -55,7 +55,8 @@ class FTPExporter(XMLExporter):
         f.write("***** FI DE FITXER *****")
         f.close()
 
-        self.send_to_ftp(filename)
+        if not settings.DEBUG:
+            self.send_to_ftp(filename)
 
     def send_to_ftp(self, filename):
         transport = paramiko.Transport((settings.ACANET_FTP['host'],
