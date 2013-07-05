@@ -85,11 +85,18 @@ class APIExporter(XMLExporter):
         return "Basic %s" % base64.encodestring('%s:%s' % (username, password)).replace('\n', '')
 
     def export(self):
+        if settings.DEBUG:
+            print self.endpoint_url
+            print "Content-type", "application/x-www-form-urlencoded",
+            print "Authorization", self.auth_header
+            print "data=", self.generate_xml()
         request = urllib2.Request(self.endpoint_url,
                                   headers={"Content-type": "application/x-www-form-urlencoded",
                                            "Authorization": self.auth_header},
                                   data="data=" + self.generate_xml())
         result = urllib2.urlopen(request)
+        if settings.DEBUG:
+            print result
 
     def generate_xml(self):
         root = ET.Element('beaches')

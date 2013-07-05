@@ -46,7 +46,7 @@ class Sight(models.Model):
         try:
             return self.sightvariables_set.filter(variable__variable__api_export_id=99)[0].value
         except IndexError:
-            return 15 # NOT VERIFIED
+            return '' # NOT VERIFIED
 
     def get_jellyFishStatus(self):
         try:
