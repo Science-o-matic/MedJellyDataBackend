@@ -197,7 +197,7 @@ class BeachVariable(models.Model):
 class SightVariables(models.Model):
     sight = models.ForeignKey('Sight')
     variable = models.ForeignKey('BeachVariable')
-    value = models.FloatField()
+    value = models.DecimalField(max_digits=6, decimal_places=2)
 
     def __unicode__(self):
         return self.variable.variable.type

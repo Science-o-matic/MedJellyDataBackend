@@ -63,8 +63,10 @@ def _clean_value(value, var_type):
         cleaned_value = 1
     else:
         if var_type == "DecimalField":
-            value = value if value else 0
-            cleaned_value = float(value)
+            # TODO Look for a better way to do this
+            # Check /home/ygneo/.virtualenvs/medjellydatabackend/local/lib/python2.7/site-packages/django/db/models/fields/__init__.py
+            # Line 869, ValidationError when running to_python
+            cleaned_value = value.replace(",", ".")
         else:
             cleaned_value = int(value)
     return cleaned_value
