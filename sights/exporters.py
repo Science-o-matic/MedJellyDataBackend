@@ -37,7 +37,7 @@ class FTPExporter(XMLExporter):
                 var.append(self.XMLnode("estacio", self.instance.beach.code))
                 var.append(self.XMLnode("variable",  sightvariable.variable.code))
                 var.append(self.XMLnode("profunditat", "1"))
-                var.append(self.XMLnode("valor", str(sightvariable.value)))
+                var.append(self.XMLnode("valor", str(sightvariable.value).replace(".", ",")))
                 var.append(self.XMLnode("motiuInvalidacio", "0"))
                 var.append(self.XMLnode("anotacio"))
                 measure_unit = sightvariable.variable.variable.measure_unit.name
