@@ -37,7 +37,7 @@ class FTPExporter(XMLExporter):
                 var.append(self.XMLnode("estacio", self.instance.beach.code))
                 var.append(self.XMLnode("variable",  sightvariable.variable.code))
                 var.append(self.XMLnode("profunditat", "1"))
-                var.append(self.XMLnode("valor", str(sightvariable.value).replace(".", ",")))
+                var.append(self.XMLnode("valor", self._cleaned_value(sightvariable)))
                 var.append(self.XMLnode("motiuInvalidacio", "0"))
                 var.append(self.XMLnode("anotacio"))
                 measure_unit = sightvariable.variable.variable.measure_unit.name
@@ -65,6 +65,17 @@ class FTPExporter(XMLExporter):
                           password = settings.ACANET_FTP['password'])
         self.sftp = paramiko.SFTPClient.from_transport(transport)
         self.sftp.put(filename, os.path.join(settings.ACANET_FTP['in_path'], filename))
+
+    def _cleaned_value(self, sightvariable):
+        cleaned_value = sightvariable.value
+        field_type = sightvariable.variable.variable.field_type
+        if field_type == "ChoiceField":
+            cleaned_value = int(cleaned_value)
+        elif field_type == "DecimalField":
+            cleaned_value = str(cleaned_value).replace(".", ",")
+        elif field_type == "BooleanField":
+            cleaned_value = int(cleaned_value)
+        return str(cleaned_value)
 
 
 class APIExporter(XMLExporter):
