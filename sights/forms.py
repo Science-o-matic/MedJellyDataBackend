@@ -26,26 +26,28 @@ class SightForm(BetterForm):
         fieldsets = []
         for group in VariablesGroup.objects.all():
             variables = group.variable_set.all()
-            no_label = (len(variables) == 1)
             fieldset_fields = []
             for var in variables:
-                FieldClass = getattr(forms, var.field_type)
-                if var.field_type == "ChoiceField":
-                    choices = []
-                    for value in json.loads(var.possible_values):
-                        choices.append(tuple(value))
-                    field_class = FieldClass(label=var.label, choices=choices)
-                else:
-                    var.label = "" if no_label else var.label
-                    field_class = FieldClass(label=var.label)
                 field_name = "var_%s" % var.id
-                self.fields[field_name] = field_class
+                self.fields[field_name] = self._field_class(var)
                 fieldset_fields.append(field_name)
             self.fieldsets.fieldsets.append((group.fieldset_name,
                                              {'fields': fieldset_fields,
                                               'legend': group.name}))
         self.fieldsets.fieldsets.append(('comments', {'fields': ['comments',],
                                                       'legend': 'Observacions'}))
+
+    def _field_class(self, var):
+        FieldClass = getattr(forms, var.field_type)
+        if var.field_type == "ChoiceField":
+            choices = []
+            for value in json.loads(var.possible_values):
+                choices.append(tuple(value))
+                field_class = FieldClass(label=var.label, choices=choices)
+        else:
+            field_class = FieldClass(label=var.label)
+        return field_class
+
 
     def is_valid(self):
         return True
