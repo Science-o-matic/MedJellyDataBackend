@@ -11,6 +11,8 @@ from tokenapi.decorators import token_required
 @token_required
 def new(request):
     user = request.user
+    context = {}
+
     if request.method == 'POST':
         form = SightForm(request.POST, user=user)
         if form.is_valid():
@@ -28,17 +30,18 @@ def new(request):
                     var_id = key.split("_")[1]
                     _add_sight_var(sight, var_id, value)
 
-            return HttpResponse('Dades creades')
+            context = {
+                "message": "Dades creades correctament.",
+                "form": SightForm({}, user=user)
+                }
         else:
             # TODO Handle this
             print "KO"
             print form.errors
     else:
-        form = SightForm({}, user=user) # An unbound form
+        context['form'] = SightForm({}, user=user) # An unbound form
 
-    return render(request, 'new_sight.html', {
-        'form': form,
-    })
+    return render(request, 'new_sight.html', context)
 
 
 def _add_sight_attr(sight, key, value):
