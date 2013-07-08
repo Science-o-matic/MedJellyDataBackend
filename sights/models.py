@@ -30,7 +30,8 @@ class Sight(models.Model):
 
     def export(self):
         if self.validated and not self.sent:
-            FTPExporter(self).export()
+            # Temporary disabled
+            # FTPExporter(self).export()
             APIExporter(self).export()
             self.sent = True
             self.sent_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%I")
