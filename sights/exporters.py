@@ -1,8 +1,10 @@
 import urllib2, base64, os
+import paramiko
+import logging
 from lxml import etree as ET
 from django.conf import settings
-import paramiko
 
+logger = logging.getLogger(__name__)
 
 class XMLExporter(object):
 
@@ -96,18 +98,19 @@ class APIExporter(XMLExporter):
         return "Basic %s" % base64.encodestring('%s:%s' % (username, password)).replace('\n', '')
 
     def export(self):
-        if settings.DEBUG:
-            print self.endpoint_url
-            print "Content-type", "application/x-www-form-urlencoded",
-            print "Authorization", self.auth_header
-            print "data=", self.generate_xml()
+        # TODO: Improve this, get data after building the request
+        logger.info("REQUEST: (exporting XML to API)")
+        logger.info(self.endpoint_url)
+        logger.info("Content-type: application/x-www-form-urlencoded")
+        logger.info("Authorization: %s" % self.auth_header)
+        logger.info("data=%s" % self.generate_xml())
         request = urllib2.Request(self.endpoint_url,
                                   headers={"Content-type": "application/x-www-form-urlencoded",
                                            "Authorization": self.auth_header},
                                   data="data=" + self.generate_xml())
         result = urllib2.urlopen(request)
-        if settings.DEBUG:
-            print result
+        logger.info("RESPONSE:")
+        logger.info("\n".join(result))
 
     def generate_xml(self):
         root = ET.Element('beaches')

@@ -209,6 +209,11 @@ LOGGING = {
             'propagate': True,
             'level': 'INFO',
         },
+        'sights': {
+            'handlers': ['logfile', 'console'],
+            'propagate': True,
+            'level': 'INFO',
+        },
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
