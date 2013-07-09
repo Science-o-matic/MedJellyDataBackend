@@ -4,7 +4,7 @@ from django.db import models
 from django.db.models import Max
 from django.conf import settings
 from django.contrib.auth.models import User
-from sights.exporters import FTPExporter, APIExporter
+from sights.exporters import APIExporter
 
 
 class Sight(models.Model):
@@ -20,7 +20,6 @@ class Sight(models.Model):
     ftp_sent_timestamp = models.DateTimeField(verbose_name="Data de enviament per FTP", null=True, blank=True)
 
 
-
     JELLYFISH_STATUS = {
         (0, 0): "NO_WARNING",
         (1, 7): "LOW_WARNING",
@@ -33,13 +32,17 @@ class Sight(models.Model):
         return u"%s (%s)" % (unicode(self.beach), self.beach.code)
 
     def export(self):
-        if self.validated and not self.sent:
-            # Temporary disabled
-            # FTPExporter(self).export()
+        if self.validated and not self.api_sent:
             APIExporter(self).export()
-            self.sent = True
-            self.sent_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%I")
+            self.api_sent = True
+            self.api_sent_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%I")
             self.save()
+
+    def save_ftp_export(self):
+        self.ftp_sent = True
+        self.ftp_sent_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%I")
+        self.save()
+
 
     def get_flag(self):
         try:

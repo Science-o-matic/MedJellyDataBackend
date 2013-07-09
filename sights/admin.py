@@ -2,6 +2,7 @@
 from django.contrib import admin
 from models import Sight, Beach, VariablesGroup, Variable,  BeachVariable, MeasureUnit, SightVariables, \
     ReportingClient, City, BeachOwner
+from sights.exporters import FTPExporter
 
 
 class BeachAdmin(admin.ModelAdmin):
@@ -18,7 +19,7 @@ class SightAdmin(admin.ModelAdmin):
                     "ftp_sent", "ftp_sent_timestamp", "api_sent", "api_sent_timestamp")
     list_filter = ( "validated", "ftp_sent", "api_sent", "timestamp", "reported_from", "beach" )
     inlines = [SightVariablesInline]
-    actions = ['mark_as_valid', 'mark_as_invalid', 'export']
+    actions = ['mark_as_valid', 'mark_as_invalid', 'api_export', 'ftp_export', 'export']
 
     def mark_as_valid(self, request, queryset):
         queryset.update(validated=True)
@@ -28,10 +29,19 @@ class SightAdmin(admin.ModelAdmin):
         queryset.update(validated=False)
     mark_as_invalid.short_description = "Invalidar avistamientos seleccionados"
 
-    def export(self, request, queryset):
+    def ftp_export(self, request, queryset):
+        FTPExporter(queryset).export()
+    ftp_export.short_description = "Exportar por FTP avistamientos seleccionados"
+
+    def api_export(self, request, queryset):
         for item in queryset:
             item.export()
-    export.short_description = "Exportar avistamientos seleccionados"
+    api_export.short_description = "Exportar por API avistamientos seleccionados"
+
+    def export(self, request, queryset):
+        self.ftp_export(request, queryset)
+        self.api_export(request, queryset)
+    export.short_description = "Exportar avistamientos seleccionados (FTP y API)"
 
 
 class SightVariablesAdmin(admin.ModelAdmin):

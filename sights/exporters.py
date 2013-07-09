@@ -1,6 +1,7 @@
 import urllib2, base64, os
 import paramiko
 import logging
+import datetime
 from lxml import etree as ET
 from django.conf import settings
 
@@ -18,38 +19,15 @@ class XMLExporter(object):
 class FTPExporter(XMLExporter):
     filename_template = "ICM_PLAT_%s.DAT"
 
-    def __init__(self, instance):
-        self.instance = instance
+    def __init__(self, queryset):
+        self.queryset = queryset.filter(validated=True, ftp_sent=False)
 
     def export(self):
-        from sights.models import SightVariables, VariablesGroup
-
         root = ET.Element('six')
-        code = "ICM%s-%s" % (self.instance.id, self.instance.timestamp.strftime('%Y%m%d'))
-        timestamp = self.instance.timestamp.strftime('%d/%m/%Y %H:00')
-        sight = ET.Element('mostreig', codi=code, tipus="PLAJ", timestamp=timestamp,
-                           observacions="prueba" if settings.DEBUG else "")
-        for group in VariablesGroup.objects.all():
-            grup = ET.Element('grup', codi=group.name, observacions="")
-            for sightvariable in SightVariables.objects.filter(sight=self.instance,
-                                                               variable__variable__ftp_exportable=True,
-                                                               variable__variable__group=group):
-                var = self.XMLnode('var')
-                var.append(self.XMLnode("timestamp", str(timestamp)))
-                var.append(self.XMLnode("estacio", self.instance.beach.code))
-                var.append(self.XMLnode("variable",  sightvariable.variable.code))
-                var.append(self.XMLnode("profunditat", "1"))
-                var.append(self.XMLnode("valor", self._cleaned_value(sightvariable)))
-                var.append(self.XMLnode("motiuInvalidacio", "0"))
-                var.append(self.XMLnode("anotacio"))
-                measure_unit = sightvariable.variable.variable.measure_unit.name
-                var.append(self.XMLnode("unitatMesura", measure_unit))
-                grup.append(var)
-            sight.append(grup)
-        root.append(sight)
+        for sight in self.queryset:
+            root.append(self.sight_xml(sight))
 
-
-        filename = self.filename_template % self.instance.timestamp.strftime('%Y%m%d')
+        filename = self.filename_template % datetime.datetime.now().strftime("%Y%m%d")
         tree = ET.ElementTree(root)
         tree.write(filename, pretty_print=True,
                    xml_declaration=True, encoding="ISO-8859-1")
@@ -59,6 +37,37 @@ class FTPExporter(XMLExporter):
 
         if not settings.DEBUG:
             self.send_to_ftp(filename)
+        for sight in self.queryset:
+            sight.save_ftp_export()
+
+
+    def sight_xml(self, sight):
+        from sights.models import SightVariables, VariablesGroup
+
+        code = "ICM%s-%s" % (sight.id, sight.timestamp.strftime('%Y%m%d'))
+        timestamp = sight.timestamp.strftime('%d/%m/%Y %H:00')
+        sight_xml = ET.Element('mostreig', codi=code, tipus="PLAJ", timestamp=timestamp,
+                           observacions="prueba" if settings.DEBUG else "")
+        for group in VariablesGroup.objects.all():
+            grup = ET.Element('grup', codi=group.name, observacions="")
+            qs = SightVariables.objects.filter(sight=sight,
+                                               variable__variable__ftp_exportable=True,
+                                               variable__variable__group=group)
+
+            for sightvariable in qs:
+                var = self.XMLnode('var')
+                var.append(self.XMLnode("timestamp", str(timestamp)))
+                var.append(self.XMLnode("estacio", sight.beach.code))
+                var.append(self.XMLnode("variable",  sightvariable.variable.code))
+                var.append(self.XMLnode("profunditat", "1"))
+                var.append(self.XMLnode("valor", self._cleaned_value(sightvariable)))
+                var.append(self.XMLnode("motiuInvalidacio", "0"))
+                var.append(self.XMLnode("anotacio"))
+                measure_unit = sightvariable.variable.variable.measure_unit.name
+                var.append(self.XMLnode("unitatMesura", measure_unit))
+                grup.append(var)
+            sight_xml.append(grup)
+        return sight_xml
 
     def send_to_ftp(self, filename):
         transport = paramiko.Transport((settings.ACANET_FTP['host'],
