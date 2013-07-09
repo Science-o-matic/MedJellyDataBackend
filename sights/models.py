@@ -14,8 +14,6 @@ class Sight(models.Model):
     reported_from = models.ForeignKey('ReportingClient', verbose_name="Reportat per")
     variables = models.ManyToManyField("BeachVariable", through="SightVariables")
     validated = models.BooleanField(default=False, verbose_name="Validat")
-    sent = models.BooleanField(default=False, verbose_name="Enviat")
-    sent_timestamp = models.DateTimeField(verbose_name="Data de enviament", null=True, blank=True)
     api_sent = models.BooleanField(default=False, verbose_name="Enviat per API")
     api_sent_timestamp = models.DateTimeField(verbose_name="Data de enviament per API", null=True, blank=True)
     ftp_sent = models.BooleanField(default=False, verbose_name="Enviat per FTP")
