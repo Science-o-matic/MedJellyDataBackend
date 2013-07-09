@@ -7,6 +7,12 @@ from django.contrib.auth.models import User
 from sights.exporters import FTPExporter, APIExporter
 
 
+class SightManager(models.Manager):
+
+    def export(self):
+        FTPExporter(self).export()
+
+
 class Sight(models.Model):
     timestamp = models.DateTimeField(verbose_name="Data de medició")
     comments = models.TextField(blank=True)
