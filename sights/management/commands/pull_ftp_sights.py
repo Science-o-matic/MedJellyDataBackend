@@ -13,7 +13,7 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
-        self.log("Connecting %s" % settings.ACANET_FTP['host'])
+        self.log("--- Connecting %s" % settings.ACANET_FTP['host'])
         transport = paramiko.Transport((settings.ACANET_FTP['host'],
                                         settings.ACANET_FTP['port']))
         transport.connect(username = settings.ACANET_FTP['user'],
@@ -25,7 +25,7 @@ class Command(BaseCommand):
             self.import_sights_file(f)
             self.log("Imported %s" %  f)
         self.sftp.close()
-
+        self.log("--- Disconnected. Import DONE.")
 
     def log(self, message):
         print datetime.datetime.now().strftime("%d/%M/%Y %H:%I"), message
