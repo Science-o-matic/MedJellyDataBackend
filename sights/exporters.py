@@ -17,7 +17,7 @@ class XMLExporter(object):
 
 
 class FTPExporter(XMLExporter):
-    filename_template = "ICM_PLAT_%s.DAT"
+    filename_template = "ICM_PLAT_%s-%s.DAT"
 
     def __init__(self, queryset):
         self.queryset = queryset.filter(validated=True, ftp_sent=False)
@@ -27,7 +27,9 @@ class FTPExporter(XMLExporter):
         for sight in self.queryset:
             root.append(self.sight_xml(sight))
 
-        filename = self.filename_template % datetime.datetime.now().strftime("%Y%m%d")
+        date_timestamp = datetime.datetime.now().strftime("%Y%m%d")
+        timestamp = datetime.datetime.now().strftime("%H-%M-%S")
+        filename = self.filename_template % (date_timestamp, timestamp)
         tree = ET.ElementTree(root)
         tree.write(filename, pretty_print=True,
                    xml_declaration=True, encoding="ISO-8859-1")
