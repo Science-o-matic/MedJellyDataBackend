@@ -35,12 +35,12 @@ class Sight(models.Model):
         if self.validated and not self.api_sent:
             APIExporter(self).export()
             self.api_sent = True
-            self.api_sent_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%I")
+            self.api_sent_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
             self.save()
 
     def save_ftp_export(self):
         self.ftp_sent = True
-        self.ftp_sent_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%I")
+        self.ftp_sent_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
         self.save()
 
 
