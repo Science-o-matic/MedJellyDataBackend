@@ -28,8 +28,7 @@ class Command(BaseCommand):
         self.log("--- Disconnected. Import DONE.")
 
     def log(self, message):
-        print datetime.datetime.now().strftime("%d/%M/%Y %H:%I"), message
-
+        print datetime.datetime.now().strftime("%d/%m/%Y %H:%M"), message
 
     def import_sights_file(self, filename):
         sights_file = self.get_sights_file(filename)
