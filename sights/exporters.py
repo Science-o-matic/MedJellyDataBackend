@@ -48,7 +48,7 @@ class FTPExporter(XMLExporter):
         from sights.models import SightVariables, VariablesGroup
 
         code = "ICM%s-%s" % (sight.id, sight.timestamp.strftime('%Y%m%d'))
-        timestamp = sight.timestamp.strftime('%d/%m/%Y %H:00')
+        timestamp = sight.timestamp.strftime('%d/%m/%Y %H:%M')
         sight_xml = ET.Element('mostreig', codi=code, tipus="PLAJ", timestamp=timestamp,
                            observacions=sight.comments)
         for group in VariablesGroup.objects.all():
