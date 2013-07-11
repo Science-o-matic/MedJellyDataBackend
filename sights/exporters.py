@@ -18,6 +18,7 @@ class XMLExporter(object):
 
 class FTPExporter(XMLExporter):
     filename_template = "ICM_PLAT_%s-%s.DAT"
+    encoding = "ISO-8859-1"
 
     def __init__(self, queryset):
         self.queryset = queryset
@@ -32,7 +33,7 @@ class FTPExporter(XMLExporter):
         filename = self.filename_template % (date_timestamp, timestamp)
         tree = ET.ElementTree(root)
         tree.write(filename, pretty_print=True,
-                   xml_declaration=True, encoding="ISO-8859-1")
+                   xml_declaration=True, encoding=self.encoding)
         f = open(filename, "a")
         f.write("***** FI DE FITXER *****")
         f.close()
@@ -49,7 +50,7 @@ class FTPExporter(XMLExporter):
         code = "ICM%s-%s" % (sight.id, sight.timestamp.strftime('%Y%m%d'))
         timestamp = sight.timestamp.strftime('%d/%m/%Y %H:00')
         sight_xml = ET.Element('mostreig', codi=code, tipus="PLAJ", timestamp=timestamp,
-                           observacions="prueba" if settings.DEBUG else "")
+                           observacions=sight.comments)
         for group in VariablesGroup.objects.all():
             grup = ET.Element('grup', codi=group.name, observacions="")
             qs = SightVariables.objects.filter(sight=sight,
