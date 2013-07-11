@@ -5,4 +5,4 @@ local\_settings.py
 *~
 media/
 fab_settings.py
-.mysqldump
+.mysqldump_cnf
