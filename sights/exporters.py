@@ -20,7 +20,7 @@ class FTPExporter(XMLExporter):
     filename_template = "ICM_PLAT_%s-%s.DAT"
 
     def __init__(self, queryset):
-        self.queryset = queryset.filter(validated=True, ftp_sent=False)
+        self.queryset = queryset
 
     def export(self):
         root = ET.Element('six')
@@ -85,7 +85,7 @@ class FTPExporter(XMLExporter):
         if field_type == "ChoiceField":
             cleaned_value = int(cleaned_value)
         elif field_type == "DecimalField":
-            cleaned_value = str(cleaned_value).replace(".", ",")
+            cleaned_value = str(cleaned_value)
         elif field_type == "BooleanField":
             cleaned_value = int(cleaned_value)
         return str(cleaned_value)

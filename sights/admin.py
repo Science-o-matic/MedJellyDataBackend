@@ -30,7 +30,9 @@ class SightAdmin(admin.ModelAdmin):
     mark_as_invalid.short_description = "Invalidar avistamientos seleccionados"
 
     def ftp_export(self, request, queryset):
-        FTPExporter(queryset).export()
+        queryset = queryset.filter(validated=True, ftp_sent=False)
+        if queryset:
+            FTPExporter(queryset).export()
     ftp_export.short_description = "Exportar por FTP avistamientos seleccionados"
 
     def api_export(self, request, queryset):
