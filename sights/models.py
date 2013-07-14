@@ -34,7 +34,7 @@ class Sight(models.Model):
         return u"%s (%s)" % (unicode(self.beach), self.beach.code)
 
     def save(self, *args, **kwargs):
-        super(Sight, self).save(self, *args, **kwargs)
+        super(Sight, self).save(*args, **kwargs)
         for field in Variable.objects.filter(field_type='BooleanField'):
             self.sightvariables_set.get_or_create(
                 variable__variable__id=field.id,
