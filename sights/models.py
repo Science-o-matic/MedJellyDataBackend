@@ -15,9 +15,11 @@ class Sight(models.Model):
     variables = models.ManyToManyField("BeachVariable", through="SightVariables")
     validated = models.BooleanField(default=False, verbose_name="Validat")
     api_sent = models.BooleanField(default=False, verbose_name="Enviat per API")
-    api_sent_timestamp = models.DateTimeField(verbose_name="Data de enviament per API", null=True, blank=True)
+    api_sent_timestamp = models.DateTimeField(verbose_name="Data de enviament per API", null=True,
+                                              blank=True)
     ftp_sent = models.BooleanField(default=False, verbose_name="Enviat per FTP")
-    ftp_sent_timestamp = models.DateTimeField(verbose_name="Data de enviament per FTP", null=True, blank=True)
+    ftp_sent_timestamp = models.DateTimeField(verbose_name="Data de enviament per FTP", null=True,
+                                              blank=True)
 
 
     JELLYFISH_STATUS = {
@@ -31,6 +33,15 @@ class Sight(models.Model):
     def __unicode__(self):
         return u"%s (%s)" % (unicode(self.beach), self.beach.code)
 
+    def save(self, *args, **kwargs):
+        super(Sight, self).save(self, *args, **kwargs)
+        for field in Variable.objects.filter(field_type='BooleanField'):
+            self.sightvariables_set.get_or_create(
+                variable__variable__id=field.id,
+                defaults={"variable_id": field.id,
+                          "value": field.DEFAULT_BOOLEAN_FIELD_VALUE})
+
+
     def export(self):
         if self.validated and not self.api_sent:
             APIExporter(self).export()
@@ -42,7 +53,6 @@ class Sight(models.Model):
         self.ftp_sent = True
         self.ftp_sent_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
         self.save()
-
 
     def get_flag(self):
         try:
@@ -159,6 +169,7 @@ class Variable(models.Model):
     measure_unit = models.ForeignKey('MeasureUnit',
                                      default = MeasureUnit.get_default)
     label = models.CharField(max_length=300, null=True)
+    DEFAULT_BOOLEAN_FIELD_VALUE = 2
     FIELD_TYPES = (
         ('BooleanField', 'BooleanField'),
         ('CharField', 'CharField'),
