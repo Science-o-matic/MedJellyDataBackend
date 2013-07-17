@@ -3,3 +3,7 @@
     padding: 1ex;
     margin: 1ex;
 }
+
+.input-error {
+    color: red;
+}
