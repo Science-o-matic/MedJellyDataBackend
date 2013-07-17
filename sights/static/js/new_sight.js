@@ -5,7 +5,7 @@ $(document).ready(function () {
       var errorMessage = "<p class=\"input-error\">Has d'indicar la temperatura de l'aigua</p>"
 
       $(".input-error").remove();
-      $("#id_var_63").parent().parent().append(errorMessage);
+      $("input[type=submit]").parent().parent().append(errorMessage);
       e.preventDefault();
     }
   });
