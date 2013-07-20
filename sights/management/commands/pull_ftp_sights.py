@@ -5,6 +5,7 @@ import paramiko
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from sights.models import Sight, SightVariables, Beach, ReportingClient, BeachVariable
+from sights import mailer
 
 
 class Command(BaseCommand):
@@ -39,7 +40,7 @@ class Command(BaseCommand):
                 sight, created = self.create_sight(line)
             if created:
                 self.log("Created sight in %s at %s" % (sight, sight.timestamp))
-
+                mailer.notify_new_sight(sight)
 
     def create_sight(self, line):
         fields = line.split("|")

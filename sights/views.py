@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import datetime
 import dateutil.parser
 from django.views.generic.edit import FormView
@@ -5,6 +6,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from sights.forms import SightForm
 from sights.models import Sight, Beach, ReportingClient, SightVariables, BeachVariable
+from sights import mailer
 from tokenapi.decorators import token_required
 
 
@@ -34,6 +36,8 @@ def new(request):
                 "message": "Dades creades correctament.",
                 "form": SightForm({}, user=user)
                 }
+
+            mailer.notify_new_sight(sight)
         else:
             # TODO Handle this
             print "KO"
