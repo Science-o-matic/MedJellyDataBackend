@@ -43,7 +43,6 @@ class Sight(models.Model):
         self.ftp_sent_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
         self.save()
 
-
     def get_flag(self):
         try:
             return self.sightvariables_set.filter(variable__variable__api_export_id=0)[0].value
@@ -168,6 +167,7 @@ class Variable(models.Model):
         ('DateTimeField', 'DateTimeField'),
         ('DecimalField', 'DecimalField')
         )
+    DEFAULT_BOOLEAN_FIELD_VALUE = 2
     field_type = models.CharField(max_length=50, choices=FIELD_TYPES,
                                   null=True)
     WIDGET_TYPES = (

@@ -43,7 +43,6 @@ class FTPExporter(XMLExporter):
         for sight in self.queryset:
             sight.save_ftp_export()
 
-
     def sight_xml(self, sight):
         from sights.models import SightVariables, VariablesGroup
 
@@ -56,19 +55,10 @@ class FTPExporter(XMLExporter):
             qs = SightVariables.objects.filter(sight=sight,
                                                variable__variable__ftp_exportable=True,
                                                variable__variable__group=group)
-
             for sightvariable in qs:
-                var = self.XMLnode('var')
-                var.append(self.XMLnode("timestamp", str(timestamp)))
-                var.append(self.XMLnode("estacio", sight.beach.code))
-                var.append(self.XMLnode("variable",  sightvariable.variable.code))
-                var.append(self.XMLnode("profunditat", "1"))
-                var.append(self.XMLnode("valor", self._cleaned_value(sightvariable)))
-                var.append(self.XMLnode("motiuInvalidacio", "0"))
-                var.append(self.XMLnode("anotacio"))
-                measure_unit = sightvariable.variable.variable.measure_unit.name
-                var.append(self.XMLnode("unitatMesura", measure_unit))
-                grup.append(var)
+                v = self.create_sight_variable(timestamp, sight, sightvariable)
+                grup.append(v)
+            self.append_default_boolean_variables(grup, timestamp, sight, group, qs)
             sight_xml.append(grup)
         return sight_xml
 
@@ -79,6 +69,36 @@ class FTPExporter(XMLExporter):
                           password = settings.ACANET_FTP['password'])
         self.sftp = paramiko.SFTPClient.from_transport(transport)
         self.sftp.put(filename, os.path.join(settings.ACANET_FTP['in_path'], filename))
+
+    def create_sight_variable(self, timestamp, sight, sightvariable):
+        var = self.XMLnode('var')
+        var.append(self.XMLnode("timestamp", str(timestamp)))
+        var.append(self.XMLnode("estacio", sight.beach.code))
+        var.append(self.XMLnode("variable",  sightvariable.variable.code))
+        var.append(self.XMLnode("profunditat", "1"))
+        var.append(self.XMLnode("valor", self._cleaned_value(sightvariable)))
+        var.append(self.XMLnode("motiuInvalidacio", "0"))
+        var.append(self.XMLnode("anotacio"))
+        measure_unit = sightvariable.variable.variable.measure_unit.name
+        var.append(self.XMLnode("unitatMesura", measure_unit))
+        return var
+
+
+    def append_default_boolean_variables(self, xmlNode, timestamp, sight, group, qs):
+        from sights.models import Variable, BeachVariable, SightVariables
+
+        for variable in Variable.objects.filter(field_type='BooleanField',
+                                                group=group,
+                                                ftp_exportable=True):
+            beach_variable = BeachVariable.objects.get(beach=sight.beach,
+                                                       variable=variable)
+            if not qs.filter(variable=beach_variable).exists():
+                sight_variable = SightVariables(sight=sight,
+                                                variable=beach_variable,
+                                                value=variable.DEFAULT_BOOLEAN_FIELD_VALUE)
+                var = self.create_sight_variable(timestamp, sight, sight_variable)
+                xmlNode.append(var)
+
 
     def _cleaned_value(self, sightvariable):
         cleaned_value = sightvariable.value
