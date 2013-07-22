@@ -11,7 +11,7 @@ def notify_new_sight(sight):
               "Se ha recibido un nuevo avistamiento reportado desde %s.\n\n" %
               sight.reported_from.name.lower() +
               "%s - %s.\n\n" %
-g              (sight.beach, sight.timestamp) +
+              (sight.beach, sight.timestamp) +
               "Puedes consultarlo en http://%s/admin/sights/sight/%s" % (site, sight.id),
               'support@science-o-matic.com',
               User.objects.filter(is_staff=True).values_list("email", flat=True),
