@@ -17,29 +17,34 @@ class XMLExporter(object):
 
 
 class FTPExporter(XMLExporter):
-    filename_template = "ICM_PLAT_%s-%s.DAT"
+    filename_template = "ICM_%s_%s-%s.DAT"
     encoding = "ISO-8859-1"
 
     def __init__(self, queryset):
         self.queryset = queryset
 
     def export(self):
-        root = ET.Element('six')
-        for sight in self.queryset:
-            root.append(self.sight_xml(sight))
+        from sights.models import ReportingClient
 
-        date_timestamp = datetime.datetime.now().strftime("%Y%m%d")
-        timestamp = datetime.datetime.now().strftime("%H-%M-%S")
-        filename = self.filename_template % (date_timestamp, timestamp)
-        tree = ET.ElementTree(root)
-        tree.write(filename, pretty_print=True,
-                   xml_declaration=True, encoding=self.encoding)
-        f = open(filename, "a")
-        f.write("***** FI DE FITXER *****")
-        f.close()
+        for reporting_client in ReportingClient.objects.all():
+            root = ET.Element('six')
+            for sight in self.queryset.filter(reported_from=reporting_client):
+                root.append(self.sight_xml(sight))
 
-        if not settings.DEBUG:
-            self.send_to_ftp(filename)
+            date_timestamp = datetime.datetime.now().strftime("%Y%m%d")
+            timestamp = datetime.datetime.now().strftime("%H-%M-%S")
+            filename = self.filename_template % (reporting_client.code,
+                                                 date_timestamp, timestamp)
+            tree = ET.ElementTree(root)
+            tree.write(filename, pretty_print=True,
+                       xml_declaration=True, encoding=self.encoding)
+            f = open(filename, "a")
+            f.write("***** FI DE FITXER *****")
+            f.close()
+
+            if not settings.DEBUG:
+                self.send_to_ftp(filename)
+
         for sight in self.queryset:
             sight.save_ftp_export()
 
