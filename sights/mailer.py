@@ -10,9 +10,7 @@ def notify_new_sight(sight):
     send_mail('[medjellydata] Nuevo avistamiento reportado desde %s' % sight.reported_from.name.lower(),
               "Se ha recibido un nuevo avistamiento reportado desde %s.\n\n" %
               sight.reported_from.name.lower() +
-              "%s - %s.\n\n" %
-              (sight.beach, sight.timestamp) +
-              "Puedes consultarlo en http://%s/admin/sights/sight/%s" % (site, sight.id),
+             "Puedes consultarlo en http://%s/admin/sights/sight/%s" % (site, sight.id),
               'support@science-o-matic.com',
               User.objects.filter(is_staff=True).values_list("email", flat=True),
               fail_silently=False)
