@@ -217,6 +217,7 @@ class SightVariables(models.Model):
 
 class ReportingClient(models.Model):
     name = models.CharField(max_length=300)
+    code = models.CharField(max_length=300, blank=True, null=True)
 
     def __unicode__(self):
         return self.name
