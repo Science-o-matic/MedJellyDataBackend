@@ -13,7 +13,7 @@ class SightForm(BetterForm):
         super(SightForm, self).__init__()
 
         self.user = kwargs["user"]
-        current_time = datetime.datetime.now().strftime("%d-%m-%Y %H:00")
+        current_time = datetime.datetime.now().strftime("%d-%m-%Y %H:%M")
         self.fields = {
             'beach': forms.ModelChoiceField(
                 queryset=Beach.objects.filter(users__in=(self.user,)), initial=1,label="Platja"),
