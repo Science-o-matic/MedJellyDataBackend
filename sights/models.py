@@ -51,9 +51,14 @@ class Sight(models.Model):
 
     def get_flag_reason(self):
         try:
-            return self.sightvariables_set.filter(variable__variable__api_export_id=99)[0].value
+            value = self.sightvariables_set.filter(variable__variable__api_export_id=99)[0].value
+            if value == 15:
+                value = ''
+            else:
+                value = int(value)
         except IndexError:
-            return '' # NOT VERIFIED
+            value = ''
+        return value
 
     def get_jellyFishStatus(self):
         try:
