@@ -157,22 +157,29 @@ class APIExporter(XMLExporter):
 
     def generate_beach_xml(self):
         timestamp = self.instance.timestamp.strftime("%Y%m%d %H:00")
+
         beach = ET.Element('beach', id=unicode(self.instance.beach.api_id))
         beach.append(self.XMLnode('flagStatusUpdated', timestamp))
+
         flag = self.instance.get_flag()
         beach.append(self.XMLnode('flagStatus', self.FLAG_STATUS[int(flag)]))
+
         flagReason = self.instance.get_flag_reason()
         beach.append(self.XMLnode('flagReason', str(flagReason)))
+
         beach.append(self.XMLnode('jellyFishStatusUpdated', timestamp))
         jellyFishStatus = self.instance.get_jellyFishStatus()
         beach.append(self.XMLnode('jellyFishStatus', jellyFishStatus))
-        jellyFishes = self.XMLnode('jellyFishes')
-        self.add_jellyfishes_xml(jellyFishes)
-        beach.append(jellyFishes)
+
+        beach.append(self.jellyfishes_xml())
         return beach
 
-    def add_jellyfishes_xml(self, node):
-        qs = self.instance.sightvariables_set.exclude(variable__variable__api_export_id=None)
-        # Value = 1 indicates presence
-        for var in qs.filter(value=1).order_by("-variable__variable__api_warning_level")[:2]:
-            node.append(self.XMLnode("jellyFish", var.variable.variable.api_export_id))
+    def jellyfishes_xml(self):
+        jellyfishes_qs = self.instance.sightvariables_set
+        jellyfishes_qs = jellyfishes_qs.exclude(variable__variable__api_export_id=None)
+        jellyfishes_qs = jellyfishes_qs.filter(value=1)
+
+        jellyfishes = self.XMLnode('jellyFishes')
+        for var in jellyfishes_qs.order_by("-variable__variable__api_warning_level")[:2]:
+            jellyfishes.append(self.XMLnode("jellyFish", var.variable.variable.api_export_id))
+        return jellyfishes
