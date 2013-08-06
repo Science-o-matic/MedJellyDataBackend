@@ -156,7 +156,7 @@ class APIExporter(XMLExporter):
         return ET.tostring(tree)
 
     def generate_beach_xml(self):
-        timestamp = self.instance.timestamp.strftime("%Y%m%d %H:00")
+        timestamp = self.instance.timestamp.strftime("%Y%m%d %H:%M")
 
         beach = ET.Element('beach', id=unicode(self.instance.beach.api_id))
         beach.append(self.XMLnode('flagStatusUpdated', timestamp))
@@ -177,6 +177,11 @@ class APIExporter(XMLExporter):
     def jellyfishes_xml(self):
         jellyfishes_qs = self.instance.sightvariables_set
         jellyfishes_qs = jellyfishes_qs.exclude(variable__variable__api_export_id=None)
+        # FIXME: Look into sights/models: I'm considering special variables flag and flagReason
+        # by using api_export_id=0 and api_export_id 99, respectively.
+        # Find a better way to do this.
+        jellyfishes_qs = jellyfishes_qs.exclude(variable__variable__api_export_id=0)
+        jellyfishes_qs = jellyfishes_qs.exclude(variable__variable__api_export_id=99)
         jellyfishes_qs = jellyfishes_qs.filter(value=1)
 
         jellyfishes = self.XMLnode('jellyFishes')
