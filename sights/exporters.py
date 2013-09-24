@@ -5,6 +5,7 @@ import datetime
 from lxml import etree as ET
 from django.conf import settings
 
+
 logger = logging.getLogger(__name__)
 
 class XMLExporter(object):
