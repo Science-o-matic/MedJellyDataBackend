@@ -17,6 +17,7 @@ class Command(BaseCommand):
     jellyfishes_names = ["Pelagia", "Aurelia", "Cotylorhiza", "Rhizostoma", "Chrysaora",
                          "Aequorea", "Velella","Physalia", "Mnemiopsis", "Phyllorhiza", "Carybdea"]
 
+    metereology_group_name = "Meteorologia"
 
     def handle(self, *args, **options):
         if len(args) == 0:
@@ -36,7 +37,7 @@ class Command(BaseCommand):
     def write_header(self, csvwriter):
         header_cols = ["beach", "date", "day", "month", "year"]
         header_cols += self.jellyfishes_names
-        header_cols += ["Origen", "Bandera", "Motivo Bandera"]
+        header_cols += ["Origen", "Bandera", "Motivo Bandera", "Metereologia"]
         csvwriter.writerow(header_cols)
 
 
@@ -47,9 +48,18 @@ class Command(BaseCommand):
             data = [sight.beach, date.strftime("%m/%d/%Y"), date.day, date.month, date.year]
             data += self.jellyfish_values(sight)
             data += [sight.reported_from, int(sight.get_flag()), sight.get_flag_reason()]
+            data += [",".join(self._get_metereology_variables_values(sight))]
         except ValueError as e:
             print "Sight id", sight.id, "has throw exception:", e.message
-        csvwriter.writerow(data)
+        csvwriter.writerow([unicode(s).encode("utf-8") for s in data])
+
+    def _get_metereology_variables_values(self, sight):
+        metereology_variables = sight.get_variables_by_group_name(self.metereology_group_name)
+        metereology_variables_names = metereology_variables.values_list(
+            "variable__variable__label",
+            flat=True
+        )
+        return metereology_variables_names
 
 
     def jellyfish_values(self, sight):

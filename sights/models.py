@@ -68,6 +68,10 @@ class Sight(models.Model):
         except IndexError:
             return 0 # NONE
 
+    def get_variables_by_group_name(self, group_name):
+        return self.sightvariables_set.filter(variable__variable__group__name=group_name,
+                                              value=True)
+
     def max_warning_level(self, qs):
         max_level = 0
         # Value = 1 indicates presence
