@@ -63,16 +63,12 @@ class Sight(models.Model):
     def get_jellyFishStatus(self):
         try:
             qs = self.sightvariables_set.exclude(variable__variable__api_export_id=None)
-            warning_level = self.max_warning_level(qs)
+            warning_level = self._max_warning_level(qs)
             return self._jellyFishStatus(warning_level)
         except IndexError:
             return 0 # NONE
 
-    def get_variables_by_group_name(self, group_name):
-        return self.sightvariables_set.filter(variable__variable__group__name=group_name,
-                                              value=True)
-
-    def max_warning_level(self, qs):
+    def _max_warning_level(self, qs):
         max_level = 0
         # Value = 1 indicates presence
         for var in qs.filter(value=1):
@@ -81,6 +77,12 @@ class Sight(models.Model):
                 max_level = warning_level
         return max_level
 
+    def get_variables_by_group_name(self, group_name):
+        return self.sightvariables_set.filter(variable__variable__group__name=group_name,
+                                              value=True)
+
+    def get_variable_by_type(self, variable_type):
+        return self.sightvariables_set.get(variable__variable__type=variable_type)
 
     def _jellyFishStatus(self, warning_level):
         for k, v in self.JELLYFISH_STATUS.items():

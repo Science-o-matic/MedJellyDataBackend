@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import csv
 from django.core.management.base import BaseCommand, CommandError
-from sights.models import Sight, Variable
+from sights.models import Sight, Variable, SightVariables
 
 
 # This intended to be a one-shot management command exporting sights data
@@ -16,8 +16,9 @@ class Command(BaseCommand):
     presence_variable_value = "1.00"
     jellyfishes_names = ["Pelagia", "Aurelia", "Cotylorhiza", "Rhizostoma", "Chrysaora",
                          "Aequorea", "Velella","Physalia", "Mnemiopsis", "Phyllorhiza", "Carybdea"]
-
     metereology_group_name = "Meteorologia"
+    water_temperature_type = "Temperatura de l'aigua"
+
 
     def handle(self, *args, **options):
         if len(args) == 0:
@@ -37,7 +38,10 @@ class Command(BaseCommand):
     def write_header(self, csvwriter):
         header_cols = ["beach", "date", "day", "month", "year"]
         header_cols += self.jellyfishes_names
-        header_cols += ["Origen", "Bandera", "Motivo Bandera", "Metereologia"]
+        header_cols += ["Origen",
+                        "Bandera", "Motivo Bandera",
+                        "T. Agua",
+                        "Metereologia"]
         csvwriter.writerow(header_cols)
 
 
@@ -48,6 +52,7 @@ class Command(BaseCommand):
             data = [sight.beach, date.strftime("%m/%d/%Y"), date.day, date.month, date.year]
             data += self.jellyfish_values(sight)
             data += [sight.reported_from, int(sight.get_flag()), sight.get_flag_reason()]
+            data += [self._get_water_temperature(sight)]
             data += [",".join(self._get_metereology_variables_values(sight))]
         except ValueError as e:
             print "Sight id", sight.id, "has throw exception:", e.message
@@ -61,6 +66,13 @@ class Command(BaseCommand):
         )
         return metereology_variables_names
 
+    def _get_water_temperature(self, sight):
+        try:
+            return sight.get_variable_by_type(self.water_temperature_type).value
+        except SightVariables.DoesNotExist:
+            return ""
+        except SightVariables.MultipleObjectsReturned:
+            return "N/A"
 
     def jellyfish_values(self, sight):
         # 0 - ausencia
