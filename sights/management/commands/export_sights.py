@@ -36,7 +36,7 @@ class Command(BaseCommand):
     def write_header(self, csvwriter):
         header_cols = ["beach", "date", "day", "month", "year"]
         header_cols += self.jellyfishes_names
-        header_cols += ["Origen", "Bandera", "Meteorología"]
+        header_cols += ["Origen", "Bandera", "Motivo Bandera"]
         csvwriter.writerow(header_cols)
 
 
@@ -46,7 +46,7 @@ class Command(BaseCommand):
         try:
             data = [sight.beach, date.strftime("%m/%d/%Y"), date.day, date.month, date.year]
             data += self.jellyfish_values(sight)
-            data += [sight.reported_from, sight.get_flag(), sight.get_flag_reason()]
+            data += [sight.reported_from, int(sight.get_flag()), sight.get_flag_reason()]
         except ValueError as e:
             print "Sight id", sight.id, "has throw exception:", e.message
         csvwriter.writerow(data)
