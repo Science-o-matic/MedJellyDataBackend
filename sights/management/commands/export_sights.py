@@ -6,7 +6,6 @@ from sights.models import Sight, Variable, SightVariables
 
 # This intended to be a one-shot management command exporting sights data
 # in a fixed format requested by customer. Some hardcoding around here.
-#
 class Command(BaseCommand):
     args = 'csvfile'
     help = 'Export all sights in a CSV file'
@@ -30,14 +29,15 @@ class Command(BaseCommand):
             csvwriter = csv.writer(csvfile, delimiter=',')
             self.write_header(csvwriter)
 
-            total = Sight.objects.all().count()
+            i = 0
             for sight in Sight.objects.all():
                 self.write_row(csvwriter, sight)
-            print "Exported", total, "sights."
+                i += 1
+            print "Exported", i, "sights"
 
 
     def write_header(self, csvwriter):
-        header_cols = ["beach", "date", "day", "month", "year"]
+        header_cols = ["id", "beach", "date", "day", "month", "year", "time"]
         header_cols += self.jellyfishes_names
         header_cols += ["%s grandaria" % s for s in self.jellyfishes_names]
         header_cols += ["Origen",
@@ -51,7 +51,8 @@ class Command(BaseCommand):
         data = []
         date = sight.timestamp
         try:
-            data = [sight.beach, date.strftime("%m/%d/%Y"), date.day, date.month, date.year]
+            data = [sight.id, sight.beach]
+            data += [date.strftime("%m/%d/%Y"), date.day, date.month, date.year, date.strftime("%H:%M")]
             data += self.jellyfish_values(sight)
             data += self.jellyfish_size_values(sight)
             data += [sight.reported_from, int(sight.get_flag()), sight.get_flag_reason()]
@@ -84,7 +85,7 @@ class Command(BaseCommand):
         # 3 - presencia con abundancia muchas
         # NA - sin datos
         if self._jellyfishes_presence(sight):
-            values = self.jellyfishes_abundance(sight)
+            values = self.get_jellyfish_values(sight)
         else:
             values = [0 for name in self.jellyfishes_names]
 
@@ -105,7 +106,7 @@ class Command(BaseCommand):
         )
         return bool(sight_has_jellyfishes)
 
-    def jellyfishes_abundance(self, sight):
+    def get_jellyfish_values(self, sight):
         jellyfishes_abundance_vars = sight.sightvariables_set.filter(
             variable__variable__label__contains=self.abundance_keyword
             )
@@ -113,21 +114,27 @@ class Command(BaseCommand):
             "variable__variable__label",
             "value"
             )
+
         jellyfishes_abundance = {}
         for var in jellyfishes_abundance_vars:
             key = var[0].split("-")[0].split(" ")[0].strip()
-            value = int(var[1]) if int(var[1]) > 0 else "NA"
+            value = int(var[1])
             jellyfishes_abundance[key] = value
 
         values = []
         for jellyfish_name in self.jellyfishes_names:
+            jellyfish_presence = self.jellyfishes_presence(jellyfish_name, sight)
             try:
-                values.append(jellyfishes_abundance[jellyfish_name])
+                if jellyfishes_abundance[jellyfish_name] > 0:
+                    value = jellyfishes_abundance[jellyfish_name]
+                elif jellyfish_presence:
+                    value = "NA"
             except KeyError:
-                if self.jellyfishes_presence(jellyfish_name, sight):
-                    values.append("NA")
+                if jellyfish_presence:
+                    value = "NA"
                 else:
-                    values.append(0)
+                    value = 0
+            values.append(value)
         return values
 
     def jellyfishes_size(self, sight):
@@ -141,27 +148,32 @@ class Command(BaseCommand):
         jellyfishes_size = {}
         for var in jellyfishes_size_vars:
             key = var[0].split("-")[0].split(" ")[0].strip()
-            value = int(var[1]) if int(var[1]) > 0 else "NA"
+            value = int(var[1])
             jellyfishes_size[key] = value
 
         values = []
         for jellyfish_name in self.jellyfishes_names:
+            jellyfish_presence = self.jellyfishes_presence(jellyfish_name, sight)
             try:
-                values.append(jellyfishes_size[jellyfish_name])
+                if jellyfishes_size[jellyfish_name] > 0:
+                    value = jellyfishes_size[jellyfish_name]
+                elif jellyfish_presence:
+                    value = "NA"
             except KeyError:
-                if self.jellyfishes_presence(jellyfish_name, sight):
-                    values.append("NA")
+                if jellyfish_presence:
+                    value = "NA"
                 else:
-                    values.append(0)
+                    value = 0
+            values.append(0)
         return values
 
 
     def jellyfishes_presence(self, name, sight):
         jellyfishes_presence_vars = sight.sightvariables_set.filter(
-            variable__variable__label__contains=name,
+            variable__variable__type__contains=name,
             value="1.00",
         )
         jellyfishes_presence_vars = jellyfishes_presence_vars.filter(
-            variable__variable__label__contains=self.presence_keyword,
+            variable__variable__type__contains=self.presence_keyword,
         )
         return bool(jellyfishes_presence_vars)
