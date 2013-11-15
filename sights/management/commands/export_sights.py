@@ -124,6 +124,7 @@ class Command(BaseCommand):
         values = []
         for jellyfish_name in self.jellyfishes_names:
             jellyfish_presence = self.jellyfishes_presence(jellyfish_name, sight)
+            value = 0
             try:
                 if jellyfishes_abundance[jellyfish_name] > 0:
                     value = jellyfishes_abundance[jellyfish_name]
@@ -132,8 +133,6 @@ class Command(BaseCommand):
             except KeyError:
                 if jellyfish_presence:
                     value = "NA"
-                else:
-                    value = 0
             values.append(value)
         return values
 
@@ -154,6 +153,7 @@ class Command(BaseCommand):
         values = []
         for jellyfish_name in self.jellyfishes_names:
             jellyfish_presence = self.jellyfishes_presence(jellyfish_name, sight)
+            value = 0
             try:
                 if jellyfishes_size[jellyfish_name] > 0:
                     value = jellyfishes_size[jellyfish_name]
@@ -162,8 +162,6 @@ class Command(BaseCommand):
             except KeyError:
                 if jellyfish_presence:
                     value = "NA"
-                else:
-                    value = 0
             values.append(value)
         return values
 
