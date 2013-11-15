@@ -164,7 +164,7 @@ class Command(BaseCommand):
                     value = "NA"
                 else:
                     value = 0
-            values.append(0)
+            values.append(value)
         return values
 
 
