@@ -115,8 +115,8 @@ class City(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = "Ciudad"
-        verbose_name_plural = "Ciudades"
+        verbose_name = "Ayuntamiento"
+        verbose_name_plural = "Ayuntamientos"
 
 
 class BeachOwner(models.Model):

@@ -38,12 +38,12 @@ class SightAdmin(admin.ModelAdmin):
     def api_export(self, request, queryset):
         for item in queryset:
             item.export()
-    api_export.short_description = "Exportar por API avistamientos seleccionados"
+    api_export.short_description = "Exportar a MedJelly avistamientos seleccionados"
 
     def export(self, request, queryset):
         self.ftp_export(request, queryset)
         self.api_export(request, queryset)
-    export.short_description = "Exportar avistamientos seleccionados (FTP y API)"
+    export.short_description = "Exportar avistamientos seleccionados (FTP y MedJelly)"
 
 
 class SightVariablesAdmin(admin.ModelAdmin):
