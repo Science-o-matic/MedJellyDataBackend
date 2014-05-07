@@ -16,7 +16,7 @@
     {% if message %}
     <p id="message">{{ message }}</p>
     {% endif %}
-    <form method="POST">
+    <form method="POST" action="{{ request.get_full_path }}">
       {% csrf_token %}
       {% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
       {% for fieldset in form.fieldsets %}

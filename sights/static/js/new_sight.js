@@ -31,7 +31,7 @@ $(document).ready(function () {
     }
   });
 
-  $.mobile.ajaxEnabled = false;
+  $.mobile.ajaxEnabled = true;
 
   if ($("#message").length) {
     $("#message").fadeOut(2400);
