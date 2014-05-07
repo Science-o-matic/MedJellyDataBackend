@@ -122,6 +122,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 TOKEN_TIMEOUT_DAYS = 1
+TOKEN_CHECK_ACTIVE_USER = True
 
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
