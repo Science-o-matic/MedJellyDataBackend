@@ -20,6 +20,7 @@ class SightAdmin(admin.ModelAdmin):
     list_filter = ( "validated", "ftp_sent", "api_sent", "timestamp", "reported_from", "beach" )
     inlines = [SightVariablesInline]
     actions = ['mark_as_valid', 'mark_as_invalid', 'api_export']
+    date_hierarchy = 'timestamp'
 
     def mark_as_valid(self, request, queryset):
         queryset.update(validated=True)
