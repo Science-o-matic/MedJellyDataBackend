@@ -10,3 +10,4 @@ gunicorn
 django-form-utils
 dateutils
 lxml
+django-cors-headers

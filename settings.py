@@ -80,6 +80,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.doc.XViewMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
 )
 
@@ -113,7 +114,8 @@ INSTALLED_APPS = (
     'django_extensions',
     'tokenapi',
     'sights',
-    'form_utils'
+    'form_utils',
+    'corsheaders',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -123,6 +125,8 @@ AUTHENTICATION_BACKENDS = (
 
 TOKEN_TIMEOUT_DAYS = 1
 TOKEN_CHECK_ACTIVE_USER = True
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
