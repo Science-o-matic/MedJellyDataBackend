@@ -88,7 +88,7 @@ def pulldb():
     get(dump_file, '.')
     run('rm %s' % dump_file)
     if confirm("Load dumped remote data into local DB?"):
-        local('mysql --defaults-file=".mysqldump" %s < %s' % (env['project_name'], filename))
+        local('mysql --defaults-file=".mysqldump_cnf" %s < %s' % (env['project_name'], filename))
 
 
 def _run_manage(command):
