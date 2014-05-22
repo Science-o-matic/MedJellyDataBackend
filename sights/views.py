@@ -5,7 +5,7 @@ from django.views.generic.edit import FormView
 from django.shortcuts import render
 from django.http import HttpResponse
 from sights.forms import SightForm
-from sights.models import Sight, Beach, ReportingClient, SightVariables, BeachVariable
+from sights.models import Sight, Beach, ReportingClient, SightVariables
 from sights import mailer
 from tokenapi.decorators import token_required
 
@@ -58,12 +58,10 @@ def _add_sight_attr(sight, key, value):
 
 
 def _add_sight_var(sight, var_id, value):
-    beach_variable = BeachVariable.objects.get(beach=sight.beach,
-                                                variable_id=var_id)
-    var_type = beach_variable.variable.field_type
+    variable = Variable.objects.get(id=var_id)
     SightVariables.objects.create(sight=sight,
-                                  variable=beach_variable,
-                                  value=_clean_value(value, var_type))
+                                  variable=variable,
+                                  value=_clean_value(value, variable.field_type))
 
 def _clean_value(value, var_type):
     if var_type == "BooleanField" and value == "on":

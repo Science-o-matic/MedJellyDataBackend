@@ -12,7 +12,6 @@ class Sight(models.Model):
     comments = models.TextField(blank=True)
     beach = models.ForeignKey('Beach', verbose_name="Platja")
     reported_from = models.ForeignKey('ReportingClient', verbose_name="Reportat per")
-    variables = models.ManyToManyField("BeachVariable", through="SightVariables")
     validated = models.BooleanField(default=False, verbose_name="Validat")
     api_sent = models.BooleanField(default=False, verbose_name="Enviat per API")
     api_sent_timestamp = models.DateTimeField(verbose_name="Data de enviament per API", null=True, blank=True)
@@ -167,7 +166,7 @@ class Variable(models.Model):
     type = models.CharField(max_length=300)
     description = models.CharField(max_length=300)
     measure_unit = models.ForeignKey('MeasureUnit',
-                                     default = MeasureUnit.get_default)
+                                     default=MeasureUnit.get_default)
     label = models.CharField(max_length=300, null=True)
     FIELD_TYPES = (
         ('BooleanField', 'BooleanField'),
@@ -200,22 +199,9 @@ class Variable(models.Model):
         ordering = ['order']
 
 
-class BeachVariable(models.Model):
-    beach = models.ForeignKey('Beach')
-    code = models.CharField(max_length=20, null=True)
-    variable = models.ForeignKey('Variable', null=True)
-
-    def __unicode__(self):
-        return unicode(self.variable)
-
-    class Meta:
-        verbose_name = "Variable de playa"
-        verbose_name_plural = "Variables de playa"
-
-
 class SightVariables(models.Model):
-    sight = models.ForeignKey('Sight')
-    variable = models.ForeignKey('BeachVariable')
+    sight = models.ForeignKey('Sight', related_name="variables")
+    variable = models.ForeignKey('Variable')
     value = models.DecimalField(max_digits=6, decimal_places=2)
 
     def __unicode__(self):

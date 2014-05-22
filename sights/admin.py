@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
-from models import Sight, Beach, VariablesGroup, Variable,  BeachVariable, MeasureUnit, SightVariables, \
+from models import Sight, Beach, VariablesGroup, Variable, MeasureUnit, SightVariables, \
     ReportingClient, City, BeachOwner
 from sights.exporters import FTPExporter
 
@@ -9,16 +9,10 @@ class BeachAdmin(admin.ModelAdmin):
     search_fields = ("name",)
 
 
-class SightVariablesInline(admin.TabularInline):
-    model = Sight.variables.through
-    raw_id_fields = ("variable",)
-
-
 class SightAdmin(admin.ModelAdmin):
     list_display = ("timestamp", "beach", "reported_from", "validated",
                     "api_sent", "api_sent_timestamp")
     list_filter = ( "validated", "ftp_sent", "api_sent", "timestamp", "reported_from", "beach" )
-    inlines = [SightVariablesInline]
     actions = ['mark_as_valid', 'mark_as_invalid', 'api_export']
     date_hierarchy = 'timestamp'
 
@@ -60,15 +54,8 @@ class VariableAdmin(admin.ModelAdmin):
     list_filter = ("field_type","group")
 
 
-class BeachVariableAdmin(admin.ModelAdmin):
-    search_fields = ("code",)
-    list_display = ("code", "variable", "beach")
-    list_filter = ("beach",)
-
-
 admin.site.register(Sight, SightAdmin)
 admin.site.register(Beach, BeachAdmin)
-admin.site.register(BeachVariable, BeachVariableAdmin)
 admin.site.register(VariablesGroup)
 admin.site.register(Variable, VariableAdmin)
 admin.site.register(MeasureUnit)
