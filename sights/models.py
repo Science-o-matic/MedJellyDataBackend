@@ -72,11 +72,10 @@ class Sight(models.Model):
         return max_level
 
     def get_variables_by_group_name(self, group_name):
-        return self.sightvariables_set.filter(variable__variable__group__name=group_name,
+        return self.sightvariables_set.filter(variable__group__name=group_name,
                                               value=True)
-
     def get_variable_by_type(self, variable_type):
-        return self.sightvariables_set.get(variable__variable__type=variable_type)
+        return self.sightvariables_set.get(variable__type=variable_type)
 
     def _jellyFishStatus(self, warning_level):
         for k, v in self.JELLYFISH_STATUS.items():
