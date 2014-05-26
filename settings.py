@@ -139,16 +139,7 @@ EMAIL_HOST_USER = '<user>'
 EMAIL_HOST_PASSWORD = '<password>'
 SERVER_EMAIL = "medjellydata@medjellydata.com"
 
-ACANET_FTP = {
-    'host': '<host>',
-    'port': 22,
-    'user': '<user>',
-    'password': '<password>',
-    'in_path': '<path>',
-    'out_path': '<path>'
-}
-
-ACANET_API = {
+MEDJELLY_API = {
     'debug': {
         'user': '<user>',
         'password': '<password>',

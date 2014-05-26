@@ -12,7 +12,6 @@ class Sight(models.Model):
     comments = models.TextField(blank=True)
     beach = models.ForeignKey('Beach', verbose_name="Platja")
     reported_from = models.ForeignKey('ReportingClient', verbose_name="Reportat per")
-    variables = models.ManyToManyField("BeachVariable", through="SightVariables")
     validated = models.BooleanField(default=False, verbose_name="Validat")
     api_sent = models.BooleanField(default=False, verbose_name="Enviat per API")
     api_sent_timestamp = models.DateTimeField(verbose_name="Data de enviament per API", null=True, blank=True)
@@ -29,7 +28,7 @@ class Sight(models.Model):
 
 
     def __unicode__(self):
-        return u"%s (%s)" % (unicode(self.beach), self.beach.code)
+        return u"[%s] %s (%s)" % (self.timestamp, unicode(self.beach), self.beach.code)
 
     def export(self):
         if self.validated and not self.api_sent:
@@ -38,20 +37,15 @@ class Sight(models.Model):
             self.api_sent_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
             self.save()
 
-    def save_ftp_export(self):
-        self.ftp_sent = True
-        self.ftp_sent_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-        self.save()
-
     def get_flag(self):
         try:
-            return self.sightvariables_set.filter(variable__variable__api_export_id=0)[0].value
+            return self.variables.filter(variable__api_export_id=0)[0].value
         except IndexError:
             return 0 # NO_INFO
 
     def get_flag_reason(self):
         try:
-            value = self.sightvariables_set.filter(variable__variable__api_export_id=99)[0].value
+            value = self.variables.filter(variable__api_export_id=99)[0].value
             if value == 15:
                 value = ''
             else:
@@ -62,7 +56,7 @@ class Sight(models.Model):
 
     def get_jellyFishStatus(self):
         try:
-            qs = self.sightvariables_set.exclude(variable__variable__api_export_id=None)
+            qs = self.variables.exclude(variable__api_export_id=None)
             warning_level = self._max_warning_level(qs)
             return self._jellyFishStatus(warning_level)
         except IndexError:
@@ -167,7 +161,7 @@ class Variable(models.Model):
     type = models.CharField(max_length=300)
     description = models.CharField(max_length=300)
     measure_unit = models.ForeignKey('MeasureUnit',
-                                     default = MeasureUnit.get_default)
+                                     default=MeasureUnit.get_default)
     label = models.CharField(max_length=300, null=True)
     FIELD_TYPES = (
         ('BooleanField', 'BooleanField'),
@@ -200,26 +194,13 @@ class Variable(models.Model):
         ordering = ['order']
 
 
-class BeachVariable(models.Model):
-    beach = models.ForeignKey('Beach')
-    code = models.CharField(max_length=20, null=True)
-    variable = models.ForeignKey('Variable', null=True)
-
-    def __unicode__(self):
-        return unicode(self.variable)
-
-    class Meta:
-        verbose_name = "Variable de playa"
-        verbose_name_plural = "Variables de playa"
-
-
 class SightVariables(models.Model):
-    sight = models.ForeignKey('Sight')
-    variable = models.ForeignKey('BeachVariable')
+    sight = models.ForeignKey('Sight', related_name="variables")
+    variable = models.ForeignKey('Variable')
     value = models.DecimalField(max_digits=6, decimal_places=2)
 
     def __unicode__(self):
-        return self.variable.variable.type
+        return self.variable.type
 
     class Meta:
         verbose_name = "Variable de avistamiento"
