@@ -16,7 +16,7 @@ class VariableInline(admin.TabularInline):
 class SightAdmin(admin.ModelAdmin):
     list_display = ("timestamp", "beach", "reported_from", "validated",
                     "api_sent", "api_sent_timestamp")
-    list_filter = ( "validated", "ftp_sent", "api_sent", "timestamp", "reported_from", "beach" )
+    list_filter = ( "validated", "api_sent", "timestamp", "reported_from", "beach" )
     actions = ['mark_as_valid', 'mark_as_invalid', 'api_export']
     inlines = [VariableInline]
     date_hierarchy = 'timestamp'
@@ -29,21 +29,13 @@ class SightAdmin(admin.ModelAdmin):
         queryset.update(validated=False)
     mark_as_invalid.short_description = "Invalidar avistamientos seleccionados"
 
-    # TODO: Drop this if it's not useful anymore
-    def ftp_export(self, request, queryset):
-        queryset = queryset.filter(validated=True, ftp_sent=False)
-        if queryset:
-            FTPExporter(queryset).export()
-    ftp_export.short_description = "Exportar por FTP avistamientos seleccionados"
-
     def api_export(self, request, queryset):
+        self.mark_as_valid(request, queryset)
         for item in queryset:
             item.export()
-    api_export.short_description = "Exportar a MedJelly avistamientos seleccionados"
+    api_export.short_description = "Validar y exportar a MedJelly avistamientos seleccionados"
 
     def export(self, request, queryset):
-        # TODO: Drop this if it's not useful anymore
-        #self.ftp_export(request, queryset)
         self.api_export(request, queryset)
     export.short_description = "Exportar avistamientos seleccionados (FTP y MedJelly)"
 
