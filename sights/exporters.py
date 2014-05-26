@@ -128,11 +128,11 @@ class APIExporter(XMLExporter):
         self.auth_header = self._generate_auth()
 
     def _generate_endpoint_url(self):
-        return settings.ACANET_API[self.enviroment]["url"]
+        return settings.MEDJELLY_API[self.enviroment]["url"]
 
     def _generate_auth(self):
-        username = settings.ACANET_API[self.enviroment]["user"]
-        password = settings.ACANET_API[self.enviroment]["password"]
+        username = settings.MEDJELLY_API[self.enviroment]["user"]
+        password = settings.MEDJELLY_API[self.enviroment]["password"]
         return "Basic %s" % base64.encodestring('%s:%s' % (username, password)).replace('\n', '')
 
     def export(self):
