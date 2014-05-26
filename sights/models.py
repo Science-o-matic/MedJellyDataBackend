@@ -178,13 +178,16 @@ class Variable(models.Model):
         ('HiddenInput', 'HiddenInput'),
         )
     widget = models.CharField(max_length=50, choices=WIDGET_TYPES,
-                                  null=True, blank=True)
-    possible_values = models.TextField(
-        help_text="json representing key/values", null=True, blank=True)
+                              null=True, blank=True)
+    possible_values = models.TextField(help_text="json representing key/values",
+                                       null=True, blank=True)
     order = models.IntegerField(null=True, blank=True)
-    ftp_exportable = models.BooleanField(default=True)
+    jellyfishes_presence_variable = models.BooleanField(default=False)
     api_export_id = models.IntegerField(null=True, blank=True)
     api_warning_level = models.IntegerField(null=True, blank=True)
+
+
+
 
     def __unicode__(self):
         return "%s - %s" % (self.type, self.description)
