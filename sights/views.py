@@ -5,7 +5,7 @@ from django.views.generic.edit import FormView
 from django.shortcuts import render
 from django.http import HttpResponse
 from sights.forms import SightForm
-from sights.models import Sight, Beach, ReportingClient, SightVariables
+from sights.models import Sight, Beach, ReportingClient, SightVariables, Variable
 from sights import mailer
 from tokenapi.decorators import token_required
 
