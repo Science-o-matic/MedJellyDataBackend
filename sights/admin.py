@@ -9,11 +9,16 @@ class BeachAdmin(admin.ModelAdmin):
     search_fields = ("name",)
 
 
+class VariableInline(admin.TabularInline):
+    model = SightVariables
+
+
 class SightAdmin(admin.ModelAdmin):
     list_display = ("timestamp", "beach", "reported_from", "validated",
                     "api_sent", "api_sent_timestamp")
     list_filter = ( "validated", "ftp_sent", "api_sent", "timestamp", "reported_from", "beach" )
     actions = ['mark_as_valid', 'mark_as_invalid', 'api_export']
+    inlines = [VariableInline]
     date_hierarchy = 'timestamp'
 
     def mark_as_valid(self, request, queryset):
