@@ -28,7 +28,7 @@ class Sight(models.Model):
 
 
     def __unicode__(self):
-        return u"%s (%s)" % (unicode(self.beach), self.beach.code)
+        return u"[%s] %s (%s)" % (self.timestamp, unicode(self.beach), self.beach.code)
 
     def export(self):
         if self.validated and not self.api_sent:
@@ -37,20 +37,15 @@ class Sight(models.Model):
             self.api_sent_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
             self.save()
 
-    def save_ftp_export(self):
-        self.ftp_sent = True
-        self.ftp_sent_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-        self.save()
-
     def get_flag(self):
         try:
-            return self.sightvariables_set.filter(variable__variable__api_export_id=0)[0].value
+            return self.variables.filter(variable__api_export_id=0)[0].value
         except IndexError:
             return 0 # NO_INFO
 
     def get_flag_reason(self):
         try:
-            value = self.sightvariables_set.filter(variable__variable__api_export_id=99)[0].value
+            value = self.variables.filter(variable__api_export_id=99)[0].value
             if value == 15:
                 value = ''
             else:
@@ -61,7 +56,7 @@ class Sight(models.Model):
 
     def get_jellyFishStatus(self):
         try:
-            qs = self.sightvariables_set.exclude(variable__variable__api_export_id=None)
+            qs = self.variables.exclude(variable__api_export_id=None)
             warning_level = self._max_warning_level(qs)
             return self._jellyFishStatus(warning_level)
         except IndexError:
@@ -205,7 +200,7 @@ class SightVariables(models.Model):
     value = models.DecimalField(max_digits=6, decimal_places=2)
 
     def __unicode__(self):
-        return self.variable.variable.type
+        return self.variable.type
 
     class Meta:
         verbose_name = "Variable de avistamiento"
