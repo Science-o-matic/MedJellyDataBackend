@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import datetime
+from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
@@ -11,20 +11,12 @@ class Migration(SchemaMigration):
         # Deleting field 'Variable.ftp_exportable'
         db.delete_column(u'sights_variable', 'ftp_exportable')
 
-        # Adding field 'Variable.jellyfishes_presence_variable'
-        db.add_column(u'sights_variable', 'jellyfishes_presence_variable',
-                      self.gf('django.db.models.fields.BooleanField')(default=False),
-                      keep_default=False)
-
 
     def backwards(self, orm):
         # Adding field 'Variable.ftp_exportable'
         db.add_column(u'sights_variable', 'ftp_exportable',
                       self.gf('django.db.models.fields.BooleanField')(default=True),
                       keep_default=False)
-
-        # Deleting field 'Variable.jellyfishes_presence_variable'
-        db.delete_column(u'sights_variable', 'jellyfishes_presence_variable')
 
 
     models = {
@@ -123,7 +115,6 @@ class Migration(SchemaMigration):
             'field_type': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True'}),
             'group': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['sights.VariablesGroup']", 'null': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'jellyfishes_presence_variable': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'label': ('django.db.models.fields.CharField', [], {'max_length': '300', 'null': 'True'}),
             'measure_unit': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['sights.MeasureUnit']"}),
             'order': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),

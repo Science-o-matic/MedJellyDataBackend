@@ -182,7 +182,6 @@ class Variable(models.Model):
     possible_values = models.TextField(help_text="json representing key/values",
                                        null=True, blank=True)
     order = models.IntegerField(null=True, blank=True)
-    jellyfishes_presence_variable = models.BooleanField(default=False)
     api_export_id = models.IntegerField(null=True, blank=True)
     api_warning_level = models.IntegerField(null=True, blank=True)
 
