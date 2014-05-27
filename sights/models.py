@@ -66,7 +66,7 @@ class Sight(models.Model):
         max_level = 0
         # Value = 1 indicates presence
         for var in qs.filter(value=1):
-            warning_level = var.variable.variable.api_warning_level
+            warning_level = var.variable.api_warning_level
             if warning_level > max_level:
                 max_level = warning_level
         return max_level
@@ -185,9 +185,6 @@ class Variable(models.Model):
     jellyfishes_presence_variable = models.BooleanField(default=False)
     api_export_id = models.IntegerField(null=True, blank=True)
     api_warning_level = models.IntegerField(null=True, blank=True)
-
-
-
 
     def __unicode__(self):
         return "%s - %s" % (self.type, self.description)
