@@ -86,6 +86,36 @@ class Sight(models.Model):
         verbose_name = "Avistamiento"
 
 
+class Jellyfish(models.Model):
+    name = models.CharField(max_length=1000)
+    description = models.CharField(max_length=5000)
+    medjelly_api_id = models.IntegerField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Medusa"
+        verbose_name_plural = "Medusas"
+
+    def __unicode__(self):
+        return u"%s (%s)" % (self.name, self.medjelly_api_id)
+
+
+
+class JellyfishAbundance(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return self.name
+
+
+class JellyfishSize(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return self.name
+
+
 class Beach(models.Model):
     code = models.CharField(max_length=20)
     name = models.CharField(max_length=1000)
@@ -136,6 +166,7 @@ class VariablesGroup(models.Model):
     class Meta:
         verbose_name = "Grupo de Variables"
         verbose_name_plural = "Grupos de Variables"
+
 
 class MeasureUnit(models.Model):
     name = models.CharField(max_length=1000)
@@ -190,6 +221,13 @@ class Variable(models.Model):
 
     class Meta:
         ordering = ['order']
+
+
+class SightJellyfishes(models.Model):
+    sight = models.ForeignKey('Sight', related_name="jellyfishes")
+    jellyfish = models.ForeignKey('Jellyfish', related_name="sightings")
+    size = models.ForeignKey('JellyfishSize')
+    abundance = models.ForeignKey('JellyfishAbundance')
 
 
 class SightVariables(models.Model):
