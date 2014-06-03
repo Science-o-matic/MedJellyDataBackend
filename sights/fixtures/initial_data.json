@@ -11,17 +11,78 @@
    "pk": 2,
    "model": "sights.reportingclient",
    "fields": {
-      "code": "PLAT",
-      "name": "FTP"
+      "code": "",
+      "name": "Protección Civíl"
+   }
+},
+{
+   "pk": 0,
+   "model": "sights.jellyfishsize",
+   "fields": {
+      "name": "ND"
+   }
+},
+{
+   "pk": 1,
+   "model": "sights.jellyfishsize",
+   "fields": {
+      "name": "0 - 5 cm"
+   }
+},
+{
+   "pk": 2,
+   "model": "sights.jellyfishsize",
+   "fields": {
+      "name": "5 - 10 cm"
    }
 },
 {
    "pk": 3,
-   "model": "sights.reportingclient",
+   "model": "sights.jellyfishsize",
    "fields": {
-      "code": "",
-      "name": "Protección Civíl"
+      "name": "10 - 15 cm"
+   }
+},
+{
+   "pk": 4,
+   "model": "sights.jellyfishsize",
+   "fields": {
+      "name": "15 - 25 cm"
+   }
+},
+{
+   "pk": 5,
+   "model": "sights.jellyfishsize",
+   "fields": {
+      "name": "> 25  cm"
+   }
+},
+{
+   "pk": 0,
+   "model": "sights.jellyfishabundance",
+   "fields": {
+      "name": "ND"
+   }
+},
+{
+   "pk": 1,
+   "model": "sights.jellyfishabundance",
+   "fields": {
+      "name": "Pocas"
+   }
+},
+{
+   "pk": 2,
+   "model": "sights.jellyfishabundance",
+   "fields": {
+      "name": "Bastantes"
+   }
+},
+{
+   "pk": 3,
+   "model": "sights.jellyfishabundance",
+   "fields": {
+      "name": "Muchas"
    }
 }
-
 ]
