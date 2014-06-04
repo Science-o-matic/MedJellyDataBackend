@@ -15,8 +15,26 @@ function toggleSubmitButton() {
   }
 }
 
+function toggleJellyfishesFieldset(jellyfishes_presence) {
+  if (jellyfishes_presence.is(':checked')) {
+    $(".jellyfishes").show();
+  } else {
+    $(".jellyfishes").hide();
+  }
+}
+
+
 
 $(document).ready(function () {
+  var jellyfishes_presence = $("#id_jellyfishes_presence");
+
+  $.mobile.ajaxEnabled = true;
+
+  if ($("#message").length) {
+    $("#message").fadeOut(2400);
+  }
+
+  toggleJellyfishesFieldset(jellyfishes_presence);
 
   $("form").submit(function (e) {
     toggleSubmitButton();
@@ -31,10 +49,8 @@ $(document).ready(function () {
     }
   });
 
-  $.mobile.ajaxEnabled = true;
-
-  if ($("#message").length) {
-    $("#message").fadeOut(2400);
-  }
+  jellyfishes_presence.click(function() {
+    toggleJellyfishesFieldset($(this));
+  });
 
 });
