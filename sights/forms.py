@@ -21,15 +21,18 @@ class SightForm(BetterForm):
                 initial=datetime.datetime.now().strftime("%d-%m-%Y %H:%M"),
                 input_formats="%d-%m-%Y %H:00",
                 label="Data de medició"),
-            'jellyfishes_presence': forms.BooleanField(),
+            'jellyfishes_presence': forms.BooleanField(label="Presencia de medusas"),
             'jellyfishes[]': forms.ModelChoiceField(
                 queryset=Jellyfish.objects.all(),
+                label="Especie de medusa",
             ),
             'jellyfishes_sizes[]': forms.ModelChoiceField(
                 queryset=JellyfishSize.objects.all(),
+                label="Tamaño",
             ),
             'jellyfishes_abundances[]': forms.ModelChoiceField(
                 queryset=JellyfishAbundance.objects.all(),
+                label="Abundancia",
             ),
             'comments': forms.CharField(widget=forms.Textarea, label="Observacions")
         }

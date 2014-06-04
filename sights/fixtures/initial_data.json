@@ -84,5 +84,158 @@
    "fields": {
       "name": "Muchas"
    }
+},
+{
+   "pk": 1,
+   "model": "sights.jellyfish",
+   "fields": {
+      "medjelly_api_id": 3,
+      "name": "Aequorea forskalea (Af)",
+      "description": "Aequorea forskalea (Af)"
+   }
+},
+{
+   "pk": 2,
+   "model": "sights.jellyfish",
+   "fields": {
+      "medjelly_api_id": 4,
+      "name": "Aurelia aurita (Aa)",
+      "description": "Aurelia aurita (Aa)"
+   }
+},
+{
+   "pk": 3,
+   "model": "sights.jellyfish",
+   "fields": {
+      "medjelly_api_id": 9,
+      "name": "Carybdea marsupialis (Cm)",
+      "description": "Carybdea marsupialis (Cm)"
+   }
+},
+{
+   "pk": 4,
+   "model": "sights.jellyfish",
+   "fields": {
+      "medjelly_api_id": 7,
+      "name": "Chrysaora hysoscella (Ch)",
+      "description": "Chrysaora hysoscella (Ch)"
+   }
+},
+{
+   "pk": 5,
+   "model": "sights.jellyfish",
+   "fields": {
+      "medjelly_api_id": 4,
+      "name": "Cotylorhiza tuberculata (Ct)",
+      "description": "Cotylorhiza tuberculata (Ct)"
+   }
+},
+{
+   "pk": 6,
+   "model": "sights.jellyfish",
+   "fields": {
+      "medjelly_api_id": 12,
+      "name": "Mnemiopsis leidyi (Ml)",
+      "description": "Mnemiopsis leidyi (Ml)"
+   }
+},
+{
+   "pk": 7,
+   "model": "sights.jellyfish",
+   "fields": {
+      "medjelly_api_id": 1,
+      "name": "Pelagia noctiluca (Pn)",
+      "description": "Pelagia noctiluca (Pn)"
+   }
+},
+{
+   "pk": 8,
+   "model": "sights.jellyfish",
+   "fields": {
+      "medjelly_api_id": 13,
+      "name": "Phyllorhiza punctata (Pp)",
+      "description": "Phyllorhiza punctata (Pp)"
+   }
+},
+{
+   "pk": 9,
+   "model": "sights.jellyfish",
+   "fields": {
+      "medjelly_api_id": 10,
+      "name": "Physalia physalis (Phph)",
+      "description": "Physalia physalis (Phph)"
+   }
+},
+{
+   "pk": 10,
+   "model": "sights.jellyfish",
+   "fields": {
+      "medjelly_api_id": 2,
+      "name": "Rhizostoma pulmo (Rp)",
+      "description": "Rhizostoma pulmo (Rp)"
+   }
+},
+{
+   "pk": 11,
+   "model": "sights.jellyfish",
+   "fields": {
+      "medjelly_api_id": null,
+      "name": "Sense identificar (SI)",
+      "description": "Sense identificar (SI)"
+   }
+},
+{
+   "pk": 12,
+   "model": "sights.jellyfish",
+   "fields": {
+      "medjelly_api_id": 5,
+      "name": "Velella velella (Vv)",
+      "description": "Velella velella (Vv)"
+   }
+},
+{
+   "pk": 13,
+   "model": "sights.jellyfish",
+   "fields": {
+      "medjelly_api_id": null,
+      "name": "Otras especies",
+      "description": "Otras especies"
+   }
+},
+{
+   "pk": 14,
+   "model": "sights.jellyfish",
+   "fields": {
+      "medjelly_api_id": null,
+      "name": "Olindias phosphorica",
+      "description": "Olindias phosphorica"
+   }
+},
+{
+   "pk": 15,
+   "model": "sights.jellyfish",
+   "fields": {
+      "medjelly_api_id": null,
+      "name": "Porpita porpita",
+      "description": "Porpita porpita"
+   }
+},
+{
+   "pk": 16,
+   "model": "sights.jellyfish",
+   "fields": {
+      "medjelly_api_id": null,
+      "name": "Pelagia benovici",
+      "description": "Pelagia benovici"
+   }
+},
+{
+   "pk": 17,
+   "model": "sights.jellyfish",
+   "fields": {
+      "medjelly_api_id": null,
+      "name": "Discomedusa lobata",
+      "description": "Discomedusa lobata"
+   }
 }
 ]

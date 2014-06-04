@@ -92,11 +92,10 @@ class Jellyfish(models.Model):
     medjelly_api_id = models.IntegerField(null=True, blank=True)
 
     class Meta:
-        verbose_name = "Medusa"
-        verbose_name_plural = "Medusas"
+        verbose_name_plural = "Jellyfishes"
 
     def __unicode__(self):
-        return u"%s (%s)" % (self.name, self.medjelly_api_id)
+        return self.name
 
 
 
