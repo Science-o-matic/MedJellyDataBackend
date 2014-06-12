@@ -11,9 +11,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         params = {
-            'key': settings.PROTECCION_CIVL_API['key'],
+            'key': settings.PROTECCION_CIVIL_API['key'],
             'sql': "SELECT CodiPlatja, Data, Bandera, Meduses, Meteorologia, "
-            "EstatMar, MarDeFons, Temperatura FROM %(table)s LIMIT 2" % settings.PROTECCION_CIVL_API
+            "EstatMar, MarDeFons, Temperatura FROM %(sightings)s LIMIT 2" %
+            settings.PROTECCION_CIVIL_API['tables']
         }
         r = requests.get(settings.PROTECCION_CIVL_API['base_url'], params=params)
         sightings = r.json()
