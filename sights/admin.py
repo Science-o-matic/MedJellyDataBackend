@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
 from models import Sight, Beach, VariablesGroup, Variable, MeasureUnit, SightVariables, \
-    ReportingClient, City, BeachOwner
+    ReportingClient, City, BeachOwner, Jellyfish, JellyfishSize, JellyfishAbundance, \
+    SightJellyfishes
 from sights.exporters import FTPExporter
 
 
@@ -13,12 +14,16 @@ class VariableInline(admin.TabularInline):
     model = SightVariables
 
 
+class JellyfishInline(admin.TabularInline):
+    model = SightJellyfishes
+
+
 class SightAdmin(admin.ModelAdmin):
     list_display = ("timestamp", "beach", "reported_from", "validated",
                     "api_sent", "api_sent_timestamp")
     list_filter = ( "validated", "api_sent", "timestamp", "reported_from", "beach" )
     actions = ['mark_as_valid', 'mark_as_invalid', 'api_export']
-    inlines = [VariableInline]
+    inlines = [VariableInline, JellyfishInline]
     date_hierarchy = 'timestamp'
 
     def mark_as_valid(self, request, queryset):
@@ -51,6 +56,14 @@ class VariableAdmin(admin.ModelAdmin):
     list_filter = ("field_type","group")
 
 
+class JellyfishSizeAdmin(admin.ModelAdmin):
+    list_display = ("id", "name",)
+
+
+class JellyfisAbundanceAdmin(admin.ModelAdmin):
+    list_display = ("id", "name",)
+
+
 admin.site.register(Sight, SightAdmin)
 admin.site.register(Beach, BeachAdmin)
 admin.site.register(VariablesGroup)
@@ -60,3 +73,6 @@ admin.site.register(SightVariables, SightVariablesAdmin)
 admin.site.register(ReportingClient)
 admin.site.register(City)
 admin.site.register(BeachOwner)
+admin.site.register(Jellyfish)
+admin.site.register(JellyfishSize, JellyfishSizeAdmin)
+admin.site.register(JellyfishAbundance, JellyfishSizeAdmin)

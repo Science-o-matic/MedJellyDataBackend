@@ -1,4 +1,6 @@
-import urllib2, base64, os
+import base64
+import os
+import requests
 import paramiko
 import logging
 import datetime
@@ -124,31 +126,30 @@ class APIExporter(XMLExporter):
     def __init__(self, instance):
         self.instance = instance
         self.enviroment = 'debug' if settings.DEBUG else 'production'
-        self.endpoint_url = self._generate_endpoint_url()
-        self.auth_header = self._generate_auth()
+        self.endpoint_url = settings.MEDJELLY_API[self.enviroment]["url"]
+        self.auth_header = self._auth_string()
 
-    def _generate_endpoint_url(self):
-        return settings.MEDJELLY_API[self.enviroment]["url"]
-
-    def _generate_auth(self):
+    def _auth_string(self):
         username = settings.MEDJELLY_API[self.enviroment]["user"]
         password = settings.MEDJELLY_API[self.enviroment]["password"]
         return "Basic %s" % base64.encodestring('%s:%s' % (username, password)).replace('\n', '')
 
     def export(self):
-        # TODO: Improve this, get data after building the request
-        logger.info("REQUEST: (exporting XML to API)")
+        headers = {
+            "Content-type": "application/xml",
+            "Authorization": self.auth_header
+        }
+        xml = self.generate_xml()
+
+        logger.info("REQUEST:")
         logger.info(self.endpoint_url)
-        logger.info("Content-type: application/x-www-form-urlencoded")
-        logger.info("Authorization: %s" % self.auth_header)
-        logger.info("data=%s" % self.generate_xml())
-        request = urllib2.Request(self.endpoint_url,
-                                  headers={"Content-type": "application/x-www-form-urlencoded",
-                                           "Authorization": self.auth_header},
-                                  data="data=" + self.generate_xml())
-        result = urllib2.urlopen(request)
+        logger.info(headers)
+        logger.info(xml)
+
+        r = requests.post(self.endpoint_url, data=xml, headers=headers)
+
         logger.info("RESPONSE:")
-        logger.info("\n".join(result))
+        logger.info(r.content)
 
     def generate_xml(self):
         root = ET.Element('beaches')
@@ -176,16 +177,12 @@ class APIExporter(XMLExporter):
         return beach
 
     def jellyfishes_xml(self):
-        jellyfishes_qs = self.instance.sightvariables_set
-        jellyfishes_qs = jellyfishes_qs.exclude(variable__variable__api_export_id=None)
-        # FIXME: Look into sights/models: I'm considering special variables flag and flagReason
-        # by using api_export_id=0 and api_export_id 99, respectively.
-        # Find a better way to do this.
-        jellyfishes_qs = jellyfishes_qs.exclude(variable__variable__api_export_id=0)
-        jellyfishes_qs = jellyfishes_qs.exclude(variable__variable__api_export_id=99)
-        jellyfishes_qs = jellyfishes_qs.filter(value=1)
-
         jellyfishes = self.XMLnode('jellyFishes')
-        for var in jellyfishes_qs.order_by("-variable__variable__api_warning_level")[:2]:
-            jellyfishes.append(self.XMLnode("jellyFish", var.variable.variable.api_export_id))
+        for j in self.instance.jellyfishes.all():
+            jelly = ET.Element('jellyFish',
+                               id=unicode(j.jellyfish.medjelly_api_id),
+                               abundance=unicode(j.abundance.id),
+                               size=unicode(j.size.id),
+            )
+            jellyfishes.append(jelly)
         return jellyfishes

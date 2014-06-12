@@ -152,6 +152,12 @@ MEDJELLY_API = {
         },
 }
 
+PROTECCION_CIVL_API = {
+    'base_url': 'https://www.googleapis.com/fusiontables/v1/query',
+    'key': 'AIzaSyBSvPHuiAg_3D2Mzr1hy4rd78aIcX011s8',
+    'table': '1yYXZxBEPX6Tcwx2MKmLldCV1M2cvCqeXkYxxrhs'
+}
+
 LOGFILE = os.path.join(PROJECT_DIR, "logfile.log")
 
 try:
