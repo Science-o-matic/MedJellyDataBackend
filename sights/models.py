@@ -244,7 +244,7 @@ class SightVariables(models.Model):
 
 class ReportingClient(models.Model):
     name = models.CharField(max_length=300)
-    # TODO: next field could probably be deprecated
+    # TODO: this field could probably be deprecated:
     code = models.CharField(max_length=300, blank=True, null=True)
 
     def __unicode__(self):
@@ -253,3 +253,12 @@ class ReportingClient(models.Model):
     class Meta:
         verbose_name = "Origen del reporte"
         verbose_name_plural = "Orígenes de reporte"
+
+
+class ProteccionCivilBeach(models.Model):
+    code = models.CharField(max_length=300)
+    name = models.CharField(max_length=300)
+    town = models.CharField(max_length=300)
+
+    def __unicode__(self):
+        return self.name
