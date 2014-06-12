@@ -22,15 +22,15 @@ class SightForm(BetterForm):
                 input_formats="%d-%m-%Y %H:00",
                 label="Data de medició"),
             'jellyfishes_presence': forms.BooleanField(label="Presencia de medusas"),
-            'jellyfishes[]': forms.ModelChoiceField(
+            'jellyfishes': forms.ModelChoiceField(
                 queryset=Jellyfish.objects.all(),
                 label="Especie de medusa",
             ),
-            'jellyfishes_sizes[]': forms.ModelChoiceField(
+            'jellyfishes_sizes': forms.ModelChoiceField(
                 queryset=JellyfishSize.objects.all(),
                 label="Tamaño",
             ),
-            'jellyfishes_abundances[]': forms.ModelChoiceField(
+            'jellyfishes_abundances': forms.ModelChoiceField(
                 queryset=JellyfishAbundance.objects.all(),
                 label="Abundancia",
             ),
@@ -43,8 +43,8 @@ class SightForm(BetterForm):
             ('jellyfishes_presence', {'fields': ['jellyfishes_presence'], 'legend': ''})
         )
         self.fieldsets.fieldsets.append(
-            ('jellyfishes', {'fields': ['jellyfishes[]', 'jellyfishes_sizes[]',
-                                        'jellyfishes_abundances[]'],
+            ('jellyfishes', {'fields': ['jellyfishes', 'jellyfishes_sizes',
+                                        'jellyfishes_abundances'],
                              'legend': 'Medusas',
                              'classes': ['jellyfishes']})
        )

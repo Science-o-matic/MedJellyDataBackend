@@ -18,11 +18,24 @@ function toggleSubmitButton() {
 function toggleJellyfishesFieldset(jellyfishes_presence) {
   if (jellyfishes_presence.is(':checked')) {
     $(".jellyfishes").show();
+    renderJellyfishes($(".jellyfishes"));
   } else {
     $(".jellyfishes").hide();
   }
 }
 
+function renderJellyfishes(target) {
+  console.log(JELLYFISHES.types);
+  $.get('/static/js/jellyfish.mst', function(template) {
+    var rendered = Mustache.render(template, {types: JELLYFISHES.types});
+    target.html(rendered);
+  });
+}
+
+function renderJellyfishesButtons() {
+  $(".jellyfishes ul:first").after('<button type="button" id="add_jelly">Añadir otra medusa</button>');
+  $(".jellyfishes ul:first").after('<hr/>');
+}
 
 
 $(document).ready(function () {
@@ -53,4 +66,8 @@ $(document).ready(function () {
     toggleJellyfishesFieldset($(this));
   });
 
+  $(document).on("click", "#add_jelly", function () {
+    $(this).before($("#id_jellyfishes").parents("ul").clone());
+    $(this).before("<hr/>");
+  });
 });

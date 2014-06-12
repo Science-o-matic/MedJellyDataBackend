@@ -1,0 +1,4 @@
+
+<ul data-role="listview" data-inset="true">
+    {{#types}}<li>{{.}}</li>{{/types}}
+</ul>

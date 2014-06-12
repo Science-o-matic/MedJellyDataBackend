@@ -4,8 +4,10 @@ import dateutil.parser
 from django.views.generic.edit import FormView
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.utils import simplejson
 from sights.forms import SightForm
-from sights.models import Sight, Beach, ReportingClient, SightVariables, Variable
+from sights.models import Sight, Beach, ReportingClient, SightVariables, Variable, Jellyfish, \
+    JellyfishSize, JellyfishAbundance
 from sights import mailer
 from tokenapi.decorators import token_required
 
@@ -17,6 +19,8 @@ def new(request):
 
     if request.method == 'POST':
         form = SightForm(request.POST, user=user)
+        import ipdb; ipdb.set_trace()
+
         if form.is_valid():
             # TODO: Form validation and/or bounding to be fixed
             # Harcoded by now
@@ -75,3 +79,13 @@ def _clean_value(value, var_type):
         else:
             cleaned_value = int(value)
     return cleaned_value
+
+
+def jellyfishes_js(request):
+    jellyfishes = {
+        "types": simplejson.dumps(list(Jellyfish.objects.values_list("name", flat=True))),
+        "sizes": simplejson.dumps(list(JellyfishSize.objects.values_list("name", flat=True))),
+        "abundances": simplejson.dumps(list(JellyfishAbundance.objects.values_list("name", flat=True)))
+    }
+    response = "var JELLYFISHES = %s" % jellyfishes
+    return HttpResponse("var JELLYFISHES = %s" % jellyfishes)
