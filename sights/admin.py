@@ -7,7 +7,7 @@ from sights.exporters import FTPExporter
 
 
 class BeachAdmin(admin.ModelAdmin):
-    search_fields = ("name", "town",)
+    search_fields = ("name",)
 
 
 class ProteccionCivilBeachAdmin(admin.ModelAdmin):
