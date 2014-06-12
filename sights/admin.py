@@ -2,13 +2,17 @@
 from django.contrib import admin
 from models import Sight, Beach, VariablesGroup, Variable, MeasureUnit, SightVariables, \
     ReportingClient, City, BeachOwner, Jellyfish, JellyfishSize, JellyfishAbundance, \
-    SightJellyfishes
+    SightJellyfishes, ProteccionCivilBeach
 from sights.exporters import FTPExporter
 
 
 class BeachAdmin(admin.ModelAdmin):
-    search_fields = ("name",)
+    search_fields = ("name", "town",)
 
+
+class ProteccionCivilBeachAdmin(admin.ModelAdmin):
+    search_fields = ("name",)
+    list_display = ("code", "name", "town")
 
 class VariableInline(admin.TabularInline):
     model = SightVariables
@@ -76,3 +80,4 @@ admin.site.register(BeachOwner)
 admin.site.register(Jellyfish)
 admin.site.register(JellyfishSize, JellyfishSizeAdmin)
 admin.site.register(JellyfishAbundance, JellyfishSizeAdmin)
+admin.site.register(ProteccionCivilBeach, ProteccionCivilBeachAdmin)
