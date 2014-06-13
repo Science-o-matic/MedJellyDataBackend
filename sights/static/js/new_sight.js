@@ -21,14 +21,16 @@ function toggleJellyfishesFieldset(jellyfishes_presence) {
     renderJellyfishes($(".jellyfishes"));
   } else {
     $(".jellyfishes").hide();
+    $(".jellyfishes ul").remove();
   }
 }
 
 function renderJellyfishes(target) {
-  console.log(JELLYFISHES.types);
   $.get('/static/js/jellyfish.mst', function(template) {
-    var rendered = Mustache.render(template, {types: JELLYFISHES.types});
-    target.html(rendered);
+          $.getJSON('/sights/jellyfishes.json', function(data) {
+                  var rendered = Mustache.render(template, data);
+                  target.append(rendered);
+         });
   });
 }
 

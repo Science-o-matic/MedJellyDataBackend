@@ -19,7 +19,6 @@ def new(request):
 
     if request.method == 'POST':
         form = SightForm(request.POST, user=user)
-        import ipdb; ipdb.set_trace()
 
         if form.is_valid():
             # TODO: Form validation and/or bounding to be fixed
@@ -81,11 +80,10 @@ def _clean_value(value, var_type):
     return cleaned_value
 
 
-def jellyfishes_js(request):
+def jellyfishes(request):
     jellyfishes = {
-        "types": simplejson.dumps(list(Jellyfish.objects.values_list("name", flat=True))),
-        "sizes": simplejson.dumps(list(JellyfishSize.objects.values_list("name", flat=True))),
-        "abundances": simplejson.dumps(list(JellyfishAbundance.objects.values_list("name", flat=True)))
+        "types": list(Jellyfish.objects.values("id", "name")),
+        "sizes": list(JellyfishSize.objects.values("id", "name")),
+        "abundances": list(JellyfishAbundance.objects.values("name"))
     }
-    response = "var JELLYFISHES = %s" % jellyfishes
-    return HttpResponse("var JELLYFISHES = %s" % jellyfishes)
+    return HttpResponse(simplejson.dumps(jellyfishes))

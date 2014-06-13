@@ -40,11 +40,11 @@ class SightForm(BetterForm):
         self._append_variables_fieldsets()
 
         self.fieldsets.fieldsets.append(
-            ('jellyfishes_presence', {'fields': ['jellyfishes_presence'], 'legend': ''})
+            ('jellyfishes_presence', {'fields': ['jellyfishes_presence'],
+                                      'legend': ''})
         )
         self.fieldsets.fieldsets.append(
-            ('jellyfishes', {'fields': ['jellyfishes', 'jellyfishes_sizes',
-                                        'jellyfishes_abundances'],
+            ('jellyfishes', {'fields': [], # generated via JS
                              'legend': 'Medusas',
                              'classes': ['jellyfishes']})
        )
