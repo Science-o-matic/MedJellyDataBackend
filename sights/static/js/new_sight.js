@@ -68,11 +68,6 @@ function renderJellyfishes(target, jellyfishes) {
     }
 }
 
-function renderJellyfishesButtons() {
-    $(".jellyfishes ul:first").after('<button type="button" id="add_jelly">Añadir otra medusa</button>');
-    $(".jellyfishes ul:first").after('<hr/>');
-}
-
 function prepareJellyFishesFieldset() {
   var jellyfishes_presence = $("#id_jellyfishes_presence");
   var jellyfishes = {};

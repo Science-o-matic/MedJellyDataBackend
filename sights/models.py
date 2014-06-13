@@ -26,7 +26,6 @@ class Sight(models.Model):
         (13, 13): "VERY_HIGH_WARNING"
     }
 
-
     def __unicode__(self):
         return u"[%s] %s (%s)" % (self.timestamp, unicode(self.beach), self.beach.code)
 
