@@ -21,13 +21,7 @@ def new(request):
     if request.method == 'POST':
         # TODO: Form validation and bounding must be fixed
         data  = dict(request.POST)
-        jellyfishes = {
-            "presence": data.pop("jellyfishes_presence"),
-            "types": data.pop("jellyfishes"),
-            "sizes": data.pop("jellyfishes_sizes"),
-            "abundances": data.pop("jellyfishes_abundances")
-        }
-        attributes, variables = _split_form_data(data)
+        attributes, variables, jellyfishes = _split_form_data(data)
         sighting = Sight()
 
         _add_sighting_attributes(sighting, attributes)
@@ -51,12 +45,22 @@ def new(request):
 def _split_form_data(data):
     attributes = {}
     variables = {}
+    jellyfishes = {"types": {}, "sizes": {}, "abundances": {}}
+
+    if "jellyfishes_presence" in data:
+        jellyfishes = {
+            "types": data.pop("jellyfishes"),
+            "sizes": data.pop("jellyfishes_sizes"),
+            "abundances": data.pop("jellyfishes_abundances")
+        }
+
     for key, value in data.iteritems():
         if key.startswith("var"):
             variables[key] = value if len(value) > 1 else value[0]
         else:
             attributes[key] = value if len(value) > 1 else value[0]
-    return (attributes, variables)
+
+    return (attributes, variables, jellyfishes)
 
 
 def _add_sighting_attributes(sighting, attributes):
