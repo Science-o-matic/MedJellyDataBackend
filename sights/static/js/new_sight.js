@@ -61,12 +61,17 @@ function renderJellyfishes(target, jellyfishes) {
         $.get('/static/js/jellyfish.mst', function(template) {
                 Mustache.parse(template);
                 that.template = template;
-                target.append(Mustache.render(template, jellyfishes));
-                target.css("background", "none");
+                renderJellyfishesTemplate(target, template, jellyfishes);
         });
     } else {
-        target.append(Mustache.render(this.template, jellyfishes));
+        renderJellyfishesTemplate(target, template, jellyfishes);
     }
+}
+
+function renderJellyfishesTemplate(target, template, jellyfishes) {
+    target.append(Mustache.render(template, jellyfishes));
+    target.css("background", "none");
+    $(".jellyfish").trigger("create");
 }
 
 function prepareJellyFishesFieldset() {
