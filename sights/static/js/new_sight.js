@@ -45,12 +45,12 @@ function toggleSubmitButton() {
 }
 
 function toggleJellyfishesFieldset(jellyfishes_presence, jellyfishes) {
-    if (jellyfishes_presence.is(':checked')) {
+   $(".jellyfishes .jellyfish").remove();
+   if (jellyfishes_presence.is(':checked')) {
         $(".jellyfishes").show();
         renderJellyfishes($(".jellyfishes"), jellyfishes);
     } else {
-        $(".jellyfishes").hide();
-        $(".jellyfishes .jellyfish").remove();
+       $(".jellyfishes").hide();
     }
 }
 
@@ -62,6 +62,7 @@ function renderJellyfishes(target, jellyfishes) {
                 Mustache.parse(template);
                 that.template = template;
                 target.append(Mustache.render(template, jellyfishes));
+                target.css("background", "none");
         });
     } else {
         target.append(Mustache.render(this.template, jellyfishes));

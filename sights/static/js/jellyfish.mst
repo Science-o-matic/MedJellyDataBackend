@@ -29,5 +29,5 @@
     </li>
   </ul>
   <hr/>
-  <button type="button" id="add_jelly">Añadir otra medusa</button>
+  <a href="" data-role="button" id="add_jelly">Añadir otra medusa</button>
 </div>
