@@ -1,31 +1,33 @@
-<ul>
-   <li class="required">
-     <label for="id_jellyfishes">Especie de medusa</label>
-     <select id="id_jellyfishes" name="jellyfishes">
-       <option value="" selected="selected">---------</option>
-       {{#types}}
-       <option value="{{ id }}"> {{ name }}</option>
-       {{/types}}
-     </select>
-   </li>
-   <li class="required">
-     <label for="id_jellyfishes_abundances">Abundancia</label>
-     <select id="id_jellyfishes_abundances" name="jellyfishes_abundances">
-       <option value="" selected="selected">---------</option>
-       {{#abundances}}
-       <option value="{{ id }}"> {{ name }}</option>
-       {{/abundances}}
-     </select>
-   </li>
-   <li class="required">
-     <label for="id_jellyfishes_sizes">Tamaño</label>
-     <select id="id_jellyfishes_sizes" name="jellyfishes_sizes">
-       <option value="" selected="selected">---------</option>
-       {{#sizes}}
-       <option value="{{ id }}"> {{ name }}</option>
-       {{/sizes}}
-     </select>
-   </li>
-</ul>
-<hr/>
-<button type="button" id="add_jelly">Añadir otra medusa</button>
+<div class="jellyfish">
+  <ul>
+    <li class="required">
+      <label for="id_jellyfishes">Especie de medusa</label>
+      <select id="id_jellyfishes" name="jellyfishes">
+        <option value="" selected="selected">---------</option>
+        {{#types}}
+        <option value="{{ id }}"> {{ name }}</option>
+        {{/types}}
+      </select>
+    </li>
+    <li class="required">
+      <label for="id_jellyfishes_abundances">Abundancia</label>
+      <select id="id_jellyfishes_abundances" name="jellyfishes_abundances">
+        <option value="" selected="selected">---------</option>
+        {{#abundances}}
+        <option value="{{ id }}"> {{ name }}</option>
+        {{/abundances}}
+      </select>
+    </li>
+    <li class="required">
+      <label for="id_jellyfishes_sizes">Tamaño</label>
+      <select id="id_jellyfishes_sizes" name="jellyfishes_sizes">
+        <option value="" selected="selected">---------</option>
+        {{#sizes}}
+        <option value="{{ id }}"> {{ name }}</option>
+        {{/sizes}}
+      </select>
+    </li>
+  </ul>
+  <hr/>
+  <button type="button" id="add_jelly">Añadir otra medusa</button>
+</div>

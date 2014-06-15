@@ -50,7 +50,7 @@ function toggleJellyfishesFieldset(jellyfishes_presence, jellyfishes) {
         renderJellyfishes($(".jellyfishes"), jellyfishes);
     } else {
         $(".jellyfishes").hide();
-        $(".jellyfishes ul").remove();
+        $(".jellyfishes .jellyfish").remove();
     }
 }
 
