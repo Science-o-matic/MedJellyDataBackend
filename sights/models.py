@@ -15,6 +15,7 @@ class Sight(models.Model):
     validated = models.BooleanField(default=False, verbose_name="Validat")
     api_sent = models.BooleanField(default=False, verbose_name="Enviat per API")
     api_sent_timestamp = models.DateTimeField(verbose_name="Data de enviament per API", null=True, blank=True)
+    # TODO: Next two fields can be dropped
     ftp_sent = models.BooleanField(default=False, verbose_name="Enviat per FTP")
     ftp_sent_timestamp = models.DateTimeField(verbose_name="Data de enviament per FTP", null=True, blank=True)
 

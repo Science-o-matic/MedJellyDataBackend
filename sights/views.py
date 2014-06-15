@@ -7,7 +7,8 @@ from django.http import HttpResponse
 from django.utils import simplejson
 from sights.forms import SightForm
 from sights.models import Sight, Beach, ReportingClient, SightVariables, \
-    Variable, Jellyfish, JellyfishSize, JellyfishAbundance
+    Variable, Jellyfish, JellyfishSize, JellyfishAbundance, \
+    SightJellyfishes
 from sights import mailer
 from tokenapi.decorators import token_required
 
@@ -20,10 +21,6 @@ def new(request):
     if request.method == 'POST':
         # TODO: Form validation and bounding must be fixed
         data  = dict(request.POST)
-        import ipdb; ipdb.set_trace()
-
-
-        data.pop("csrfmiddlewaretoken")
         jellyfishes = {
             "presence": data.pop("jellyfishes_presence"),
             "types": data.pop("jellyfishes"),
@@ -44,7 +41,7 @@ def new(request):
             "form": SightForm({}, user=user)
         }
 
-        mailer.notify_new_sight(sighting)
+        mailer.notify_new_sighting(sighting)
     else:
         context['form'] = SightForm({}, user=user) # An unbound form
 
@@ -56,9 +53,9 @@ def _split_form_data(data):
     variables = {}
     for key, value in data.iteritems():
         if key.startswith("var"):
-            variables[key] = value
+            variables[key] = value if len(value) > 1 else value[0]
         else:
-            attributes[key] = value
+            attributes[key] = value if len(value) > 1 else value[0]
     return (attributes, variables)
 
 
@@ -76,13 +73,14 @@ def _add_sighting_variables(sighting, variables):
 
 
 def _add_sighting_jellyfishes(sighting, jellyfishes):
-    jellys = []
-    for i, jelly in jellyfishes["types"].iteritems():
-        jellys.append({
-                "id": jelly["id"],
-                "size": jellyfishes["sizes"][i],
-                "abundance": jellyfishes["abundances"][i],
-        })
+    for i, jelly_id in enumerate(jellyfishes["types"]):
+        sighting.jellyfishes.add(
+            SightJellyfishes(sight=sighting,
+                             jellyfish_id=jelly_id,
+                             size_id=jellyfishes["sizes"][i],
+                             abundance_id=jellyfishes["abundances"][i]
+                             )
+            )
 
 
 def _add_sighting_attr(sighting, key, value):
