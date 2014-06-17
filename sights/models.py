@@ -122,7 +122,7 @@ class Beach(models.Model):
     owner = models.ForeignKey("BeachOwner")
     users = models.ManyToManyField(User)
     medjelly_api_id = models.IntegerField(null=True, blank=False)
-    proteccion_civil_api_id = models.CharField(max_length=300, null=True, blank=False)
+    proteccion_civil_api_id = models.CharField(max_length=300, null=True, blank=True)
 
     def __unicode__(self):
         return self.name
