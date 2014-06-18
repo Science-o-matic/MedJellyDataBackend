@@ -126,7 +126,10 @@ class APIExporter(XMLExporter):
     def __init__(self, instance):
         self.instance = instance
         self.enviroment = 'debug' if settings.DEBUG else 'production'
-        self.endpoint_url = settings.MEDJELLY_API[self.enviroment]["url"]
+        self.endpoint_url = os.path.join(
+            settings.MEDJELLY_API[self.enviroment]["url"],
+            'bulkupdate'
+        )
         self.auth_header = self._auth_string()
 
     def _auth_string(self):
@@ -160,7 +163,7 @@ class APIExporter(XMLExporter):
     def generate_beach_xml(self):
         timestamp = self.instance.timestamp.strftime("%Y%m%d %H:%M")
 
-        beach = ET.Element('beach', id=unicode(self.instance.beach.api_id))
+        beach = ET.Element('beach', id=unicode(self.instance.beach.medjelly_api_id))
         beach.append(self.XMLnode('flagStatusUpdated', timestamp))
 
         flag = self.instance.get_flag()
