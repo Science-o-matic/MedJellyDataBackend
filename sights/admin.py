@@ -1,14 +1,35 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
+from django.contrib.admin import SimpleListFilter
 from models import Sight, Beach, VariablesGroup, Variable, MeasureUnit, SightVariables, \
     ReportingClient, City, BeachOwner, Jellyfish, JellyfishSize, JellyfishAbundance, \
     SightJellyfishes, ProteccionCivilBeach, MedJellyBeach
 from sights.exporters import FTPExporter
 
 
+class BeachAPIFilter(SimpleListFilter):
+    title = 'Filtro por correspondencias con API'
+    parameter_name = 'api'
+
+    def lookups(self, request, model_admin):
+        return [
+            ("medjelly", "Sin correspondencia en MedJelly"),
+            ("proteccion_civil", "Sin correspondencia en Protección Civíl"),
+        ]
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == "medjelly":
+            queryset = queryset.filter(medjelly_api_id__in=(None, 0))
+        elif value == "proteccion_civil":
+            queryset = queryset.filter(proteccion_civil_api_id__isnull=True)
+        return queryset
+
+
 class BeachAdmin(admin.ModelAdmin):
     search_fields = ("name",)
-
+    list_display = ("name", "city", "medjelly_api_id", "proteccion_civil_api_id")
+    list_filter = (BeachAPIFilter,)
 
 class ProteccionCivilBeachAdmin(admin.ModelAdmin):
     search_fields = ("name",)
