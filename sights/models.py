@@ -28,7 +28,7 @@ class Sight(models.Model):
     }
 
     def __unicode__(self):
-        return u"[%s] %s (%s)" % (self.timestamp, unicode(self.beach), self.beach.code)
+        return u"[%s] %s" % (self.timestamp, unicode(self.beach))
 
     def export(self):
         if self.validated and not self.api_sent:

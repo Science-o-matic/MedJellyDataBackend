@@ -8,17 +8,26 @@ $(document).ready(function () {
         prepareJellyFishesFieldset();
 
         $("form").submit(function (e) {
+                var errorMessage = '';
                 toggleSubmitButton();
 
                 if ($("#id_var_63").val().trim() === "") {
-                    var errorMessage = "<p class=\"input-error\">Has d'indicar la temperatura de l'aigua</p>";
+                    errorMessage = "<p class=\"input-error\">Haz de indicar la temperatura del agua</p>";
+                }
 
+                $('input[name^="jellyfishes"]').each(function(){
+                        if ($(this).val() == "") {
+                            errorMessage = "<p class=\"input-error\">Haz de indicar todos los datos sobre medusas o indicar que no hay medusas</p>"
+                       }
+                });
+
+                if (errorMessage) {
                     $(".input-error").remove();
                     $("input[type=submit]").parent().parent().append(errorMessage);
                     e.preventDefault();
                     toggleSubmitButton();
                 }
-            });
+        });
 });
 
 $(document).on("click", "#add_jelly", function () {

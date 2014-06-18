@@ -32,7 +32,7 @@ class BeachAdmin(admin.ModelAdmin):
     list_filter = (BeachAPIFilter,)
 
 class ProteccionCivilBeachAdmin(admin.ModelAdmin):
-    search_fields = ("name",)
+    search_fields = ("code", "name",)
     list_display = ("code", "name", "town")
 
 
