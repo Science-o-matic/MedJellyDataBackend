@@ -8,7 +8,7 @@ from sights.exporters import FTPExporter
 
 
 class BeachAPIFilter(SimpleListFilter):
-    title = 'Filtro por correspondencias con API'
+    title = 'correspondencia con API'
     parameter_name = 'api'
 
     def lookups(self, request, model_admin):
