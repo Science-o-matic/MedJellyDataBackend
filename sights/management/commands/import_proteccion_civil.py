@@ -29,5 +29,10 @@ class Command(BaseCommand):
         return prepared_sighting
 
     def _create_sighting(self, sighting):
-        ts = datetime.strptime(sighting['Data'], '%d/%m/%Y %H:%M').strftime('%Y-%m-%d %H:%M')
-        Sight.objects.create(timestamp=ts)
+        date = datetime.strptime(sighting["Data"], '%d/%m/%Y %H:%M')
+        date = date.strftime('%Y-%m-%d %H:%M')
+        beach = Beach.objects.get(proteccion_civil_api_id=sighting["
+
+        Sight.objects.create(timestamp=date,
+                             beach_id=
+                             )
