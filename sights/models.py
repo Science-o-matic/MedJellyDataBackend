@@ -116,12 +116,11 @@ class JellyfishSize(models.Model):
 
 
 class Beach(models.Model):
-    code = models.CharField(max_length=20)
     name = models.CharField(max_length=1000)
     city = models.ForeignKey("City")
     owner = models.ForeignKey("BeachOwner")
     users = models.ManyToManyField(User)
-    medjelly_api_id = models.IntegerField(null=True, blank=False)
+    medjelly_api_id = models.IntegerField(null=True, blank=True)
     proteccion_civil_api_id = models.CharField(max_length=300, null=True, blank=True)
 
     def __unicode__(self):
