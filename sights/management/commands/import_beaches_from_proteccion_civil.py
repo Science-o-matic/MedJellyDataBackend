@@ -5,7 +5,7 @@ from sights.models import Beach, ProteccionCivilBeach
 
 
 class Command(BaseCommand):
-    help = 'Import beaches from proteccion civl to ProteccionCivilBeach model'
+    help = "Import beaches from Proteccion Civíl's API to ProteccionCivilBeach model"
 
     def handle(self, *args, **options):
         params = {

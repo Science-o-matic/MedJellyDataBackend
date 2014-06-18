@@ -257,9 +257,37 @@ class ReportingClient(models.Model):
 
 
 class ProteccionCivilBeach(models.Model):
+    """
+    This model is used as a reference during the process of
+    putting together the Beach model data from different source.
+    It's holding beaches from Proteccion Civíl's API
+    """
     code = models.CharField(max_length=300)
     name = models.CharField(max_length=300)
     town = models.CharField(max_length=300)
+
+    class Meta:
+        verbose_name = "Playa (Protección Civíl)"
+        verbose_name_plural = "Playas (Protección Civíl)"
+
+
+    def __unicode__(self):
+        return self.name
+
+
+class MedJellyBeach(models.Model):
+    """
+    This model is used as a reference during the process of
+    putting together the Beach model data from different sources.
+    It's holding beaches from MedJelly's API
+    """
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=300)
+    town = models.CharField(max_length=300)
+
+    class Meta:
+        verbose_name = "Playa (MedJelly)"
+        verbose_name_plural = "Playas (MedJelly)"
 
     def __unicode__(self):
         return self.name
