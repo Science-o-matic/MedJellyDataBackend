@@ -47,8 +47,8 @@ def _split_form_data(data):
     variables = {}
     jellyfishes = {
         "types": [jelly for jelly in data.pop("jellyfishes") if jelly],
-        "sizes": [size for size in data.pop("jellyfishes_sizes") if size],
-        "abundances": [ab for ab in data.pop("jellyfishes_abundances") if ab]
+        "sizes": data.pop("jellyfishes_sizes"),
+        "abundances": data.pop("jellyfishes_abundances")
     }
 
     for key, value in data.iteritems():
@@ -75,13 +75,17 @@ def _add_sighting_variables(sighting, variables):
 
 def _add_sighting_jellyfishes(sighting, jellyfishes):
     for i, jelly_id in enumerate(jellyfishes["types"]):
+        jelly_size = jellyfishes["sizes"][i] or 0
+        jelly_abundance = jellyfishes["sizes"][i] or 0
+
         sighting.jellyfishes.add(
-            SightJellyfishes(sight=sighting,
-                             jellyfish_id=jelly_id,
-                             size_id=jellyfishes["sizes"][i],
-                             abundance_id=jellyfishes["abundances"][i]
-                             )
+            SightJellyfishes(
+                sight=sighting,
+                jellyfish_id=jelly_id,
+                size_id=jelly_size,
+                abundance_id=jelly_abundance
             )
+        )
 
 
 def _add_sighting_attr(sighting, key, value):
