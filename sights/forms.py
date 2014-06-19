@@ -16,11 +16,11 @@ class SightForm(BetterForm):
         self.user = kwargs["user"]
         self.fields = {
             'beach': forms.ModelChoiceField(
-                queryset=Beach.objects.filter(users__in=(self.user,)), initial=1, label="Platja"),
+                queryset=Beach.objects.filter(users__in=(self.user,)), initial=1, label="Playa"),
             'timestamp': forms.DateTimeField(
                 initial=datetime.datetime.now().strftime("%d-%m-%Y %H:%M"),
                 input_formats="%d-%m-%Y %H:00",
-                label="Data de medició"),
+                label="Fecha de medición"),
             'jellyfishes_presence': forms.BooleanField(label="Presencia de medusas"),
             'jellyfishes': forms.ModelChoiceField(
                 queryset=Jellyfish.objects.all(),
@@ -34,7 +34,7 @@ class SightForm(BetterForm):
                 queryset=JellyfishAbundance.objects.all(),
                 label="Abundancia",
             ),
-            'comments': forms.CharField(widget=forms.Textarea, label="Observacions")
+            'comments': forms.CharField(widget=forms.Textarea, label="Observaciones")
         }
 
         self._append_variables_fieldsets()
@@ -50,7 +50,7 @@ class SightForm(BetterForm):
        )
         self.fieldsets.fieldsets.append(
             ('comments', {'fields': ['comments',],
-                          'legend': 'Observacions'})
+                          'legend': 'Observaciones'})
         )
 
     def _append_variables_fieldsets(self):
