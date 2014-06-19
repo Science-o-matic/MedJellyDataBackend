@@ -45,14 +45,11 @@ def new(request):
 def _split_form_data(data):
     attributes = {}
     variables = {}
-    jellyfishes = {"types": {}, "sizes": {}, "abundances": {}}
-
-    if "jellyfishes_presence" in data:
-        jellyfishes = {
-            "types": data.pop("jellyfishes"),
-            "sizes": data.pop("jellyfishes_sizes"),
-            "abundances": data.pop("jellyfishes_abundances")
-        }
+    jellyfishes = {
+        "types": [jelly for jelly in data.pop("jellyfishes") if jelly],
+        "sizes": [size for size in data.pop("jellyfishes_sizes") if size],
+        "abundances": [ab for ab in data.pop("jellyfishes_abundances") if ab]
+    }
 
     for key, value in data.iteritems():
         if key.startswith("var"):
