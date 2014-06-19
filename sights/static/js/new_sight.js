@@ -1,40 +1,34 @@
 $(document).ready(function () {
-        $.mobile.ajaxEnabled = true;
+  $.mobile.ajaxEnabled = true;
 
-        if ($("#message").length) {
-            $("#message").fadeOut(2400);
-        }
+  if ($("#message").length) {
+    $("#message").fadeOut(2400);
+  }
 
-        prepareJellyFishesFieldset();
+  prepareJellyFishesFieldset();
 
-        $("form").submit(function (e) {
-                var errorMessage = '';
-                toggleSubmitButton();
+  $("form").submit(function (e) {
+    var errorMessage = '';
+    toggleSubmitButton();
 
-                if ($("#id_var_63").val().trim() === "") {
-                    errorMessage = "<p class=\"input-error\">Haz de indicar la temperatura del agua</p>";
-                }
+    if ($("#id_var_63").val().trim() === "") {
+      errorMessage = "<p class=\"input-error\">Haz de indicar la temperatura del agua</p>";
+    }
 
-                $('input[name^="jellyfishes"]').each(function(){
-                        if ($(this).val() == "") {
-                            errorMessage = "<p class=\"input-error\">Haz de indicar todos los datos sobre medusas o indicar que no hay medusas</p>"
-                       }
-                });
+    $('input[name^="jellyfishes"]').each(function(){
+      if ($(this).val() == "") {
+        errorMessage = "<p class=\"input-error\">Haz de indicar todos los datos sobre medusas o indicar que no hay medusas</p>"
+      }
+    });
 
-                if (errorMessage) {
-                    $(".input-error").remove();
-                    $("input[type=submit]").parent().parent().append(errorMessage);
-                    e.preventDefault();
-                    toggleSubmitButton();
-                }
-        });
+    if (errorMessage) {
+      $(".input-error").remove();
+      $("input[type=submit]").parent().parent().append(errorMessage);
+      e.preventDefault();
+      toggleSubmitButton();
+    }
+  });
 });
-
-$(document).on("click", "#add_jelly", function () {
-        $(this).before($("#id_jellyfishes").parents("ul").clone());
-        $(this).before("<hr/>");
-});
-
 
 function toggleSubmitButton() {
     var span_button = $('.ui-submit span.ui-btn-inner'),
@@ -96,4 +90,9 @@ function prepareJellyFishesFieldset() {
   jellyfishes_presence.click(function() {
           toggleJellyfishesFieldset($(this), jellyfishes);
   });
+
+  $(document).on("click", "#add_jelly", function () {
+    renderJellyfishes($(".jellyfishes"), jellyfishes);
+  });
+
 }
