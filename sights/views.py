@@ -46,9 +46,9 @@ def _split_form_data(data):
     attributes = {}
     variables = {}
     jellyfishes = {
-        "types": [jelly for jelly in data.pop("jellyfishes") if jelly],
-        "sizes": data.pop("jellyfishes_sizes"),
-        "abundances": data.pop("jellyfishes_abundances")
+        "types": [jelly for jelly in data.pop("jellyfishes", []) if jelly],
+        "sizes": data.pop("jellyfishes_sizes", []),
+        "abundances": data.pop("jellyfishes_abundances", [])
     }
 
     for key, value in data.iteritems():
