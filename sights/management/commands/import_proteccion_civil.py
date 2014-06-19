@@ -4,14 +4,16 @@ from datetime import datetime
 from collections import defaultdict
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from sights.models import Sight, ReportingClient, Beach, SightVariables
+from sights.models import Sight, ReportingClient, Beach, SightVariables, SightJellyfishes, \
+    Jellyfish
+
 
 # Colums to be retrieved from Protección Civíl's API
 API_COLUMNS = {
     'all': ("CodiPlatja", "Data", "Bandera", "Meduses", "Meteorologia",
             "EstatMar", "MarDeFons", "Temperatura"),
     'variables': ("Bandera", "Meteorologia", "EstatMar", "MarDeFons", "Temperatura"),
-    'jellyfishes': ("Meduses",)
+    'jellyfishes': "Meduses"
 }
 
 # Conversion from Protección Civil's api rows to variables ids
@@ -46,6 +48,22 @@ VARIABLE_CONVERSION = {
     },
 }
 
+JELLYFISH_CONVERSION = {
+    "abundance": {
+        "nd": 0,
+        "poques": 1,
+        "bastants": 2,
+        "moltes": 3
+    },
+    "size": {
+        "nd": 0,
+        "0-5": 1,
+        "5-10": 2,
+        "10-15": 3,
+        "15-25": 4,
+        ">25": 5
+    }
+}
 
 class Command(BaseCommand):
     help = 'Import sightings data from "Protección Civil" Google Fusion Table'
@@ -95,17 +113,19 @@ class Command(BaseCommand):
             print "Beach with proteccion_civil_api_id=%s not found!" % proteccion_civil_beach_id
             return 0
 
-        reported_from = ReportingClient.objects.get(id=2) # Protección Civíl
-
         s, _ = Sight.objects.get_or_create(
             timestamp=date,
             beach=beach,
-            reported_from=reported_from
+            reported_from=ReportingClient.objects.get(id=2) # Protección Civíl
         )
-        self._add_sighitings_variables(s, sighting)
+        print sighting
+        self._add_sighiting_variables(s, sighting)
+
+        self._add_sighiting_jellyfishes(s, sighting[API_COLUMNS["jellyfishes"]])
+
         return 1
 
-    def _add_sighitings_variables(self, sighting, sighting_data):
+    def _add_sighiting_variables(self, sighting, sighting_data):
         for key in API_COLUMNS['variables']:
             try:
                 variable_id = self._variable_id(key, sighting_data[key])
@@ -156,3 +176,15 @@ class Command(BaseCommand):
         except KeyError:
             print "Conversion for %s=%s not found!" % (key, value)
             raise
+
+    def _add_sighiting_jellyfishes(self, sighting, jellyfishes):
+        for jelly in jellyfishes.split(";"):
+            name, abundance, size = jelly.split(",")
+            SightJellyfishes.objects.get_or_create(
+                sight=sighting,
+                jellyfish=Jellyfish.objects.get(name__contains=name),
+                defaults={
+                    "size_id": JELLYFISH_CONVERSION["size"][size],
+                    "abundance_id": JELLYFISH_CONVERSION["abundance"][abundance]
+                }
+            )
