@@ -41,6 +41,17 @@ VARIABLE_CONVERSION = {
         },
         "value": defaultdict(lambda: True),
     },
+    "EstatMar": {
+        "id": 68,
+        "value": {
+            "plana": 1,
+            "arrissada": 2,
+            "marejol": 3,
+            "maror": 4,
+            "forta maror": 5,
+            "maregassa": 6,
+         }
+    },
     "MarDeFons": {
         "id": 40,
         "value": {
@@ -172,7 +183,6 @@ class Command(BaseCommand):
                     variable_id=variable_id,
                     value=value
                 )
-
 
     def _variable_id(self, key, value):
         try:
