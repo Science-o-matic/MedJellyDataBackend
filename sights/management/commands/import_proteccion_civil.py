@@ -149,13 +149,16 @@ class Command(BaseCommand):
             date = datetime.strptime(sighting["Data"], '%d/%m/%Y %H:%M')
             date = date.strftime('%Y-%m-%d %H:%M')
         except ValueError:
-            logger.warning("Error converting date %s to DD/MM/YYYY" % sighting["Data"])
+            self._log_sighting_warning("Error converting date %(Data)s to DD/MM/YYYY" % sighting, sighting)
             return 0
 
         try:
             beach = Beach.objects.get(proteccion_civil_api_id=proteccion_civil_beach_id)
         except Beach.DoesNotExist:
-            logger.warning("Beach with proteccion_civil_api_id=%s not found!" % proteccion_civil_beach_id)
+            self._log_sighting_warning(
+                "Beach with proteccion_civil_api_id=%s not found!" % proteccion_civil_beach_id,
+                sighting
+            )
             return 0
 
         s, _ = Sight.objects.get_or_create(
@@ -164,13 +167,13 @@ class Command(BaseCommand):
             reported_from=self.reporting_client
         )
 
-        self._add_sighiting_variables(s, sighting)
+        self._add_sighting_variables(s, sighting)
 
-        self._add_sighiting_jellyfishes(s, sighting[API_COLUMNS["jellyfishes"]])
+        self._add_sighting_jellyfishes(s, sighting[API_COLUMNS["jellyfishes"]])
 
         return 1
 
-    def _add_sighiting_variables(self, sighting, sighting_data):
+    def _add_sighting_variables(self, sighting, sighting_data):
         for key in API_COLUMNS['variables']:
             try:
                 variable_id = self._variable_id(key, sighting_data[key])
@@ -194,7 +197,7 @@ class Command(BaseCommand):
         try:
             variable_converted = VARIABLE_CONVERSION[key]
         except KeyError:
-            print "Variable named %s not found!" % key
+            logger.warning("Variable named %s not found!" % key)
             return
 
         variable_id = variable_converted["id"]
@@ -204,10 +207,14 @@ class Command(BaseCommand):
             return variable_id
 
     def _convert_value(self, key, value):
+        if value == "NaN":
+            logger.warning("Invalid value (%s=NaN)" % key)
+            raise Exception("Invalid value")
+
         try:
             conversion = VARIABLE_CONVERSION[key]
         except KeyError:
-            print "Conversion for variable %s not found!" % key
+            logger.warning("Conversion for variable %s not found!" % key)
             raise
 
         try:
@@ -218,17 +225,27 @@ class Command(BaseCommand):
         try:
             return value_conversion[value]
         except KeyError:
-            print "Conversion for %s=%s not found!" % (key, value)
+            logger.warning("Conversion for %s=%s not found!" % (key, value))
             raise
 
-    def _add_sighiting_jellyfishes(self, sighting, jellyfishes):
+    def _add_sighting_jellyfishes(self, sighting, jellyfishes):
+        if not jellyfishes:
+            return
+
         for jelly in jellyfishes.split(";"):
             name, abundance, size = jelly.split(",")
-            SightJellyfishes.objects.get_or_create(
+
+            try:
+                jellyfish = Jellyfish.objects.get(name__contains=name)
+            except Jellyfish.DoesNotExist:
+                logger.warning("Jellyfish named %s not found!" % name)
+
+            SightJellyfishes.objects.create(
                 sight=sighting,
-                jellyfish=Jellyfish.objects.get(name__contains=name),
-                defaults={
-                    "size_id": JELLYFISH_CONVERSION["size"][size],
-                    "abundance_id": JELLYFISH_CONVERSION["abundance"][abundance]
-                }
+                jellyfish=jellyfish,
+                size_id=JELLYFISH_CONVERSION["size"][size],
+                abundance_id=JELLYFISH_CONVERSION["abundance"][abundance]
             )
+
+    def _log_sighting_warning(self, message, sighting):
+        logger.warning("[sighting %s] %s" % (sighting["Data"], message))
