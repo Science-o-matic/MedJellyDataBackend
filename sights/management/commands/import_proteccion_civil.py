@@ -66,13 +66,11 @@ VARIABLE_CONVERSION = {
 
 JELLYFISH_CONVERSION = {
     "abundance": {
-        "nd": 0,
         "poques": 1,
         "bastants": 2,
         "moltes": 3
     },
     "size": {
-        "nd": 0,
         "0-5": 1,
         "5-10": 2,
         "10-15": 3,
@@ -100,19 +98,18 @@ class Command(BaseCommand):
             logger.critical(message)
             raise CommandError(message)
 
-
     def handle(self, *args, **options):
         last_import_date = self.reporting_client.last_import_date
         if not last_import_date:
             logger.warning("No last import date found, importing sightins from today's date.")
-            last_import_date = date.today().strftime(self.datetime_format)
+            last_import_date = date.today()
 
         params = {
             'key': settings.PROTECCION_CIVIL_API['key'],
-            'sql': "SELECT %s FROM %s WHERE Data >= '%s' LIMIT 50" % (
+            'sql': "SELECT %s FROM %s WHERE Data >= '%s'" % (
                 ",".join(API_COLUMNS['all']),
                 settings.PROTECCION_CIVIL_API['tables']['sightings'],
-                last_import_date
+                last_import_date.strftime(self.datetime_format)
             )
         }
 
