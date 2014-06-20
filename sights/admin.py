@@ -27,19 +27,20 @@ class BeachAPIFilter(SimpleListFilter):
 
 
 class BeachAdmin(admin.ModelAdmin):
-    search_fields = ("name",)
+    search_fields = ["name",]
     list_display = ("name", "city", "medjelly_api_id", "proteccion_civil_api_id")
-    list_filter = (BeachAPIFilter,)
+    list_filter = (BeachAPIFilter, "city")
 
 class ProteccionCivilBeachAdmin(admin.ModelAdmin):
     search_fields = ("code", "name",)
     list_display = ("code", "name", "town")
+    list_filter = ("town",)
 
 
 class MedJellyBeachAdmin(admin.ModelAdmin):
     search_fields = ("name",)
     list_display = ("id", "name", "town")
-
+    list_filter = ("town",)
 
 class VariableInline(admin.TabularInline):
     model = SightVariables
