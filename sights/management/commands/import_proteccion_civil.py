@@ -117,15 +117,24 @@ class Command(BaseCommand):
         response = requests.get(settings.PROTECCION_CIVIL_API['base_url'], params=params)
         sightings = response.json()
 
+        if 'rows' in sightings:
+            self._import(sightings)
+        else:
+            logger.info("No new sightings recieved.")
+
+    def _import(self, sightings):
         total = len(sightings['rows'])
         logger.info("Importing %s sightings" % total)
+
         count = 0
         for s in sightings['rows']:
             sighting = self._prepare_sighting(s, sightings['columns'])
             count += self._create_sighting(sighting)
-        self.reporting_client.last_import_date = datetime.today().strftime(self.datetime_format)
+
+        self.reporting_client.last_import_date = datetime.today()
         self.reporting_client.save()
-        logger.info("Sightings successfully imported:", count, "failed:", total - count)
+
+        logger.info("Sightings successfully imported: %i, failed: %i" % (count, total - count))
 
     def _prepare_sighting(self, sighting, cols):
         prepared_sighting = {}
