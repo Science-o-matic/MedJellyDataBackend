@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 import requests
 from datetime import datetime
+import logging
+from datetime import date, datetime
 from collections import defaultdict
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 from sights.models import Sight, ReportingClient, Beach, SightVariables, SightJellyfishes, \
     Jellyfish
+
+
+logger = logging.getLogger(__name__)
 
 
 # Colums to be retrieved from Protección Civíl's API
@@ -65,31 +70,54 @@ JELLYFISH_CONVERSION = {
     }
 }
 
+
 class Command(BaseCommand):
     help = 'Import sightings data from "Protección Civil" Google Fusion Table'
+    reporting_client_id = 2
+    datetime_format = "%d/%m/%y %H:%M"
+
+    def __init__(self, *args, **kwargs):
+        super(Command, self).__init__(*args, **kwargs)
+
+        try:
+            # Protección Civíl reporting client
+            self.reporting_client = ReportingClient.objects.get(
+                id=self.reporting_client_id
+            )
+        except ReportingClient.DoesNotExist:
+            message = "No reporting client with id=%s found!" % self.reporting_client_id
+            logger.critical(message)
+            raise CommandError(message)
+
 
     def handle(self, *args, **options):
+        last_import_date = self.reporting_client.last_import_date
+        if not last_import_date:
+            logger.warning("No last import date found, importing sightins from today's date.")
+            last_import_date = date.today().strftime(self.datetime_format)
+
         params = {
             'key': settings.PROTECCION_CIVIL_API['key'],
-            'sql': "SELECT %s FROM %s WHERE Data > %s LIMIT 50" % (
+            'sql': "SELECT %s FROM %s WHERE Data >= '%s' LIMIT 50" % (
                 ",".join(API_COLUMNS['all']),
                 settings.PROTECCION_CIVIL_API['tables']['sightings'],
-                "'01/06/2014'"
+                last_import_date
             )
         }
 
-        print "GET %s?%s" % (settings.PROTECCION_CIVIL_API['base_url'], params["sql"])
+        logger.info("GET %s?%s" % (settings.PROTECCION_CIVIL_API['base_url'], params["sql"]))
         response = requests.get(settings.PROTECCION_CIVIL_API['base_url'], params=params)
         sightings = response.json()
 
         total = len(sightings['rows'])
-        print "Recieved %i sightings." % total
-        print "Importing..."
+        logger.info("Importing %s sightings" % total)
         count = 0
         for s in sightings['rows']:
             sighting = self._prepare_sighting(s, sightings['columns'])
             count += self._create_sighting(sighting)
-        print "Sightings imported:", count, "failed:", total - count
+        self.reporting_client.last_import_date = datetime.today().strftime(self.datetime_format)
+        self.reporting_client.save()
+        logger.info("Sightings successfully imported:", count, "failed:", total - count)
 
     def _prepare_sighting(self, sighting, cols):
         prepared_sighting = {}
@@ -104,21 +132,21 @@ class Command(BaseCommand):
             date = datetime.strptime(sighting["Data"], '%d/%m/%Y %H:%M')
             date = date.strftime('%Y-%m-%d %H:%M')
         except ValueError:
-            print "Error converting date %s to DD/MM/YYYY" % sighting["Data"]
+            logger.warning("Error converting date %s to DD/MM/YYYY" % sighting["Data"])
             return 0
 
         try:
             beach = Beach.objects.get(proteccion_civil_api_id=proteccion_civil_beach_id)
         except Beach.DoesNotExist:
-            print "Beach with proteccion_civil_api_id=%s not found!" % proteccion_civil_beach_id
+            logger.warning("Beach with proteccion_civil_api_id=%s not found!" % proteccion_civil_beach_id)
             return 0
 
         s, _ = Sight.objects.get_or_create(
             timestamp=date,
             beach=beach,
-            reported_from=ReportingClient.objects.get(id=2) # Protección Civíl
+            reported_from=self.reporting_client
         )
-        print sighting
+
         self._add_sighiting_variables(s, sighting)
 
         self._add_sighiting_jellyfishes(s, sighting[API_COLUMNS["jellyfishes"]])
