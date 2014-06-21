@@ -31,6 +31,7 @@ class BeachAdmin(admin.ModelAdmin):
     list_display = ("name", "city", "medjelly_api_id", "proteccion_civil_api_id")
     list_filter = (BeachAPIFilter, "city")
 
+
 class ProteccionCivilBeachAdmin(admin.ModelAdmin):
     search_fields = ("code", "name",)
     list_display = ("code", "name", "town")
@@ -42,6 +43,7 @@ class MedJellyBeachAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "town")
     list_filter = ("town",)
 
+
 class VariableInline(admin.TabularInline):
     model = SightVariables
 
@@ -50,10 +52,28 @@ class JellyfishInline(admin.TabularInline):
     model = SightJellyfishes
 
 
+class SightJellyfishPresenceFilter(SimpleListFilter):
+    title = 'presencia de medusas'
+    parameter_name = 'jellyfishes_presence'
+
+    def lookups(self, request, model_admin):
+        return [
+            (1, "Sí"),
+            (0, "No"),
+        ]
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value is not None:
+            value = bool(int(value))
+            queryset = queryset.filter(jellyfishes_presence=value)
+        return queryset
+
 class SightAdmin(admin.ModelAdmin):
     list_display = ("timestamp", "beach", "reported_from", "validated",
-                    "api_sent", "api_sent_timestamp")
-    list_filter = ( "validated", "api_sent", "timestamp", "reported_from", "beach" )
+                    "api_sent", "api_sent_timestamp", "jellyfishes_presence")
+    list_filter = ("validated", "api_sent", "timestamp", "reported_from",
+                   SightJellyfishPresenceFilter, "beach",)
     actions = ['mark_as_valid', 'mark_as_invalid', 'api_export']
     inlines = [VariableInline, JellyfishInline]
     date_hierarchy = 'timestamp'

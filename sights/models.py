@@ -33,9 +33,9 @@ class Sight(models.Model):
     def __unicode__(self):
         return u"[%s] %s" % (self.timestamp, unicode(self.beach))
 
-    def save(self):
+    def save(self, *args, **kwargs):
         self.jellyfishes_presence = bool(self.jellyfishes.count())
-        super(Sight, self).save()
+        super(Sight, self).save(*args, **kwargs)
 
     def export(self):
         if self.validated and not self.api_sent:
