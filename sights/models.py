@@ -18,7 +18,7 @@ class Sight(models.Model):
     # TODO: Next two fields can be dropped
     ftp_sent = models.BooleanField(default=False, verbose_name="Enviat per FTP")
     ftp_sent_timestamp = models.DateTimeField(verbose_name="Data de enviament per FTP", null=True, blank=True)
-
+    jellyfishes_presence = models.BooleanField(default=False, verbose_name="Presencia de medusas")
 
     JELLYFISH_STATUS = {
         (0, 0): "NO_WARNING",
@@ -27,8 +27,15 @@ class Sight(models.Model):
         (13, 13): "VERY_HIGH_WARNING"
     }
 
+    class Meta:
+        verbose_name = "Avistamiento"
+
     def __unicode__(self):
         return u"[%s] %s" % (self.timestamp, unicode(self.beach))
+
+    def save(self):
+        self.jellyfishes_presence = bool(self.jellyfishes.count())
+        super(Sight, self).save()
 
     def export(self):
         if self.validated and not self.api_sent:
@@ -81,9 +88,6 @@ class Sight(models.Model):
         for k, v in self.JELLYFISH_STATUS.items():
             if (warning_level >= k[0]) and (warning_level <= k[1]):
                 return v
-
-    class Meta:
-        verbose_name = "Avistamiento"
 
 
 class Jellyfish(models.Model):
