@@ -76,7 +76,7 @@ def _add_sighting_variables(sighting, variables):
 def _add_sighting_jellyfishes(sighting, jellyfishes):
     for i, jelly_id in enumerate(jellyfishes["types"]):
         jelly_size = jellyfishes["sizes"][i] or 0
-        jelly_abundance = jellyfishes["sizes"][i] or 0
+        jelly_abundance = jellyfishes["abundances"][i] or 0
 
         sighting.jellyfishes.add(
             SightJellyfishes(
