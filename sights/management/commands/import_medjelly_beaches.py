@@ -37,9 +37,14 @@ class Command(BaseCommand):
         count = 0
         for beach in data["beaches"]:
             count += 1
-            MedJellyBeach.objects.get_or_create(
-                id=beach["id"],
-                name=beach["name"],
-                town=beach["municipalityName"]
-            )
+
+            try:
+                medjelly_beach = MedJellyBeach.objects.get(id=beach["id"])
+            except MedJellyBeach.DoesNotExist:
+                medjelly_beach = MedJellyBeach(id=beach["id"])
+
+            medjelly_beach.name=beach["name"]
+            medjelly_beach.town=beach["municipalityName"]
+            medjelly_beach.save()
+
         return count
