@@ -27,8 +27,11 @@ class Command(BaseCommand):
         return prepared_beach
 
     def _create_beach(self, beach):
-        ProteccionCivilBeach.objects.get_or_create(
-            name=beach["Platja"],
-            code=beach["CodiPlatja"],
-            town=beach["Municipi"],
-        )
+        try:
+            pc = ProteccionCivilBeach.objects.get(code=beach["CodiPlatja"])
+        except ProteccionCivilBeach.DoesNotExist:
+            pc = ProteccionCivilBeach(code=beach["CodiPlatja"])
+
+        pc.name = beach["Platja"]
+        pc.town = beach["Municipi"]
+        pc.save()
