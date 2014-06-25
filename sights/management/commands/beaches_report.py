@@ -61,7 +61,7 @@ class Command(BaseCommand):
 
             report.append(("%s (%s)" % (proteccion_civil_beach.name, proteccion_civil_beach.town),
                            "%s (%s)" % (beach.name, beach.city),
-                           unicode(proteccion_civil_beach.id), unicode(beach.id)))
+                           unicode(proteccion_civil_beach.code), unicode(beach.id)))
 
         with open('beaches_proteccion_civil.csv', 'wb') as csvfile:
             writer = csv.writer(csvfile)
