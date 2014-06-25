@@ -70,13 +70,17 @@ class SightJellyfishPresenceFilter(SimpleListFilter):
         return queryset
 
 class SightAdmin(admin.ModelAdmin):
-    list_display = ("timestamp", "beach", "reported_from", "validated",
+    list_display = ("timestamp", "beach", "get_beach_city", "reported_from", "validated",
                     "api_sent", "api_sent_timestamp", "jellyfishes_presence")
     list_filter = ("validated", "api_sent", "timestamp", "reported_from",
                    SightJellyfishPresenceFilter, "beach",)
     actions = ['mark_as_valid', 'mark_as_invalid', 'api_export']
     inlines = [VariableInline, JellyfishInline]
     date_hierarchy = 'timestamp'
+
+    def get_beach_city(self, obj):
+        return obj.beach.city
+    get_beach_city.short_description = 'Ayuntamiento'
 
     def mark_as_valid(self, request, queryset):
         queryset.update(validated=True)
