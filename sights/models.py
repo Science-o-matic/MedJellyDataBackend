@@ -84,10 +84,15 @@ class Sight(models.Model):
     def get_variable_by_type(self, variable_type):
         return self.sightvariables_set.get(variable__type=variable_type)
 
+    def get_water_temp(self):
+        return round(self.variables.get(variable_id=63).value, 2)
+
     def _jellyFishStatus(self, warning_level):
         for k, v in self.JELLYFISH_STATUS.items():
             if (warning_level >= k[0]) and (warning_level <= k[1]):
                 return v
+
+
 
 
 class Jellyfish(models.Model):

@@ -172,6 +172,8 @@ class APIExporter(XMLExporter):
         flagReason = self.instance.get_flag_reason()
         beach.append(self.XMLnode('flagReason', str(flagReason)))
 
+        beach.append(self.XMLnode('waterTemperature', str(self.instance.get_water_temp())))
+
         beach.append(self.XMLnode('jellyFishStatusUpdated', timestamp))
         jellyFishStatus = self.instance.get_jellyFishStatus()
         beach.append(self.XMLnode('jellyFishStatus', jellyFishStatus))
