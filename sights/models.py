@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import datetime
 from django.db import models
 from django.db.models import Max
@@ -244,7 +245,14 @@ class SightVariables(models.Model):
     value = models.DecimalField(max_digits=6, decimal_places=2)
 
     def __unicode__(self):
-        return self.variable.type
+        repr_string = self.variable.type
+        if self.variable.possible_values:
+            values = json.loads(self.variable.possible_values)
+            repr_string += ' ('
+            for v in values:
+                repr_string += "%s = %s, " % (v[0], v[1])
+            repr_string += ')'
+        return repr_string
 
     class Meta:
         verbose_name = "Variable de avistamiento"
