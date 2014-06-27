@@ -106,7 +106,7 @@ class Command(BaseCommand):
 
         params = {
             'key': settings.PROTECCION_CIVIL_API['key'],
-            'sql': "SELECT %s FROM %s WHERE Data >= '%s'" % (
+            'sql': "SELECT %s FROM %s WHERE Data >= '%s' ORDER BY Data" % (
                 ",".join(API_COLUMNS['all']),
                 settings.PROTECCION_CIVIL_API['tables']['sightings'],
                 last_import_date.strftime(self.datetime_format)
@@ -127,12 +127,16 @@ class Command(BaseCommand):
         logger.info("Importing %s sightings" % total)
 
         count = 0
+        last_date = None
         for s in sightings['rows']:
             sighting = self._prepare_sighting(s, sightings['columns'])
-            count += self._create_sighting(sighting)
+            c, date = self._create_sighting(sighting)
+            count += c
+            last_date = date if date else last_date
 
-        self.reporting_client.last_import_date = datetime.today()
-        self.reporting_client.save()
+        if last_date:
+            self.reporting_client.last_import_date = last_date
+            self.reporting_client.save()
 
         logger.info("Sightings successfully imported: %i, failed: %i" % (count, total - count))
 
@@ -150,7 +154,7 @@ class Command(BaseCommand):
             date = date.strftime('%Y-%m-%d %H:%M')
         except ValueError:
             self._log_sighting_warning("Error converting date %(Data)s to DD/MM/YYYY" % sighting, sighting)
-            return 0
+            return (0, None)
 
         try:
             beach = Beach.objects.get(proteccion_civil_api_id=proteccion_civil_beach_id)
@@ -159,9 +163,9 @@ class Command(BaseCommand):
                 "Beach with proteccion_civil_api_id=%s not found!" % proteccion_civil_beach_id,
                 sighting
             )
-            return 0
+            return (0, None)
 
-        s, _ = Sight.objects.get_or_create(
+        s, created = Sight.objects.get_or_create(
             timestamp=date,
             beach=beach,
             reported_from=self.reporting_client
@@ -171,7 +175,7 @@ class Command(BaseCommand):
 
         self._add_sighting_jellyfishes(s, sighting[API_COLUMNS["jellyfishes"]])
 
-        return 1
+        return (1, s.timestamp)
 
     def _add_sighting_variables(self, sighting, sighting_data):
         for key in API_COLUMNS['variables']:
