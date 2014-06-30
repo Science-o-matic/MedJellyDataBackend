@@ -171,9 +171,9 @@ class Command(BaseCommand):
             reported_from=self.reporting_client
         )
 
-        self._add_sighting_variables(s, sighting)
-
-        self._add_sighting_jellyfishes(s, sighting[API_COLUMNS["jellyfishes"]])
+        if created:
+            self._add_sighting_variables(s, sighting)
+            self._add_sighting_jellyfishes(s, sighting[API_COLUMNS["jellyfishes"]])
 
         return (1, s.timestamp)
 
