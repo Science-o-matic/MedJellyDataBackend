@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
 
     def _generate_beaches_report(self):
-        report = [("Nombre Playa", "Nombre Playa MedJelly", u"Nombre Playa Protección Civíl",
+        report = [("Id Playa", "Nombre Playa", "Nombre Playa MedJelly", u"Nombre Playa Protección Civíl",
                   "Id Medjelly", u"Id Protección Civíl"),]
 
         for beach in Beach.objects.all():
@@ -23,12 +23,14 @@ class Command(BaseCommand):
 
             beach_city = self._get_beach_city(beach)
 
-            report.append(("%s (%s)" % (beach.name, beach_city),
-                           "%s (%s)" % (medjelly_beach.name, medjelly_beach.town),
-                           "%s (%s)" % (proteccion_civil_beach.name, proteccion_civil_beach.town),
-                           unicode(medjelly_beach.id),
-                           unicode(proteccion_civil_beach.id or '0')
-                           ))
+            report.append((
+                    unicode(beach.id),
+                    "%s (%s)" % (beach.name, beach_city),
+                    "%s (%s)" % (medjelly_beach.name, medjelly_beach.town),
+                    "%s (%s)" % (proteccion_civil_beach.name, proteccion_civil_beach.town),
+                    unicode(medjelly_beach.id),
+                    unicode(proteccion_civil_beach.code or '')
+                    ))
 
         with open('beaches.csv', 'wb') as csvfile:
             writer = csv.writer(csvfile)
