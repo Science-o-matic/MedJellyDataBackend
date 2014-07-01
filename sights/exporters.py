@@ -184,10 +184,13 @@ class APIExporter(XMLExporter):
     def jellyfishes_xml(self):
         jellyfishes = self.XMLnode('jellyFishes')
         for j in self.instance.jellyfishes.all():
+            medjelly_api_id = j.jellyfish.medjelly_api_id
             jelly = ET.Element('jellyFish',
-                               id=unicode(j.jellyfish.medjelly_api_id),
+                               id=unicode(medjelly_api_id),
                                abundance=unicode(j.abundance.id),
                                size=unicode(j.size.id),
             )
+            if medjelly_api_id == 0:
+                jelly.set("hazard", "NO_INFO")
             jellyfishes.append(jelly)
         return jellyfishes
