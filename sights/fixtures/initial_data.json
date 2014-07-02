@@ -1,21 +1,5 @@
 [
 {
-   "pk": 1,
-   "model": "sights.reportingclient",
-   "fields": {
-      "code": "APP",
-      "name": "M\u00f3vil"
-   }
-},
-{
-   "pk": 2,
-   "model": "sights.reportingclient",
-   "fields": {
-      "code": "",
-      "name": "Protección Civíl"
-   }
-},
-{
    "pk": 0,
    "model": "sights.jellyfishsize",
    "fields": {
