@@ -83,7 +83,7 @@ JELLYFISH_CONVERSION = {
 class Command(BaseCommand):
     help = 'Import sightings data from "Protección Civil" Google Fusion Table'
     reporting_client_id = 2
-    datetime_format = "%d/%m/%y %H:%M"
+    datetime_format = "%Y-%m-%d %H:%M:%S"
 
     def __init__(self, *args, **kwargs):
         super(Command, self).__init__(*args, **kwargs)
@@ -149,12 +149,7 @@ class Command(BaseCommand):
     def _create_sighting(self, sighting):
         proteccion_civil_beach_id = sighting["CodiPlatja"]
 
-        try:
-            date = datetime.strptime(sighting["Data"], '%d/%m/%Y %H:%M')
-            date = date.strftime('%Y-%m-%d %H:%M')
-        except ValueError:
-            self._log_sighting_warning("Error converting date %(Data)s to DD/MM/YYYY" % sighting, sighting)
-            return (0, None)
+        date = datetime.strptime(sighting["Data"], self.datetime_format)
 
         try:
             beach = Beach.objects.get(proteccion_civil_api_id=proteccion_civil_beach_id)
