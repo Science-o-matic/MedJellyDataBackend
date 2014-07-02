@@ -106,7 +106,7 @@ class Command(BaseCommand):
 
         params = {
             'key': settings.PROTECCION_CIVIL_API['key'],
-            'sql': "SELECT %s FROM %s WHERE Data >= '%s' ORDER BY Data" % (
+            'sql': "SELECT %s FROM %s WHERE Data > '%s' ORDER BY Data" % (
                 ",".join(API_COLUMNS['all']),
                 settings.PROTECCION_CIVIL_API['tables']['sightings'],
                 last_import_date.strftime(self.datetime_format)
