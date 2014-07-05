@@ -124,7 +124,7 @@ class JellyfishSize(models.Model):
 
 class Beach(models.Model):
     name = models.CharField(max_length=1000)
-    city = models.ForeignKey("City")
+    city = models.ForeignKey("City", verbose_name="Ayuntamiento")
     owner = models.ForeignKey("BeachOwner")
     users = models.ManyToManyField(User)
     medjelly_api_id = models.IntegerField(null=True, blank=True)
@@ -146,6 +146,7 @@ class City(models.Model):
     class Meta:
         verbose_name = "Ayuntamiento"
         verbose_name_plural = "Ayuntamientos"
+        ordering = ["name"]
 
 
 class BeachOwner(models.Model):
