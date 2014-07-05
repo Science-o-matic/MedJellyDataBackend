@@ -3,6 +3,7 @@ import json
 import datetime
 from django.db import models
 from django.db.models import Max
+from django.db.models.signals import post_save, post_delete
 from django.conf import settings
 from django.contrib.auth.models import User
 from sights.exporters import APIExporter
@@ -33,10 +34,6 @@ class Sight(models.Model):
 
     def __unicode__(self):
         return u"[%s] %s" % (self.timestamp, unicode(self.beach))
-
-    def save(self, *args, **kwargs):
-        self.jellyfishes_presence = bool(self.jellyfishes.count())
-        super(Sight, self).save(*args, **kwargs)
 
     def export(self):
         if self.validated and not self.api_sent:
@@ -237,6 +234,13 @@ class SightJellyfishes(models.Model):
     jellyfish = models.ForeignKey('Jellyfish', related_name="sightings")
     size = models.ForeignKey('JellyfishSize')
     abundance = models.ForeignKey('JellyfishAbundance')
+
+def update_sighting_jellyfishes_presence(sender, instance, **kwargs):
+    instance.sight.jellyfishes_presence = bool(instance.sight.jellyfishes.count())
+    instance.sight.save()
+
+post_save.connect(update_sighting_jellyfishes_presence, sender=SightJellyfishes)
+post_delete.connect(update_sighting_jellyfishes_presence, sender=SightJellyfishes)
 
 
 class SightVariables(models.Model):
