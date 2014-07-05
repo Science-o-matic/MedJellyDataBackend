@@ -236,8 +236,11 @@ class SightJellyfishes(models.Model):
     abundance = models.ForeignKey('JellyfishAbundance')
 
 def update_sighting_jellyfishes_presence(sender, instance, **kwargs):
-    instance.sight.jellyfishes_presence = bool(instance.sight.jellyfishes.count())
-    instance.sight.save()
+    try:
+        instance.sight.jellyfishes_presence = bool(instance.sight.jellyfishes.count())
+        instance.sight.save()
+    except Sight.DoesNotExist:
+        pass
 
 post_save.connect(update_sighting_jellyfishes_presence, sender=SightJellyfishes)
 post_delete.connect(update_sighting_jellyfishes_presence, sender=SightJellyfishes)
