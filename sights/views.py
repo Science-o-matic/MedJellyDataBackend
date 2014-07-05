@@ -21,6 +21,7 @@ def new(request):
     if request.method == 'POST':
         # TODO: Form validation and bounding must be fixed
         data  = dict(request.POST)
+        data.pop("jellyfishes_presence")
         attributes, variables, jellyfishes = _split_form_data(data)
         sighting = Sight()
 
