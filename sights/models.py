@@ -5,8 +5,6 @@ from django.db import models
 from django.db.models import Max
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.signals import request_finished
-from django.dispatch import receiver
 from sights.exporters import APIExporter
 
 
@@ -21,6 +19,7 @@ class Sight(models.Model):
     # TODO: Next two fields can be dropped
     ftp_sent = models.BooleanField(default=False, verbose_name="Enviat per FTP")
     ftp_sent_timestamp = models.DateTimeField(verbose_name="Data de enviament per FTP", null=True, blank=True)
+    jellyfishes_presence = models.BooleanField(default=False, verbose_name="Presencia de medusas")
 
     JELLYFISH_STATUS = {
         (0, 0): "NO_WARNING",
@@ -35,10 +34,9 @@ class Sight(models.Model):
     def __unicode__(self):
         return u"[%s] %s" % (self.timestamp, unicode(self.beach))
 
-    def jellyfishes_presence(self):
-        return bool(self.jellyfishes.count())
-    jellyfishes_presence.boolean = True
-    jellyfishes_presence.short_description = "Presencia de medusas"
+    def save(self, *args, **kwargs):
+        self.jellyfishes_presence = bool(self.jellyfishes.count())
+        super(Sight, self).save(*args, **kwargs)
 
     def export(self):
         if self.validated and not self.api_sent:
@@ -94,6 +92,8 @@ class Sight(models.Model):
         for k, v in self.JELLYFISH_STATUS.items():
             if (warning_level >= k[0]) and (warning_level <= k[1]):
                 return v
+
+
 
 
 class Jellyfish(models.Model):
