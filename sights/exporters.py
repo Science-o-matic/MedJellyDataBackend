@@ -150,6 +150,7 @@ class APIExporter(XMLExporter):
         logger.info(xml)
 
         r = requests.post(self.endpoint_url, data=xml, headers=headers)
+        r.raise_for_status()
 
         logger.info("RESPONSE:")
         logger.info(r.content)
