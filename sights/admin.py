@@ -72,8 +72,8 @@ class SightJellyfishPresenceFilter(SimpleListFilter):
 class SightAdmin(admin.ModelAdmin):
     list_display = ("timestamp", "beach", "get_beach_city", "reported_from", "validated",
                     "api_sent", "api_sent_timestamp", "jellyfishes_presence")
-    list_filter = ("validated", "api_sent", "timestamp", "reported_from", "beach__city",
-                   SightJellyfishPresenceFilter, "beach",)
+    list_filter = ("validated", "api_sent", "timestamp", "reported_from",
+                   SightJellyfishPresenceFilter, "beach__city", "beach",)
     actions = ['mark_as_valid', 'mark_as_invalid', 'api_export']
     inlines = [VariableInline, JellyfishInline]
     date_hierarchy = 'timestamp'
