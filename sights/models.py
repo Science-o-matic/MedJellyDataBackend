@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 import json
 import datetime
 from django.db import models
@@ -7,6 +8,9 @@ from django.db.models.signals import post_save, post_delete
 from django.conf import settings
 from django.contrib.auth.models import User
 from sights.exporters import APIExporter
+
+
+logger = logging.getLogger(__name__)
 
 
 class Sight(models.Model):
@@ -37,10 +41,13 @@ class Sight(models.Model):
 
     def export(self):
         if self.validated and not self.api_sent:
+            logger.info("Going to export: %s" % self)
             APIExporter(self).export()
+            logger.info("Exported, updating data of %s" % self)
             self.api_sent = True
             self.api_sent_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
             self.save()
+            logger.info("Updated data of %s" % self)
 
     def get_flag(self):
         try:
