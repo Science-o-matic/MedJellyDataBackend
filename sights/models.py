@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import logging
 import json
 import datetime
 from django.db import models
@@ -8,9 +7,6 @@ from django.db.models.signals import post_save, post_delete
 from django.conf import settings
 from django.contrib.auth.models import User
 from sights.exporters import APIExporter
-
-
-logger = logging.getLogger(__name__)
 
 
 class Sight(models.Model):
@@ -41,13 +37,10 @@ class Sight(models.Model):
 
     def export(self):
         if self.validated and not self.api_sent:
-            logger.info("Going to export: %s" % self)
             APIExporter(self).export()
-            logger.info("Exported, updating data of %s" % self)
             self.api_sent = True
             self.api_sent_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
             self.save()
-            logger.info("Updated data of %s" % self)
 
     def get_flag(self):
         try:
@@ -129,6 +122,19 @@ class JellyfishSize(models.Model):
         return self.name
 
 
+class ProteccionCivilBeach(models.Model):
+    code = models.CharField(max_length=300)
+    name = models.CharField(max_length=300)
+    town = models.CharField(max_length=300)
+
+    class Meta:
+        verbose_name = "Playa (Protección Civíl)"
+        verbose_name_plural = "Playas (Protección Civíl)"
+
+    def __unicode__(self):
+        return self.name
+
+
 class Beach(models.Model):
     name = models.CharField(max_length=1000)
     city = models.ForeignKey("City", verbose_name="Ayuntamiento")
@@ -136,6 +142,7 @@ class Beach(models.Model):
     users = models.ManyToManyField(User)
     medjelly_api_id = models.IntegerField(null=True, blank=True)
     proteccion_civil_api_id = models.CharField(max_length=300, null=True, blank=True)
+    proteccion_civil_beaches = models.ManyToManyField(ProteccionCivilBeach)
 
     def __unicode__(self):
         return self.name
@@ -287,25 +294,6 @@ class ReportingClient(models.Model):
     class Meta:
         verbose_name = "Origen del reporte"
         verbose_name_plural = "Orígenes de reporte"
-
-
-class ProteccionCivilBeach(models.Model):
-    """
-    This model is used as a reference during the process of
-    putting together the Beach model data from different source.
-    It's holding beaches from Proteccion Civíl's API
-    """
-    code = models.CharField(max_length=300)
-    name = models.CharField(max_length=300)
-    town = models.CharField(max_length=300)
-
-    class Meta:
-        verbose_name = "Playa (Protección Civíl)"
-        verbose_name_plural = "Playas (Protección Civíl)"
-
-
-    def __unicode__(self):
-        return self.name
 
 
 class MedJellyBeach(models.Model):
