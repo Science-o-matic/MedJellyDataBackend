@@ -8,9 +8,13 @@ class Command(BaseCommand):
     help = "Generates a report about correspondences between Beach, MedJellyBeach and ProteccionCivilBeach"
 
     def handle(self, *args, **options):
+        print "Generating beaches report..."
         self._generate_beaches_report()
+        print "Generating medjelly beaches report..."
         self._generate_medjelly_beaches_report()
+        print "Generating proteccion civil beaches report..."
         self._generate_proteccion_civil_beaches_report()
+        print "Done"
 
 
     def _generate_beaches_report(self):
@@ -32,10 +36,7 @@ class Command(BaseCommand):
                     unicode(proteccion_civil_beach.code or '')
                     ))
 
-        with open('beaches.csv', 'wb') as csvfile:
-            writer = csv.writer(csvfile)
-            for line in report:
-                writer.writerow([c.encode("utf-8") for c in line])
+        self._export_csv_report(report, "beaches.csv")
 
     def _generate_medjelly_beaches_report(self):
         report = [("Nombre Playa MedJelly", "Nombre Playa",
@@ -49,27 +50,22 @@ class Command(BaseCommand):
                            unicode(medjelly_beach.id),
                            unicode(beach.id)))
 
-        with open('beaches_medjelly.csv', 'wb') as csvfile:
-            writer = csv.writer(csvfile)
-            for line in report:
-                writer.writerow([c.encode("utf-8") for c in line])
+        self._export_csv_report(report, 'beaches_medjelly.csv')
 
     def _generate_proteccion_civil_beaches_report(self):
-        report = [(u"Nombre Playa Protección Civíl", "Nombre Playa",
-                  "Id Proteccion Civil", "Id Playa"),]
+        report = [(u"Nombre Playa Protección Civíl", "Nombre Playa (Ayuntamiento) [id]",
+                  "Id Proteccion Civil",)]
 
         for proteccion_civil_beach in ProteccionCivilBeach.objects.all():
-            beach = self._get_beach(proteccion_civil_api_id=proteccion_civil_beach.code)
+            beaches = ["%s (%s) [%i]" % (b.name, b.city, b.id)
+                       for b in  proteccion_civil_beach.beach_set.all()]
 
             report.append(("%s (%s)" % (proteccion_civil_beach.name, proteccion_civil_beach.town),
-                           "%s (%s)" % (beach.name, beach.city),
-                           unicode(proteccion_civil_beach.code), unicode(beach.id)))
+                           ",".join(beaches),
+                           unicode(proteccion_civil_beach.code)))
 
-        with open('beaches_proteccion_civil.csv', 'wb') as csvfile:
-            writer = csv.writer(csvfile)
-            for line in report:
-                writer.writerow([c.encode("utf-8") for c in line])
 
+        self._export_csv_report(report, 'beaches_proteccion_civil.csv')
 
     def _get_beach(self, medjelly_api_id=None, proteccion_civil_api_id=None):
         try:
@@ -90,7 +86,6 @@ class Command(BaseCommand):
         except City.DoesNotExist:
             return City(name="N/A")
 
-
     def _get_medjelly_beach(self, beach):
         try:
             return MedJellyBeach.objects.get(id=beach.medjelly_api_id)
@@ -102,3 +97,9 @@ class Command(BaseCommand):
             return ProteccionCivilBeach.objects.get(code=beach.proteccion_civil_api_id)
         except ProteccionCivilBeach.DoesNotExist:
             return ProteccionCivilBeach(code="0", name="")
+
+    def _export_csv_report(self, report, filename):
+        with open(filename, 'wb') as csvfile:
+            writer = csv.writer(csvfile)
+            for line in report:
+                writer.writerow([c.encode("utf-8") for c in line])
