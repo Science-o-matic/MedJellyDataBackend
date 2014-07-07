@@ -152,7 +152,9 @@ class Command(BaseCommand):
         date = datetime.strptime(sighting["Data"], self.datetime_format)
 
         try:
-            beach = Beach.objects.get(proteccion_civil_api_id=proteccion_civil_beach_id)
+            beach = Beach.objects.get(
+                proteccion_civil_beaches__code__in=[proteccion_civil_beach_id]
+            )
         except Beach.DoesNotExist:
             self._log_sighting_warning(
                 "Beach with proteccion_civil_api_id=%s not found!" % proteccion_civil_beach_id,
