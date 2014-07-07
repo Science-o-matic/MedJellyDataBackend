@@ -28,8 +28,15 @@ class BeachAPIFilter(SimpleListFilter):
 
 class BeachAdmin(admin.ModelAdmin):
     search_fields = ["name",]
-    list_display = ("name", "city", "medjelly_api_id", "proteccion_civil_api_id")
+    list_display = ("name", "city", "medjelly_api_id", "proteccion_civil_api_id", "get_proteccion_civil_beaches")
     list_filter = (BeachAPIFilter, "city")
+
+    def get_proteccion_civil_beaches(self, obj):
+        proteccion_civil_beaches = []
+        for beach in obj.proteccion_civil_beaches.all():
+            proteccion_civil_beaches.append("%s (%s)" % (beach.name, beach.town))
+        return ",".join(proteccion_civil_beaches)
+    get_proteccion_civil_beaches.short_description = 'Playas Protección Civíl'
 
 
 class ProteccionCivilBeachAdmin(admin.ModelAdmin):
