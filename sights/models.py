@@ -132,7 +132,7 @@ class ProteccionCivilBeach(models.Model):
         verbose_name_plural = "Playas (Protección Civíl)"
 
     def __unicode__(self):
-        return self.name
+        return u"%s (%s) [código=%s]" % (self.name, self.town, self.code)
 
 
 class Beach(models.Model):
