@@ -86,7 +86,8 @@ class Command(BaseCommand):
     datetime_format = "%Y-%m-%d %H:%M:%S"
     report = {"received": 0, "imported": 0, "failed": 0,
               "having_jellyfishes": 0, "not_having_jellyfishes": 0,
-              "not_found_beaches": []}
+              "not_found_beaches": [],
+              "sightings_having_jellyfishes": []}
 
     def __init__(self, *args, **kwargs):
         super(Command, self).__init__(*args, **kwargs)
@@ -137,8 +138,6 @@ class Command(BaseCommand):
             if sighting_created:
                 imported +=1
                 last_date = sighting_created.timestamp
-                if sighting_created.jellyfishes_presence:
-                    self.report["having_jellyfishes"] += 1
 
         if last_date:
             self.reporting_client.last_import_date = last_date
@@ -183,6 +182,10 @@ class Command(BaseCommand):
         if created:
             self._add_sighting_variables(sighting_instance, sighting)
             self._add_sighting_jellyfishes(sighting_instance, sighting[API_COLUMNS["jellyfishes"]])
+
+            if sighting_instance.jellyfishes_presence:
+                self.report["having_jellyfishes"] += 1
+                self.report["sightings_having_jellyfishes"].append(sighting_instance.id)
             return sighting_instance
         else:
             return None

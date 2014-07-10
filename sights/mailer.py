@@ -22,10 +22,16 @@ def notify_new_sighting(sight):
 def notify_import_report(report):
     subject = '[medjellydata] Informe de avistamientos importados desde Protección Civíl'
 
+    report["admin_url"] = ""
+    if report["sightings_having_jellyfishes"]:
+        report["admin_url"] = "http://%s/admin/sights/sight/?id_in=%s" % (
+            CURRENT_SITE, ",".join([str(s) for s in report["sightings_having_jellyfishes"]])
+         )
+
     body = """
 Se han recibido %(received)s avistamientos, de los cuales se han importado %(imported)s:
-- %(having_jellyfishes)s con presencia de medusas
-- %(not_having_jellyfishes)s sin presencia de medusas
+- %(having_jellyfishes)s con presencia de medusas. %(admin_url)s
+- %(not_having_jellyfishes)s sin presencia de medusas.
 """ % report
 
     if report["failed"]:
