@@ -22,7 +22,7 @@ class BeachAPIFilter(SimpleListFilter):
         if value == "medjelly":
             queryset = queryset.filter(medjelly_api_id__isnull=True)
         elif value == "proteccion_civil":
-            queryset = queryset.filter(proteccion_civil_api_id__isnull=True)
+            queryset = queryset.filter(proteccion_civil_beaches__isnull=True)
         return queryset
 
 
