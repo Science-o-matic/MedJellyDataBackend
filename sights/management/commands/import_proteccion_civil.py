@@ -26,7 +26,7 @@ VARIABLE_CONVERSION = {
     "Bandera": {
         "id": 67,
         "value": {
-            "sense informació": 0,
+            "sense informacio": 0,
             "verda": 1,
             "groga": 2,
             "vermella": 3
