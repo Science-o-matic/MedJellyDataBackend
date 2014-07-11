@@ -36,13 +36,40 @@ class BeachAdmin(admin.ModelAdmin):
         for beach in obj.proteccion_civil_beaches.all():
             proteccion_civil_beaches.append("%s (%s)" % (beach.name, beach.town))
         return ",".join(proteccion_civil_beaches)
-    get_proteccion_civil_beaches.short_description = 'Playas Protección Civíl'
+    get_proteccion_civil_beaches.short_description = 'Playa/s Protección Civíl'
+
+
+class ProteccionCivilBeachAPIFilter(SimpleListFilter):
+    title = 'correspondencia con playas'
+    parameter_name = 'beach'
+
+    def lookups(self, request, model_admin):
+        return [
+            ("notnull", "Con correspondencia"),
+            ("null", "Sin correspondencia"),
+        ]
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == "notnull":
+            queryset = queryset.filter(beach__isnull=False)
+        elif value == "null":
+            queryset = queryset.filter(beach__isnull=True)
+        return queryset
 
 
 class ProteccionCivilBeachAdmin(admin.ModelAdmin):
     search_fields = ("code", "name",)
-    list_display = ("code", "name", "town")
-    list_filter = ("town",)
+    list_display = ("code", "name",  "town", "get_beaches")
+    list_filter = (ProteccionCivilBeachAPIFilter, "town",)
+
+    def get_beaches(self, obj):
+        beaches = []
+        for beach in obj.beach_set.all():
+            beaches.append("%s (%s)" % (beach.name, beach.city))
+        return ",".join(beaches)
+    get_beaches.short_description = 'Playa/s correspondiente/s'
+
 
 
 class MedJellyBeachAdmin(admin.ModelAdmin):
