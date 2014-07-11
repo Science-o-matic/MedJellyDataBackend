@@ -149,7 +149,7 @@ class Beach(models.Model):
 
     class Meta:
         verbose_name = "Playa"
-
+        ordering = ["name"]
 
 class City(models.Model):
     name = models.CharField(max_length=300)

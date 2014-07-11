@@ -58,10 +58,16 @@ class ProteccionCivilBeachAPIFilter(SimpleListFilter):
         return queryset
 
 
+class BeachInline(admin.TabularInline):
+    model = Beach.proteccion_civil_beaches.through
+    extra = 1
+
+
 class ProteccionCivilBeachAdmin(admin.ModelAdmin):
     search_fields = ("code", "name",)
     list_display = ("code", "name",  "town", "get_beaches")
     list_filter = (ProteccionCivilBeachAPIFilter, "town",)
+    inlines = [BeachInline]
 
     def get_beaches(self, obj):
         beaches = []
