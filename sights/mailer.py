@@ -41,5 +41,5 @@ Se han recibido %(received)s avistamientos, de los cuales se han importado %(imp
         for beach in report["not_found_beaches"]:
             body += u"\n- Playa %s no tiene correspondencia en el listado de playas" % beach
 
-        send_mail(subject, body, 'support@science-o-matic.com', IMPORT_REPORT_MAILS,
-                  fail_silently=False)
+    send_mail(subject, body, 'support@science-o-matic.com', IMPORT_REPORT_MAILS,
+              fail_silently=False)
