@@ -26,7 +26,7 @@ def notify_import_report(report):
 
     report["admin_url"] = ""
     if report["sightings_having_jellyfishes"]:
-        report["admin_url"] = "http://%s/admin/sights/sight/?id_in=%s" % (
+        report["admin_url"] = "http://%s/admin/sights/sight/?id__in=%s" % (
             CURRENT_SITE, ",".join([str(s) for s in report["sightings_having_jellyfishes"]])
          )
 

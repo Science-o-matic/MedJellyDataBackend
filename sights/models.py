@@ -142,7 +142,7 @@ class Beach(models.Model):
     users = models.ManyToManyField(User)
     medjelly_api_id = models.IntegerField(null=True, blank=True)
     proteccion_civil_api_id = models.CharField(max_length=300, null=True, blank=True)
-    proteccion_civil_beaches = models.ManyToManyField(ProteccionCivilBeach)
+    proteccion_civil_beaches = models.ManyToManyField(ProteccionCivilBeach, blank=True)
 
     def __unicode__(self):
         return self.name
