@@ -59,9 +59,10 @@ def reloadapp():
 
 
 @roles('%s' % PROJECT_USER)
-def release(run_migrate=True, static=True, branch='master'):
+def release(run_migrate=True, static=True, reload_app=True, branch='master'):
     run_migrate = _booleanize(run_migrate)
     static = _booleanize(static)
+    reload_app = _booleanize(reload_app)
 
     _git_update(branch)
 
@@ -77,7 +78,8 @@ def release(run_migrate=True, static=True, branch='master'):
         if static:
             _run_manage('collectstatic --noinput')
 
-    reloadapp()
+    if reload_app:
+        reloadapp()
 
 
 @roles('%s' % PROJECT_USER)
