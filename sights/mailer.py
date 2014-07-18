@@ -27,7 +27,7 @@ def notify_import_report(report):
     report["admin_url"] = ""
     if report["sightings_having_jellyfishes"]:
         report["admin_url"] = "http://%s/admin/sights/sight/?id__in=%s" % (
-            CURRENT_SITE, ",".join([str(s) for s in report["sightings_having_jellyfishes"]])
+            CURRENT_SITE, ",".join([str(s.id) for s in report["sightings_having_jellyfishes"]])
          )
 
     body = """
@@ -40,6 +40,8 @@ Se han recibido %(received)s avistamientos, de los cuales se han importado %(imp
         body += "\nNo se han podido importar %(failed)s avistamientos." % report
         for beach in report["not_found_beaches"]:
             body += u"\n- Playa %s no tiene correspondencia en el listado de playas" % beach
+        for sighting in report["sightings_already_imported"]:
+            body += u"\n- Avistamiento %s ya había sido importado previamente." % sighting
 
     send_mail(subject, body, 'support@science-o-matic.com', IMPORT_REPORT_MAILS,
               fail_silently=False)

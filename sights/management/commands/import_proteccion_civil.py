@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import requests
 from datetime import datetime
 import logging
@@ -9,6 +10,8 @@ from django.conf import settings
 from sights.models import Sight, ReportingClient, Beach, SightVariables, SightJellyfishes, \
     Jellyfish, ProteccionCivilBeach
 from sights import mailer
+from optparse import make_option
+
 
 logger = logging.getLogger(__name__)
 
@@ -82,18 +85,24 @@ JELLYFISH_CONVERSION = {
 
 class Command(BaseCommand):
     help = 'Import sightings data from "Protección Civil" Google Fusion Table'
-    reporting_client_id = 2
+    reporting_client_id = 2  # Protección Civíl reporting client
     datetime_format = "%Y-%m-%d %H:%M:%S"
     report = {"received": 0, "imported": 0, "failed": 0,
               "having_jellyfishes": 0, "not_having_jellyfishes": 0,
               "not_found_beaches": [],
-              "sightings_having_jellyfishes": []}
+              "sightings_having_jellyfishes": [],
+              "sightings_already_imported": []}
+
+    option_list = BaseCommand.option_list + (
+        make_option('--dump_path',
+            action='store',
+            help='Dumping response path'),
+    )
 
     def __init__(self, *args, **kwargs):
         super(Command, self).__init__(*args, **kwargs)
 
         try:
-            # Protección Civíl reporting client
             self.reporting_client = ReportingClient.objects.get(
                 id=self.reporting_client_id
             )
@@ -119,8 +128,11 @@ class Command(BaseCommand):
 
         logger.info("GET %s?%s" % (settings.PROTECCION_CIVIL_API['base_url'], params["sql"]))
         response = requests.get(settings.PROTECCION_CIVIL_API['base_url'], params=params)
-        sightings = response.json()
+        if options["dump_path"]:
+            self._dump_response(response, options["dump_path"])
+        response.raise_for_status()
 
+        sightings = response.json()
         if 'rows' in sightings:
             self._import(sightings)
             mailer.notify_import_report(self.report)
@@ -185,10 +197,12 @@ class Command(BaseCommand):
 
             if sighting_instance.jellyfishes_presence:
                 self.report["having_jellyfishes"] += 1
-                self.report["sightings_having_jellyfishes"].append(sighting_instance.id)
+                self.report["sightings_having_jellyfishes"].append(sighting_instance)
             return sighting_instance
         else:
+            self.report["sightings_already_imported"].append(sighting_instance)
             return None
+
 
     def _add_sighting_variables(self, sighting, sighting_data):
         for key in API_COLUMNS['variables']:
@@ -273,3 +287,10 @@ class Command(BaseCommand):
         except ProteccionCivilBeach.DoesNotExist:
             proteccion_civil_beach = code
         self.report["not_found_beaches"].append(proteccion_civil_beach)
+
+    def _dump_response(self, response, path):
+        f = os.path.join(path, "import_proteccion_civil_response_dumped_%s" %
+                    datetime.today().strftime("%d_%m_%Y_%H_%M.json"))
+        with open(f, 'w') as dump_file:
+            dump_file.write(response.content)
+        logger.info("Dumped response to %s" % f)
