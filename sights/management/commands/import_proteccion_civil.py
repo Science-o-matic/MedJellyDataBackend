@@ -122,7 +122,7 @@ class Command(BaseCommand):
             'sql': "SELECT %s FROM %s WHERE Data > '%s' ORDER BY Data" % (
                 ",".join(API_COLUMNS['all']),
                 settings.PROTECCION_CIVIL_API['tables']['sightings'],
-                last_import_date.strftime(self.datetime_format)
+                last_import_date.strftime("%Y-%m-%d")
             )
         }
 

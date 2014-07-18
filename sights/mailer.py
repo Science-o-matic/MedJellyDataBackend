@@ -37,7 +37,7 @@ Se han recibido %(received)s avistamientos, de los cuales se han importado %(imp
 """ % report
 
     if report["failed"]:
-        body += "\nNo se han podido importar %(failed)s avistamientos." % report
+        body += "\nNo se han importado %(failed)s avistamientos." % report
         for beach in report["not_found_beaches"]:
             body += u"\n- Playa %s no tiene correspondencia en el listado de playas" % beach
         for sighting in report["sightings_already_imported"]:
