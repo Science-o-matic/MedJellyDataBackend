@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import requests
 import base64
@@ -22,6 +23,7 @@ class Command(BaseCommand):
 
         print "GET %s" % url
         response = requests.get(url, headers=headers)
+
         print "Importing..."
         count = self._import_beaches(response.json())
         print "Imported", count, "beaches"
@@ -36,15 +38,22 @@ class Command(BaseCommand):
     def _import_beaches(self, data):
         count = 0
         for beach in data["beaches"]:
-            count += 1
-
             try:
                 medjelly_beach = MedJellyBeach.objects.get(id=beach["id"])
             except MedJellyBeach.DoesNotExist:
-                medjelly_beach = MedJellyBeach(id=beach["id"])
+                medjelly_beach = MedJellyBeach.objects.create(
+                    id=beach["id"],
+                    name=beach["name"],
+                    town=beach["municipalityName"]
+                    )
+                count += 1
 
-            medjelly_beach.name=beach["name"]
-            medjelly_beach.town=beach["municipalityName"]
-            medjelly_beach.save()
+            if beach["name"] != medjelly_beach.name:
+                print medjelly_beach, "ha cambiado de nombre a", beach["name"]
+                print "El cambio no se ha aplicado y queda pendiente de revisión manual"
+
+            if beach["municipalityName"] != medjelly_beach.town:
+                print medjelly_beach, "ha cambiado de ciudad a", beach["municipalityName"]
+                print "El cambio no se ha aplicado y queda pendiente de revisión manual"
 
         return count
