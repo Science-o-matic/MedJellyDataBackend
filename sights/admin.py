@@ -110,6 +110,7 @@ class SightJellyfishPresenceFilter(SimpleListFilter):
         return queryset
 
 class SightAdmin(admin.ModelAdmin):
+    exclude = ('api_sent', 'api_sent_timestamp', 'ftp_sent', 'ftp_sent_timestamp')
     list_display = ("timestamp", "beach", "get_beach_city", "reported_from", "validated",
                     "api_sent", "api_sent_timestamp", "jellyfishes_presence")
     list_filter = ("validated", "api_sent", "timestamp", "reported_from",
