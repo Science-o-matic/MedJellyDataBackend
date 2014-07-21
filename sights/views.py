@@ -98,10 +98,11 @@ def _add_sighting_attr(sighting, key, value):
 
 
 def _add_sighting_var(sighting, var_id, value):
-    variable = Variable.objects.get(id=var_id)
-    SightVariables.objects.create(sight=sighting,
-                                  variable=variable,
-                                  value=_clean_value(value, variable.field_type))
+    if value != '':
+        variable = Variable.objects.get(id=var_id)
+        SightVariables.objects.create(sight=sighting,
+                                      variable=variable,
+                                      value=_clean_value(value, variable.field_type))
 
 def _clean_value(value, var_type):
     if var_type == "BooleanField" and value == "on":

@@ -11,10 +11,6 @@ $(document).ready(function () {
     var errorMessage = '';
     toggleSubmitButton();
 
-    if ($("#id_var_63").val().trim() === "") {
-      errorMessage = "<p class=\"input-error\">Haz de indicar la temperatura del agua</p>";
-    }
-
     $('input[name^="jellyfishes"]').each(function(){
       if ($(this).val() == "") {
         errorMessage = "<p class=\"input-error\">Haz de indicar todos los datos sobre medusas o indicar que no hay medusas</p>"
