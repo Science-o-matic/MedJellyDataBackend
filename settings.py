@@ -116,7 +116,10 @@ INSTALLED_APPS = (
     'sights',
     'form_utils',
     'corsheaders',
+    'django_nose',
 )
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',

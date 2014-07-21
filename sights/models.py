@@ -83,7 +83,11 @@ class Sight(models.Model):
         return self.sightvariables_set.get(variable__type=variable_type)
 
     def get_water_temp(self):
-        return round(self.variables.get(variable_id=63).value, 2)
+        try:
+            temp = round(self.variables.get(variable_id=63).value, 2)
+        except SightVariables.DoesNotExist:
+            temp = None
+        return temp
 
     def _jellyFishStatus(self, warning_level):
         for k, v in self.JELLYFISH_STATUS.items():
