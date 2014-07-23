@@ -85,23 +85,28 @@ JELLYFISH_CONVERSION = {
 
 class Command(BaseCommand):
     help = 'Import sightings data from "Protección Civil" Google Fusion Table'
+
     reporting_client_id = 2  # Protección Civíl reporting client
     datetime_format = "%Y-%m-%d %H:%M:%S"
     report = {"received": 0, "imported": 0, "failed": 0,
               "having_jellyfishes": 0, "not_having_jellyfishes": 0,
               "not_found_beaches": [],
               "sightings_having_jellyfishes": [],
-              "sightings_already_imported": []}
+              "sightings_already_imported": [],
+              "sightings_auto_exported": []}
 
     option_list = BaseCommand.option_list + (
         make_option('--dump_path',
             action='store',
             help='Dumping response path'),
+        make_option('--auto_export',
+            action='store_true',
+            default=False,
+            help='Export automatically sightings with no jellyfishes'),
     )
 
     def __init__(self, *args, **kwargs):
         super(Command, self).__init__(*args, **kwargs)
-
         try:
             self.reporting_client = ReportingClient.objects.get(
                 id=self.reporting_client_id
@@ -116,6 +121,8 @@ class Command(BaseCommand):
         if not last_import_date:
             logger.warning("No last import date found, importing sightins from today's date.")
             last_import_date = date.today()
+
+        self.auto_export = options["auto_export"]
 
         params = {
             'key': settings.PROTECCION_CIVIL_API['key'],
@@ -198,6 +205,8 @@ class Command(BaseCommand):
             if sighting_instance.jellyfishes_presence:
                 self.report["having_jellyfishes"] += 1
                 self.report["sightings_having_jellyfishes"].append(sighting_instance)
+            else:
+                self._handle_no_jellyfishes_sighting(sighting_instance)
             return sighting_instance
         else:
             self.report["sightings_already_imported"].append(sighting_instance)
@@ -277,6 +286,12 @@ class Command(BaseCommand):
                 size_id=JELLYFISH_CONVERSION["size"][size],
                 abundance_id=JELLYFISH_CONVERSION["abundance"][abundance]
             )
+
+    def _handle_no_jellyfishes_sighting(self, sighting):
+        if self.auto_export:
+            sighting.validated = True
+            sighting.export()
+            self.report["sightings_auto_exported"].append(sighting)
 
     def _log_sighting_warning(self, message, sighting):
         logger.warning("[sighting %s] %s" % (sighting["Data"], message))

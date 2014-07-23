@@ -10,6 +10,7 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
+
 class XMLExporter(object):
 
     def XMLnode(self, name, XMLNodeText=None, **kwargs):
