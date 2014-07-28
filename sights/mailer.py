@@ -40,15 +40,14 @@ def notify_import_report(report):
         n = len(report["sightings_auto_exported"])
         body += "\n\nSe han exportado %s avistamiento/s automáticamente:" % n
         for sighting in report["sightings_auto_exported"]:
-            body += u"\n- Avistamiento %s" % sighting
-
+            body += u"\n- Avistamiento %s".encode("utf-8") % sighting
 
     if report["failed"]:
         body += "\n\nNo se han importado %(failed)s avistamiento/s:" % report
         for beach in report["not_found_beaches"]:
-            body += u"\n- Playa %s no tiene correspondencia en el listado de playas" % beach
+            body += u"\n- Playa %s no tiene correspondencia en el listado de playas".encode("utf-8") % beach
         for sighting in report["sightings_already_imported"]:
-            body += u"\n- Avistamiento %s ya había sido importado previamente." % sighting
+            body += u"\n- Avistamiento %s ya había sido importado previamente.".encode("utf-8") % sighting
 
     send_mail(subject, body, 'support@science-o-matic.com', IMPORT_REPORT_MAILS,
               fail_silently=False)

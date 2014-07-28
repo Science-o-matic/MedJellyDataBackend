@@ -33,7 +33,7 @@ class Sight(models.Model):
         verbose_name = "Avistamiento"
 
     def __unicode__(self):
-        return "[%s] %s" % (self.timestamp, unicode(self.beach))
+        return u"[%s] %s" % (self.timestamp, unicode(self.beach))
 
     def export(self):
         if self.validated and not self.api_sent:

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
 import requests
-from datetime import datetime
 import logging
 from datetime import date, datetime
 from collections import defaultdict
