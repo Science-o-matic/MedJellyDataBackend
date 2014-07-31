@@ -299,7 +299,7 @@ class Command(BaseCommand):
         try:
             proteccion_civil_beach = ProteccionCivilBeach.objects.get(code=code)
         except ProteccionCivilBeach.DoesNotExist:
-            proteccion_civil_beach = code
+            proteccion_civil_beach = str(code)
         self.report["not_found_beaches"].append(proteccion_civil_beach)
 
     def _dump_response(self, response, path):
