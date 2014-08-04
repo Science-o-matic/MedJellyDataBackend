@@ -6,22 +6,32 @@ from django.contrib.sites.models import Site
 
 CURRENT_SITE = Site.objects.get(pk=settings.SITE_ID)
 
-IMPORT_REPORT_MAILS = ('marambio@icm.csic.es', 'lopezcastillo89@gmail.com', 'veronica.jellyrisk@gmail.com',
-                       'antonio.barcia@gmail.com', 'maca.jellyrisk@gmail.com', 'fuentesmartin@gmail.com'
-                       )
+NOTIFY_EMAILS = ('marambio@icm.csic.es', 'lopezcastillo89@gmail.com',
+                 'veronica.jellyrisk@gmail.com', 'antonio.barcia@gmail.com',
+                 'maca.jellyrisk@gmail.com', 'fuentesmartin@gmail.com'
+                 )
 
-def notify_new_sighting(sight):
-    send_mail('[medjellydata] Nuevo avistamiento reportado desde %s' %
-              sight.reported_from.name.lower(),
-              "Se ha recibido un nuevo avistamiento reportado desde %s.\n\n" %
-              sight.reported_from.name.lower() +
-              "Puedes consultarlo en http://%s/admin/sights/sight/%s" % (CURRENT_SITE, sight.id),
-              'support@science-o-matic.com',
-              User.objects.filter(is_staff=True).values_list("email", flat=True),
+def notify_new_sighting(sighting):
+    reporting_client = sighting.reported_from.name.lower()
+
+    subject = '[medjellydata] Nuevo avistamiento reportado desde %s' % reporting_client
+
+    body = u"Se ha recibido un nuevo avistamiento reportado desde %s." % reporting_client
+
+
+    if sighting.api_sent:
+        body += u"\nEl avistamiento ha sido exportado automáticamente."
+
+    if sighting.jellyfishes_presence:
+        body += u"\nEl avistamiento reporta presencia de medusas."
+
+    body += u"\nPuedes consultarlo en http://%s/admin/sights/sight/%s" % (CURRENT_SITE, sighting.id)
+
+    send_mail(subject, body, 'support@science-o-matic.com', NOTIFY_EMAILS,
               fail_silently=False)
 
 
-def notify_import_report(report):
+def notify_report(report):
     subject = '[medjellydata] Informe de avistamientos importados desde Protección Civíl'
 
     report["admin_url"] = ""
@@ -49,5 +59,5 @@ def notify_import_report(report):
         for sighting in report["sightings_already_imported"]:
             body += u"\n- Avistamiento %s ya había sido importado previamente.".encode("utf-8") % sighting
 
-    send_mail(subject, body, 'support@science-o-matic.com', IMPORT_REPORT_MAILS,
+    send_mail(subject, body, 'support@science-o-matic.com', NOTIFY_EMAILS,
               fail_silently=False)

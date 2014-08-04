@@ -141,7 +141,7 @@ class Command(BaseCommand):
         sightings = response.json()
         if 'rows' in sightings:
             self._import(sightings)
-            mailer.notify_import_report(self.report)
+            mailer.notify_report(self.report)
         else:
             logger.info("No new sightings recieved.")
 

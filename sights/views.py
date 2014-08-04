@@ -35,6 +35,11 @@ def new(request):
             "form": SightForm({}, user=user)
         }
 
+
+        if not sighting.jellyfishes_presence:
+            sighting.validated = True
+            sighting.export()
+
         mailer.notify_new_sighting(sighting)
     else:
         context['form'] = SightForm({}, user=user) # An unbound form
