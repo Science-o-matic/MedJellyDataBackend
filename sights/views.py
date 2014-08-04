@@ -35,7 +35,6 @@ def new(request):
             "form": SightForm({}, user=user)
         }
 
-
         if not sighting.jellyfishes_presence:
             sighting.validated = True
             sighting.export()
