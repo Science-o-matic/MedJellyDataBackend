@@ -7,3 +7,4 @@ pygraphviz
 shortuuid
 mock
 django-nose==1.2
+responses
