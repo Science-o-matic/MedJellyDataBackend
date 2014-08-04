@@ -7,7 +7,7 @@ from django.contrib.sites.models import Site
 CURRENT_SITE = Site.objects.get(pk=settings.SITE_ID)
 
 IMPORT_REPORT_MAILS = ('marambio@icm.csic.es', 'lopezcastillo89@gmail.com', 'veronica.jellyrisk@gmail.com',
-                       'antonio.barcia@gmail.com', 'maca.jellyrisk@gmail.com',
+                       'antonio.barcia@gmail.com', 'maca.jellyrisk@gmail.com', 'fuentesmartin@gmail.com'
                        )
 
 def notify_new_sighting(sight):
