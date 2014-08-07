@@ -20,7 +20,7 @@ class Command(BaseCommand):
         print "Importing..."
         for b in beaches['rows']:
             self._create_beach(self._prepare_beach(b, beaches['columns']))
-        print "Imported"
+        print "Imported!"
 
     def _prepare_beach(self, beach, cols):
         prepared_beach = {}
@@ -32,8 +32,16 @@ class Command(BaseCommand):
         try:
             pc = ProteccionCivilBeach.objects.get(code=beach["CodiPlatja"])
         except ProteccionCivilBeach.DoesNotExist:
-            pc = ProteccionCivilBeach(code=beach["CodiPlatja"])
+            pc = ProteccionCivilBeach.objects.create(
+                    code=beach["CodiPlatja"],
+                    name=beach["Platja"],
+                    town=beach["Municipi"]
+                    )
 
-        pc.name = beach["Platja"]
-        pc.town = beach["Municipi"]
-        pc.save()
+        if beach["Platja"] != pc.name:
+            print pc.name, "ha cambiado de nombre a", beach["Platja"]
+            print "El cambio no se ha aplicado y queda pendiente de revisión manual."
+
+        if beach["Municipi"] != pc.town:
+            print pc.town, "ha cambiado de nombre a", beach["Municipi"]
+            print "El cambio no se ha aplicado y queda pendiente de revisión manual."
