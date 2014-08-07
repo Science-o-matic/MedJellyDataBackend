@@ -110,7 +110,8 @@ class SightJellyfishPresenceFilter(SimpleListFilter):
         return queryset
 
 class SightAdmin(admin.ModelAdmin):
-    exclude = ('api_sent', 'api_sent_timestamp', 'ftp_sent', 'ftp_sent_timestamp')
+    exclude = ('api_sent', 'api_sent_timestamp', 'ftp_sent', 'ftp_sent_timestamp',
+               'jellyfishes_presence')
     list_display = ("timestamp", "beach", "get_beach_city", "reported_from", "validated",
                     "api_sent", "api_sent_timestamp", "jellyfishes_presence")
     list_filter = ("validated", "api_sent", "timestamp", "reported_from",
@@ -160,6 +161,9 @@ class JellyfishSizeAdmin(admin.ModelAdmin):
 class JellyfisAbundanceAdmin(admin.ModelAdmin):
     list_display = ("id", "name",)
 
+class JellyfishAdmin(admin.ModelAdmin):
+    list_display = ("name", "medjelly_api_id")
+
 
 admin.site.register(Sight, SightAdmin)
 admin.site.register(Beach, BeachAdmin)
@@ -170,7 +174,7 @@ admin.site.register(SightVariables, SightVariablesAdmin)
 admin.site.register(ReportingClient)
 admin.site.register(City)
 admin.site.register(BeachOwner)
-admin.site.register(Jellyfish)
+admin.site.register(Jellyfish, JellyfishAdmin)
 admin.site.register(JellyfishSize, JellyfishSizeAdmin)
 admin.site.register(JellyfishAbundance, JellyfishSizeAdmin)
 admin.site.register(ProteccionCivilBeach, ProteccionCivilBeachAdmin)
