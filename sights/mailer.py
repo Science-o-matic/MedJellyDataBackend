@@ -7,7 +7,7 @@ from django.contrib.sites.models import Site
 CURRENT_SITE = Site.objects.get(pk=settings.SITE_ID)
 
 NOTIFY_EMAILS = ('marambio@icm.csic.es', 'lopezcastillo89@gmail.com',
-                 'veronica.jellyrisk@gmail.com', 'antonio.barcia@gmail.com',
+                 'antonio.barcia@gmail.com',
                  'maca.jellyrisk@gmail.com', 'fuentesmartin@gmail.com'
                  )
 
