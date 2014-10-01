@@ -50,7 +50,7 @@ class Sight(models.Model):
 
     def get_flag_reason(self):
         try:
-            value = self.variables.filter(variable__api_export_id=99)[0].value
+            value = int(self.variables.filter(variable__api_export_id=99)[0].value)
             if value == 15:
                 value = ''
             else:
@@ -77,10 +77,11 @@ class Sight(models.Model):
         return max_level
 
     def get_variables_by_group_name(self, group_name):
-        return self.sightvariables_set.filter(variable__group__name=group_name,
+        return self.variables.filter(variable__group__name=group_name,
                                               value=True)
+
     def get_variable_by_type(self, variable_type):
-        return self.sightvariables_set.get(variable__type=variable_type)
+        return self.variables.filter(variable__type=variable_type)
 
     def get_water_temp(self):
         try:

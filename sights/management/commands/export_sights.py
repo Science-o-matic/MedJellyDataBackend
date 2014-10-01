@@ -9,16 +9,10 @@ from sights.models import Sight, Variable, SightVariables
 class Command(BaseCommand):
     args = 'csvfile'
     help = 'Export all sights in a CSV file'
-    abundance_keyword = "Abundància"
-    presence_keyword = "Presència"
-    size_keyword = "Grandària"
-    presence_variable_label = "Meduses"
-    presence_variable_value = "1.00"
-    jellyfishes_names = ["Pelagia", "Aurelia", "Cotylorhiza", "Rhizostoma", "Chrysaora",
-                         "Aequorea", "Velella","Physalia", "Mnemiopsis", "Phyllorhiza", "Carybdea"]
-    metereology_group_name = "Meteorologia"
+    metereology_group_name = "Meteorología"
     water_temperature_type = "Temperatura de l'aigua"
-
+    groundswell_presence_type = "Mar de fondo (presencia)"
+    sea_status_type = "Estado de la Mar"
 
     def handle(self, *args, **options):
         if len(args) == 0:
@@ -30,148 +24,71 @@ class Command(BaseCommand):
             self.write_header(csvwriter)
 
             i = 0
-            for sight in Sight.objects.all():
-                self.write_row(csvwriter, sight)
+            for sighting in Sight.objects.all():
+                self.write_sighting(csvwriter, sighting)
                 i += 1
             print "Exported", i, "sights"
 
 
     def write_header(self, csvwriter):
-        header_cols = ["id", "beach", "date", "day", "month", "year", "time"]
-        header_cols += self.jellyfishes_names
-        header_cols += ["%s grandaria" % s for s in self.jellyfishes_names]
-        header_cols += ["Origen",
-                        "Bandera", "Motivo Bandera",
-                        "T. Agua",
-                        "Metereologia"]
+        header_cols = ["Municipio", "Nombre playa", "Fecha", "Hora", "Presencia Medusas",
+                       "Especie / Tamaño / Abundancia", "Meteorología",
+                       "Estado de la mar (1 = Plana, 2 = Rizada, 3 = Marejadilla, 4 = Marejada, 5 = Fuerte marejada, 6 = Mar gruesa)",
+                       "Presencia Mar de Fondo",
+                       "Bandera estado mar (0 = Sin información, 1 = Bandera verde, 2 = Bandera amarilla, 3 = Bandera roja)",
+                       "Tª agua", "Reportado por",
+                       "Comentarios"]
         csvwriter.writerow(header_cols)
 
 
-    def write_row(self, csvwriter, sight):
+    def write_sighting(self, csvwriter, sighting):
         data = []
-        date = sight.timestamp
-        try:
-            data = [sight.id, sight.beach]
-            data += [date.strftime("%m/%d/%Y"), date.day, date.month, date.year, date.strftime("%H:%M")]
-            data += self.jellyfish_values(sight)
-            data += self.jellyfish_size_values(sight)
-            data += [sight.reported_from, int(sight.get_flag()), sight.get_flag_reason()]
-            data += [self._get_water_temperature(sight)]
-            data += [",".join(self._get_metereology_variables_values(sight))]
-        except ValueError as e:
-            print "Sight id", sight.id, "has throw exception:", e.message
+        date = sighting.timestamp
+
+        data = [sighting.beach.city, sighting.beach, date.strftime("%d/%m/%Y"),
+                date.strftime("%H:%M"), int(sighting.jellyfishes_presence),
+                self._get_jellyfishes(sighting),
+                ",".join(self._get_metereology_variables_values(sighting)),
+                self._get_sea_status(sighting),
+                self._get_groundswell_presence(sighting),
+                sighting.get_flag(),
+                sighting.get_water_temp() or "N/A",
+                sighting.reported_from,
+                sighting.comments
+                ]
+
         csvwriter.writerow([unicode(s).encode("utf-8") for s in data])
 
-    def _get_metereology_variables_values(self, sight):
-        metereology_variables = sight.get_variables_by_group_name(self.metereology_group_name)
-        metereology_variables_names = metereology_variables.values_list(
-            "variable__variable__label",
+
+    def _get_jellyfishes(self, sighting):
+        jellyfishes = ""
+
+        for jellyfish in sighting.jellyfishes.all():
+            jellyfishes += "%s / %s / %s |" % (
+                jellyfish.jellyfish.name,
+                jellyfish.size.id,
+                jellyfish.abundance.id
+            )
+
+        return jellyfishes
+
+    def _get_metereology_variables_values(self, sighting):
+        metereology_variables = sighting.get_variables_by_group_name(self.metereology_group_name)
+        return metereology_variables.values_list(
+            "variable__label",
             flat=True
         )
-        return metereology_variables_names
 
-    def _get_water_temperature(self, sight):
+    def _get_groundswell_presence(self, sighting):
         try:
-            return sight.get_variable_by_type(self.water_temperature_type).value
-        except SightVariables.DoesNotExist:
-            return ""
-        except SightVariables.MultipleObjectsReturned:
-            return "N/A"
-
-    def jellyfish_values(self, sight):
-        # 0 - ausencia
-        # 1 - presencia con abundancia pocas
-        # 2 - presencia con abundancia bastantes
-        # 3 - presencia con abundancia muchas
-        # NA - sin datos
-        if self._jellyfishes_presence(sight):
-            values = self.get_jellyfish_values(sight)
-        else:
-            values = [0 for name in self.jellyfishes_names]
-
-        return values
-
-    def jellyfish_size_values(self, sight):
-        if self._jellyfishes_presence(sight):
-            values = self.jellyfishes_size(sight)
-        else:
-            values = [0 for name in self.jellyfishes_names]
-
-        return values
-
-    def _jellyfishes_presence(self, sight):
-        sight_has_jellyfishes = sight.sightvariables_set.filter(
-            variable__variable__label=self.presence_variable_label,
-            value=self.presence_variable_value
-        )
-        return bool(sight_has_jellyfishes)
-
-    def get_jellyfish_values(self, sight):
-        jellyfishes_abundance_vars = sight.sightvariables_set.filter(
-            variable__variable__label__contains=self.abundance_keyword
-            )
-        jellyfishes_abundance_vars = jellyfishes_abundance_vars.values_list(
-            "variable__variable__label",
-            "value"
-            )
-
-        jellyfishes_abundance = {}
-        for var in jellyfishes_abundance_vars:
-            key = var[0].split("-")[0].split(" ")[0].strip()
-            value = int(var[1])
-            jellyfishes_abundance[key] = value
-
-        values = []
-        for jellyfish_name in self.jellyfishes_names:
-            jellyfish_presence = self.jellyfishes_presence(jellyfish_name, sight)
+            value = sighting.get_variable_by_type(self.groundswell_presence_type)[0].value
+        except IndexError:
             value = 0
-            try:
-                if jellyfishes_abundance[jellyfish_name] > 0:
-                    value = jellyfishes_abundance[jellyfish_name]
-                elif jellyfish_presence:
-                    value = "NA"
-            except KeyError:
-                if jellyfish_presence:
-                    value = "NA"
-            values.append(value)
-        return values
+        return value
 
-    def jellyfishes_size(self, sight):
-        jellyfishes_size_vars = sight.sightvariables_set.filter(
-            variable__variable__label__contains=self.size_keyword
-            )
-        jellyfishes_size_vars = jellyfishes_size_vars.values_list(
-            "variable__variable__label",
-            "value"
-            )
-        jellyfishes_size = {}
-        for var in jellyfishes_size_vars:
-            key = var[0].split("-")[0].split(" ")[0].strip()
-            value = int(var[1])
-            jellyfishes_size[key] = value
-
-        values = []
-        for jellyfish_name in self.jellyfishes_names:
-            jellyfish_presence = self.jellyfishes_presence(jellyfish_name, sight)
-            value = 0
-            try:
-                if jellyfishes_size[jellyfish_name] > 0:
-                    value = jellyfishes_size[jellyfish_name]
-                elif jellyfish_presence:
-                    value = "NA"
-            except KeyError:
-                if jellyfish_presence:
-                    value = "NA"
-            values.append(value)
-        return values
-
-
-    def jellyfishes_presence(self, name, sight):
-        jellyfishes_presence_vars = sight.sightvariables_set.filter(
-            variable__variable__type__contains=name,
-            value="1.00",
-        )
-        jellyfishes_presence_vars = jellyfishes_presence_vars.filter(
-            variable__variable__type__contains=self.presence_keyword,
-        )
-        return bool(jellyfishes_presence_vars)
+    def _get_sea_status(self, sighting):
+        try:
+            value = sighting.get_variable_by_type(self.sea_status_type)[0].value
+        except IndexError:
+            value = ""
+        return value
