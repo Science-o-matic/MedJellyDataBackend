@@ -190,7 +190,6 @@ class Command(BaseCommand):
             )
             self._report_not_found_beach(proteccion_civil_beach_id)
             return None
-
         sighting_instance, created = Sight.objects.get_or_create(
             timestamp=date,
             beach=beach,
@@ -270,21 +269,22 @@ class Command(BaseCommand):
     def _add_sighting_jellyfishes(self, sighting, jellyfishes):
         if not jellyfishes:
             return
+        for jelly in jellyfishes.split(";"):           
+	    jelly_info = jelly.split(",")
+	    if len(jelly_info) == 3:
+            	name, abundance, size = jelly_info
 
-        for jelly in jellyfishes.split(";"):
-            name, abundance, size = jelly.split(",")
-
-            try:
-                jellyfish = Jellyfish.objects.get(name__contains=name)
-            except Jellyfish.DoesNotExist:
-                logger.warning("Jellyfish named %s not found!" % name)
-
-            SightJellyfishes.objects.create(
-                sight=sighting,
-                jellyfish=jellyfish,
-                size_id=JELLYFISH_CONVERSION["size"][size],
-                abundance_id=JELLYFISH_CONVERSION["abundance"][abundance]
-            )
+        	try:
+                   jellyfish = Jellyfish.objects.get(name__contains=name)
+	        except Jellyfish.DoesNotExist:
+        	   logger.warning("Jellyfish named %s not found!" % name)
+                
+                SightJellyfishes.objects.create(
+                   sight=sighting,
+                   jellyfish=jellyfish,
+                   size_id=JELLYFISH_CONVERSION["size"][size],
+                   abundance_id=JELLYFISH_CONVERSION["abundance"][abundance]
+                )
 
     def _handle_no_jellyfishes_sighting(self, sighting):
         if self.auto_export:
